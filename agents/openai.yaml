@@ -1,0 +1,6 @@
+interface:
+  display_name: "网易 ModSDK API 查询"
+  short_description: "从完整模组需求检索网易 API，按端侧核验签名、限制和关联能力"
+  default_prompt: "使用 $netease-api-query 查找这个模组需求所需的 API，并核验端侧与重要限制。"
+policy:
+  allow_implicit_invocation: true
