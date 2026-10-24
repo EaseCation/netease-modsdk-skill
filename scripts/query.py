@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """独立 skill 查询入口，Wiki 路径由环境变量或仓库 .env 配置。"""
 import json
+import os
 import runpy
 import sys
 from config import read_config, resolve_root, validate_wiki
@@ -14,7 +15,11 @@ def main():
     if any(arg == '--root' or arg.startswith('--root=') for arg in sys.argv[1:]):
         raise ValueError('请通过 MODSDK_WIKI_ROOT 或本技能 .env 选择 Wiki，不使用 --root')
     sys.argv = [str(script), '--root', str(root)] + sys.argv[1:]
-    runpy.run_path(str(script), run_name='__main__')
+    if os.environ.get('MODSDK_MAINTAINER_MODE') == '1':
+        from maintenance import capture_query
+        capture_query(sys.argv[1:], root, lambda: runpy.run_path(str(script), run_name='__main__'))
+    else:
+        runpy.run_path(str(script), run_name='__main__')
 
 
 if __name__ == '__main__':

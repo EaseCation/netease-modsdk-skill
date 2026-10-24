@@ -7,7 +7,7 @@ import json
 from pathlib import Path, PurePosixPath
 import re
 import sys
-import urllib.request
+from network import fetch_public
 from config import SKILL_ROOT, read_config, resolve_root, validate_wiki
 
 
@@ -91,11 +91,7 @@ def load_source(source_id):
         if path.is_file():
             data = path.read_bytes()
         else:
-            request = urllib.request.Request(url, headers={'User-Agent': 'netease-modsdk-skill', 'Accept-Encoding': 'identity'})
-            with urllib.request.urlopen(request, timeout=30) as response:
-                data = response.read(2_000_001)
-            if len(data) > 2_000_000:
-                raise ValueError('来源文件超过 2 MB，请缩小登记范围')
+            data = fetch_public(url)
             if source_digest(data) != source['sha256']:
                 raise ValueError('固定原文摘要不符，未写入缓存：' + source_id)
             path.parent.mkdir(parents=True, exist_ok=True)

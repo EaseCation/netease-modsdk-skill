@@ -5,10 +5,12 @@ import json
 from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
-KEYS = ('MODSDK_WIKI_ROOT', 'MODSDK_WIKI_REPOSITORY', 'MODSDK_WIKI_REF')
+KEYS = ('MODSDK_WIKI_ROOT', 'MODSDK_WIKI_REPOSITORY', 'MODSDK_WIKI_REF',
+        'MODSDK_UPDATE_CHECK_HOURS', 'MODSDK_NETWORK_TIMEOUT', 'MODSDK_GITHUB_PROXY_PREFIX')
 DEFAULTS = {'MODSDK_WIKI_ROOT': '.data/wiki',
             'MODSDK_WIKI_REPOSITORY': 'https://github.com/EaseCation/netease-modsdk-wiki.git',
-            'MODSDK_WIKI_REF': 'main'}
+            'MODSDK_WIKI_REF': 'main', 'MODSDK_UPDATE_CHECK_HOURS': '24',
+            'MODSDK_NETWORK_TIMEOUT': '30', 'MODSDK_GITHUB_PROXY_PREFIX': ''}
 
 
 def read_config():
@@ -40,8 +42,11 @@ def read_config():
     for key in KEYS:
         if key in os.environ:
             values[key] = os.environ[key]
-        if not values[key].strip():
+        if key != 'MODSDK_GITHUB_PROXY_PREFIX' and not values[key].strip():
             raise ValueError(key + ' 不能为空')
+    for key, low, high in [('MODSDK_UPDATE_CHECK_HOURS', 0, 720), ('MODSDK_NETWORK_TIMEOUT', 1, 120)]:
+        if not values[key].isdigit() or not low <= int(values[key]) <= high:
+            raise ValueError(key + ' 的值超出允许范围')
     return values
 
 

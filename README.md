@@ -72,6 +72,23 @@ ln -s /absolute/path/to/netease-modsdk-skill ~/.codex/skills/netease-modsdk-skil
 
 已有同名安装时先确认归属，避免覆盖其他内容。技能的自动选择设置在 `agents/openai.yaml`；使用指引见 [SKILL.md](SKILL.md)。
 
+## 更新检查与网络失败
+
+首次使用执行 `python3 scripts/session.py`。默认在使用时每 24 小时检查配置的 Wiki 分支/标签，不安装后台定时任务；可用 `MODSDK_UPDATE_CHECK_HOURS` 调整，设为 0 禁用自动检查。`setup.py --check` 始终只检查本地；`setup.py --check-updates` 显式检查上游，受管且无用户修改的副本用 `setup.py --update` 更新。完整 Wiki 工作区不自动 pull/reset。
+
+网络请求有总超时和有限次数：默认单次 30 秒，一次直连；只有配置 `MODSDK_GITHUB_PROXY_PREFIX` 时才追加一次代理尝试。安装/更新过程另有 180 秒预算，失败恢复最多追加 30 秒。Git 使用 HTTP/1.1，失败后进入 15 分钟冷却；已缓存原文与 API 查询仍可离线使用。超时会终止本次进程树，错误会明确告知代理、切换网络及下一步，不无限重试。
+
+```dotenv
+MODSDK_UPDATE_CHECK_HOURS=24
+MODSDK_NETWORK_TIMEOUT=30
+# 可选：可信服务须支持完整 GitHub URL 前缀模式及所需 Git/raw 请求
+MODSDK_GITHUB_PROXY_PREFIX=https://your-trusted-proxy.example/
+```
+
+代理前缀仅用于公开 GitHub 的只读下载，原始仓库地址仍保留；不随机寻找第三方镜像，也不将登录凭据发往下载代理。也可使用系统环境中的 HTTP(S) 代理。代理服务是否支持 partial clone 由该服务决定；不支持时应切换网络，不退回下载所有历史与附件。
+
+用户调整网络后，可执行 `python3 scripts/setup.py --retry-network` 清除冷却，再重试先前操作。不能把反复解除冷却作为自动重试策略。来源不存在、固定文件摘要不符、用户修改或协议不匹配属于独立错误，不伪装成网络故障。
+
 ## 按需开发指引
 
 [SKILL.md](SKILL.md) 保持短入口，按当前任务选择 15 个模块中的相关一篇；需要跨版判断时再加载版本说明，具体字段再读取原文章节。API 合同仍调用现有 query，不将全部教程混入 API 索引。

@@ -59,12 +59,92 @@ def evaluate_guides():
     return 0 if not errors and report['passed']==report['cases'] else 1
 
 
+def evaluate_operations():
+    """隔离目录中运行真实 CLI，检查可见性、提醒、超时及回执门槛。"""
+    import shutil
+    import socket
+    import tempfile
+    from network import run_bounded, NetworkError
+    root=validate_wiki(resolve_root(read_config()['MODSDK_WIKI_ROOT']))
+    checks=[]
+    with tempfile.TemporaryDirectory(prefix='modsdk-operations-') as temp:
+        clone=Path(temp)/'skill'
+        shutil.copytree(SKILL_ROOT,clone,ignore=shutil.ignore_patterns('.git','.data','.local','.env','__pycache__'))
+        env={**os.environ,'MODSDK_WIKI_ROOT':str(root),'MODSDK_MAINTAINER_MODE':'0','MODSDK_UPDATE_CHECK_HOURS':'0'}
+        def run(script,*args,settings=None,code=0):
+            proc=subprocess.run([sys.executable,str(clone/'scripts'/script),*args],cwd=clone,env={**env,**(settings or {})},capture_output=True,text=True,timeout=150)
+            if proc.returncode!=code:raise ValueError(script+' 返回值异常：'+proc.stderr[:300])
+            return json.loads(proc.stdout or proc.stderr),proc.stdout
+        value,_=run('session.py')
+        assert 'context_file' not in value
+        value,_=run('maintenance.py','publish',code=1)
+        assert value=={'enabled':False} and not (clone/'.local/maintenance').exists()
+        checks.append('disabled_mode_hidden_and_write_denied')
+        query=['resolve','给指定玩家发送系统聊天消息','--side','server']
+        _,ordinary=run('query.py',*query)
+        assert not (clone/'.local/maintenance').exists()
+        active={'MODSDK_MAINTAINER_MODE':'1'}
+        value,_=run('session.py',settings=active)
+        assert Path(value['context_file']).is_file()
+        _,observed=run('query.py',*query,settings=active)
+        assert ordinary==observed
+        log=clone/'.local/maintenance/ledger.json';state=json.loads(log.read_text())
+        assert len(state['observations'])==1 and not state['issues']
+        checks.append('enabled_mode_preserves_query_stdout')
+        value,_=run('maintenance.py','record','--query','检索复盘集成核验','--summary','隔离目录记录与提醒检查',settings=active)
+        issue=value['issue_id'];state=json.loads(log.read_text());state['started_at']=time.time()-172800
+        log.write_text(json.dumps(state,ensure_ascii=False))
+        value,_=run('maintenance.py','checkpoint',settings=active);assert not value['remind']
+        value,_=run('maintenance.py','checkpoint','--work-complete',settings=active);assert value['remind']
+        value,_=run('maintenance.py','checkpoint','--work-complete',settings=active);assert not value['remind']
+        run('maintenance.py','dismiss',issue,'--reason','集成核验已结束，无需修改公共标注',settings=active)
+        state=json.loads(log.read_text());assert state['last_organized_at'] and state['last_reminded_at'] and state['issues'][0]['status']=='not_actionable'
+        run('maintenance.py','record','--query','检索复盘集成核验','--summary','检查重复问题重新打开',settings=active)
+        state=json.loads(log.read_text());assert len(state['issues'])==1 and state['issues'][0]['occurrences']==2 and state['issues'][0]['status']=='pending'
+        checks.append('reminder_requires_time_and_task_boundary_and_deduplicates')
+        # 本地 bare 仓库是真实 Git 上游，避免此检查依赖外部连通性。
+        remote=Path(temp)/'upstream.git'
+        subprocess.run(['git','clone','--bare','--shared',str(root),str(remote)],check=True,capture_output=True)
+        head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+        subprocess.run(['git','--git-dir',str(remote),'update-ref','refs/heads/main',head],check=True)
+        settings={'MODSDK_WIKI_REPOSITORY':str(remote),'MODSDK_WIKI_REF':'main','MODSDK_UPDATE_CHECK_HOURS':'24'}
+        value,_=run('session.py',settings=settings);assert value['upstream']['checked_now'] and value['upstream']['status']=='up_to_date'
+        value,_=run('session.py',settings=settings);assert not value['upstream']['checked_now']
+        checks.append('upstream_check_obeys_interval')
+        with socket.socket() as reserved:
+            reserved.bind(('127.0.0.1',0))
+            settings={'MODSDK_WIKI_REPOSITORY':'http://127.0.0.1:'+str(reserved.getsockname()[1])+'/missing.git','MODSDK_NETWORK_TIMEOUT':'1','MODSDK_GITHUB_PROXY_PREFIX':'','NO_PROXY':'*','no_proxy':'*'}
+            value,_=run('setup.py','--check-updates',settings=settings,code=1);assert value['status']=='unavailable'
+            value,_=run('setup.py','--check-updates',settings=settings,code=1);assert '冷却' in value['message']
+            # 远程检查失败不阻断已有本地语料。
+            _,cached=run('query.py',*query,settings=settings);assert cached==ordinary
+        checks.append('network_failure_cools_down_and_local_query_still_works')
+        started=time.monotonic()
+        try:
+            run_bounded([sys.executable,'-c','import time;time.sleep(5)'],timeout=.2)
+            raise AssertionError('未执行总超时')
+        except NetworkError:assert time.monotonic()-started<3
+        checks.append('subprocess_total_timeout')
+        # 回执缺失时在接触 GitHub 写入前即拒绝。
+        tx=clone/'.local/maintenance/transaction.json'
+        tx.write_text(json.dumps({'root':str(root),'repository':'EaseCation/netease-modsdk-wiki','base':head,'phase':'editing','probes':[]}))
+        value,_=run('maintenance.py','publish',settings=active,code=1);assert '回归回执' in value['error']
+        checks.append('publish_requires_current_validation_receipt')
+    report={'passed':len(checks),'checks':checks,'scope':'真实 CLI/文件/Git/超时检查；不执行生产推送或游戏测试'}
+    out=SKILL_ROOT/'.local';out.mkdir(exist_ok=True);(out/'operations-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps(report,ensure_ascii=False));return 0
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split',choices=['regression','holdout','protocol','all'],default='all')
+    parser.add_argument('--operations',action='store_true',help='隔离核验安装、网络与会话机制')
     parser.add_argument('--guides',action='store_true',help='检查教程来源、引用与固定阅读路径的字符预算')
     parser.add_argument('--record-baseline',action='store_true',help='全部通过后，显式记录新的成本基线；不会改题目或期望 API')
     args=parser.parse_args()
+    if args.operations:
+        if args.guides or args.record_baseline or args.split!='all':raise ValueError('--operations 单独运行')
+        return evaluate_operations()
     if args.guides:
         if args.record_baseline or args.split!='all':raise ValueError('--guides 不与 API 题库筛选或基线记录混用')
         return evaluate_guides()
