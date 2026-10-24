@@ -87,5 +87,15 @@
     "note": "初次留出检查暴露了事件时机和批量槽位区分问题；这些题此后作为已知回归题，不再视作独立盲测。"
   },
   "evaluation_commit": "2ae0d396c1f4e079b685e73e45245e73a515a9a7",
-  "skill_commit": "197810304b17ddd15e07debcb7a1ae09e8e0bbfe"
+  "skill_commit": "197810304b17ddd15e07debcb7a1ae09e8e0bbfe",
+  "bukkit_basic_review": {
+    "wiki_before": "da9dada97b98a87715d4490a19c2b491b37df52d",
+    "frozen_cases": 31,
+    "before_passed": 16,
+    "after_passed": 31,
+    "before_hits": 18,
+    "after_hits": 34,
+    "required": 34,
+    "note": "冻结语义计划，通过实际查询运行时比较；随后四条客户端对照加入正式 CLI 回归，未计入此对照。合同提示用于复核，不等于游戏实机验收。"
+  }
 }

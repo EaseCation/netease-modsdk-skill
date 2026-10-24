@@ -1898,6 +1898,1273 @@
       "boundary": false,
       "limit": 8,
       "max_chars": 5500
+    },
+    {
+      "id": "bukkit-title",
+      "title": "给指定玩家显示屏幕中央主标题和副标题，并控制淡入停留淡出。",
+      "query": "给指定玩家显示屏幕中央主标题和副标题，并控制淡入停留淡出。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "给玩家发送屏幕中央大标题和副标题",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOnePopupNotice",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOneTipMessage"
+      ],
+      "contract_checks": [
+        "原文只有通用命令入口，使用 title/titleraw；不能把 Popup 副标题当中央副标题。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-title-name",
+      "title": "Bukkit Player.sendTitle 对应什么？",
+      "query": "Bukkit Player.sendTitle 对应什么？",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "Player.sendTitle",
+            "kind": "api",
+            "operation": "write",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOnePopupNotice"
+      ],
+      "contract_checks": [
+        "社区方法名只是检索别名，实际返回 SetCommand，不生成 sendTitle SDK 签名。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-title-reset",
+      "title": "清除并重置玩家屏幕中央标题的显示时间。",
+      "query": "清除并重置玩家屏幕中央标题的显示时间。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "清除屏幕标题并重置标题时间",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "区分 clear 与 reset，时间单位为游戏 tick。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-actionbar",
+      "title": "给某个玩家发送原生 actionbar 动作栏文字。",
+      "query": "给某个玩家发送原生 actionbar 动作栏文字。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "发送原生动作栏 actionbar 文字",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOnePopupNotice",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOneTipMessage"
+      ],
+      "contract_checks": [
+        "使用 titleLocation=actionbar，不与 tip/popup 区域混同。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-rawtext",
+      "title": "向指定玩家发送 rawtext 结构化聊天文本。",
+      "query": "向指定玩家发送 rawtext 结构化聊天文本。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "发送结构化 JSON 聊天文本",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg"
+      ],
+      "contract_checks": [
+        "用 JSON 序列化 rawtext，执行者与接收者选择器分别指定。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-chat-one",
+      "title": "只给一个玩家发系统聊天消息，其他人看不到。",
+      "query": "只给一个玩家发系统聊天消息，其他人看不到。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "给指定玩家发送系统聊天消息",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "NotifyOneMessage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.NotifyOneMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg",
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsgToPlayer",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetTipMessage"
+      ],
+      "contract_checks": [
+        "系统定向聊天不冒充玩家。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-message-name",
+      "title": "Bukkit Player.sendMessage 对应什么？",
+      "query": "Bukkit Player.sendMessage 对应什么？",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "Player.sendMessage",
+            "kind": "api",
+            "operation": "write",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "NotifyOneMessage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.NotifyOneMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg",
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsgToPlayer"
+      ],
+      "contract_checks": [
+        "sendMessage 对应普通系统消息语义，不是 SendMsg 的玩家发言语义。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-chat-broadcast",
+      "title": "给当前全部在线玩家发一条系统聊天公告，不能冒充玩家发言。",
+      "query": "给当前全部在线玩家发一条系统聊天公告，不能冒充玩家发言。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "列出所有在线玩家",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "extent": "global",
+            "id": "1"
+          },
+          {
+            "query": "给指定玩家发送系统聊天消息",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single",
+            "id": "2"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetPlayerList",
+          "ids": [
+            "modsdk:api:server:mod.server.extraServerApi.GetPlayerList"
+          ]
+        },
+        {
+          "label": "NotifyOneMessage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.NotifyOneMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg",
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsgToPlayer"
+      ],
+      "contract_checks": [
+        "玩家列表跨维度，逐个定向通知；不把 SendMsg 当系统广播。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-chat-as-player",
+      "title": "模拟一个已有玩家向全服发出聊天消息。",
+      "query": "模拟一个已有玩家向全服发出聊天消息。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "模拟玩家向所有人说话",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SendMsg",
+          "ids": [
+            "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.NotifyOneMessage"
+      ],
+      "contract_checks": [
+        "必须是已有玩家名字，否则引擎随机选玩家。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-chat-private-player",
+      "title": "模拟玩家甲向玩家乙发私聊。",
+      "query": "模拟玩家甲向玩家乙发私聊。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "模拟玩家给另一个玩家发私聊",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SendMsgToPlayer",
+          "ids": [
+            "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsgToPlayer"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.NotifyOneMessage",
+        "modsdk:api:server:mod.server.component.msgCompServer.MsgComponentServer.SendMsg"
+      ],
+      "contract_checks": [
+        "from/to 都是玩家 ID，保留发送者身份。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-tip-one",
+      "title": "只给一个玩家发送快捷栏上方的 tip 提示。",
+      "query": "只给一个玩家发送快捷栏上方的 tip 提示。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "给单个玩家发送快捷栏 tip 提示",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetOneTipMessage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOneTipMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetTipMessage"
+      ],
+      "contract_checks": [
+        "明确单个接收者；服务端普通 SetTipMessage 作用于全体。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-tip-all",
+      "title": "给全部玩家发送快捷栏上方 tip 提示。",
+      "query": "给全部玩家发送快捷栏上方 tip 提示。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "向所有玩家广播快捷栏 tip 提示",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "global",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetTipMessage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetTipMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetOneTipMessage"
+      ],
+      "contract_checks": [
+        "服务端 SetTipMessage 是全体范围。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-scoreboard-create",
+      "title": "建立记分板目标并在侧边栏显示。",
+      "query": "建立记分板目标并在侧边栏显示。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "创建记分板目标并显示侧边栏",
+            "kind": "api",
+            "operation": "write",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetAllScoreboardObjects"
+      ],
+      "contract_checks": [
+        "目标建立与侧边栏显示属于原生命令；目标定义读取不完成创建。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-scoreboard-write",
+      "title": "设置一个玩家某个记分板目标的分数。",
+      "query": "设置一个玩家某个记分板目标的分数。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "写入玩家记分板分数",
+            "kind": "api",
+            "operation": "write",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetCommand",
+          "ids": [
+            "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetAllPlayerScoreboardObjects"
+      ],
+      "contract_checks": [
+        "分数写入用原生命令；读取 API 不能完成变更。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-scoreboard-read",
+      "title": "只读取某个玩家的记分板目标和分数。",
+      "query": "只读取某个玩家的记分板目标和分数。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取玩家记分板分数",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetAllPlayerScoreboardObjects",
+          "ids": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetAllPlayerScoreboardObjects"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.commandCompServer.CommandCompServer.SetCommand"
+      ],
+      "contract_checks": [
+        "读取玩家记分项，不能执行修改分数的命令。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-online",
+      "title": "获得跨维度的全部在线玩家列表。",
+      "query": "获得跨维度的全部在线玩家列表。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "获取全部在线玩家",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "extent": "global",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetPlayerList",
+          "ids": [
+            "modsdk:api:server:mod.server.extraServerApi.GetPlayerList"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "全部维度在线玩家 ID；返回顺序没有业务意义。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-xp-total",
+      "title": "读取玩家累计总经验点数。",
+      "query": "读取玩家累计总经验点数。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取玩家累计总经验点数",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetPlayerTotalExp",
+          "ids": [
+            "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.GetPlayerTotalExp"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.GetPlayerExp",
+        "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.GetPlayerLevel"
+      ],
+      "contract_checks": [
+        "累计总点数不是本级经验或等级。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-xp-progress",
+      "title": "读取玩家当前等级内的经验条进度。",
+      "query": "读取玩家当前等级内的经验条进度。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取玩家当前等级的经验条进度",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetPlayerExp",
+          "ids": [
+            "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.GetPlayerExp"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.GetPlayerTotalExp"
+      ],
+      "contract_checks": [
+        "isPercent 开关选择百分比/本级绝对值，原文未明确比例范围。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-xp-set-total",
+      "title": "把玩家总经验点数设置为给定值，并相应改变等级。",
+      "query": "把玩家总经验点数设置为给定值，并相应改变等级。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "设置玩家总经验点数",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetPlayerTotalExp",
+          "ids": [
+            "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.SetPlayerTotalExp"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.AddPlayerExperience"
+      ],
+      "contract_checks": [
+        "设置总经验会重新计算等级。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-xp-give",
+      "title": "给玩家增加若干经验点。",
+      "query": "给玩家增加若干经验点。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "增加玩家经验点数",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "AddPlayerExperience",
+          "ids": [
+            "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.AddPlayerExperience"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.AddPlayerLevel",
+        "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.CreateExperienceOrb"
+      ],
+      "contract_checks": [
+        "负数扣减不会自动降级；实体经验球不是直接给玩家经验。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-level-absolute",
+      "title": "将玩家等级设为目标等级，先查当前等级再计算调整量。",
+      "query": "将玩家等级设为目标等级，先查当前等级再计算调整量。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取玩家当前等级",
+            "kind": "api",
+            "operation": "read",
+            "target": "player",
+            "id": "1"
+          },
+          {
+            "query": "增减玩家等级",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "2"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetPlayerLevel",
+          "ids": [
+            "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.GetPlayerLevel"
+          ]
+        },
+        {
+          "label": "AddPlayerLevel",
+          "ids": [
+            "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.AddPlayerLevel"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerHealthLevel"
+      ],
+      "contract_checks": [
+        "绝对等级需要读当前等级，再以差值调整；不是直接设置生命阈值。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-location",
+      "title": "取得玩家脚底 Location 坐标，不要眼睛坐标。",
+      "query": "取得玩家脚底 Location 坐标，不要眼睛坐标。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取玩家脚底坐标",
+            "kind": "api",
+            "operation": "read",
+            "target": "entity",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetFootPos",
+          "ids": [
+            "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.GetFootPos"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.GetPos"
+      ],
+      "contract_checks": [
+        "读取脚底，不用含姿态偏移的 GetPos。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-teleport-same",
+      "title": "在同一维度把玩家传送到指定脚底坐标。",
+      "query": "在同一维度把玩家传送到指定脚底坐标。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "传送玩家到指定脚底位置",
+            "kind": "api",
+            "operation": "write",
+            "target": "entity",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetFootPos / SetPos",
+          "ids": [
+            "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.SetFootPos",
+            "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.SetPos"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.ChangeEntityDimension"
+      ],
+      "contract_checks": [
+        "服务端 SetPos/SetFootPos 都写脚底；不把读取端差异错用到写入端。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-teleport-dimension",
+      "title": "将玩家传送到另一维度的给定位置。",
+      "query": "将玩家传送到另一维度的给定位置。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "跨维度传送玩家",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "ChangePlayerDimension",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.ChangePlayerDimension"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.ChangeEntityDimension"
+      ],
+      "contract_checks": [
+        "pos 为玩家头部位置；ChangeEntityDimension 不用于玩家。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-velocity",
+      "title": "设置玩家速度向量，相当于 setVelocity。",
+      "query": "设置玩家速度向量，相当于 setVelocity。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "设置玩家速度向量",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetPlayerMotion",
+          "ids": [
+            "modsdk:api:server:mod.server.component.actorMotionCompServer.ActorMotionComponentServer.SetPlayerMotion"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.actorMotionCompServer.ActorMotionComponentServer.SetMotion"
+      ],
+      "contract_checks": [
+        "玩家使用 SetPlayerMotion；不以非玩家 SetMotion 替代。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-food",
+      "title": "设置玩家饥饿值，不能改变自动回血的饥饿阈值。",
+      "query": "设置玩家饥饿值，不能改变自动回血的饥饿阈值。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "设置玩家饥饿值",
+            "kind": "api",
+            "operation": "write",
+            "target": "attribute",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetAttrValue",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetAttrValue"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerHealthLevel",
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerStarveLevel"
+      ],
+      "contract_checks": [
+        "按 AttrType 改饥饿值，不能改回血/饥饿阈值。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-health",
+      "title": "将玩家当前生命值恢复到其实际生命上限。",
+      "query": "将玩家当前生命值恢复到其实际生命上限。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "读取实体生命上限",
+            "kind": "api",
+            "operation": "read",
+            "target": "attribute",
+            "id": "1"
+          },
+          {
+            "query": "设置玩家当前生命值",
+            "kind": "api",
+            "operation": "write",
+            "target": "attribute",
+            "id": "2"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "GetAttrMaxValue",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.GetAttrMaxValue"
+          ]
+        },
+        {
+          "label": "SetAttrValue",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetAttrValue"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerHealthLevel"
+      ],
+      "contract_checks": [
+        "读取实际上限后设置当前值。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-potion",
+      "title": "给玩家添加持续一定时间的药水状态效果。",
+      "query": "给玩家添加持续一定时间的药水状态效果。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "添加药水状态效果",
+            "kind": "api",
+            "operation": "write",
+            "target": "entity",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "AddEffectToEntity",
+          "ids": [
+            "modsdk:api:server:mod.server.component.effectCompServer.EffectComponentServer.AddEffectToEntity"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "持续时间秒，amplifier 从零起算，低等级不覆盖高等级。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-invulnerable",
+      "title": "设置实体免疫伤害。",
+      "query": "设置实体免疫伤害。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "设置实体无敌免疫伤害",
+            "kind": "api",
+            "operation": "write",
+            "target": "entity",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "ImmuneDamage",
+          "ids": [
+            "modsdk:api:server:mod.server.component.hurtCompServer.HurtCompServer.ImmuneDamage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "免疫状态会存档。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-fire",
+      "title": "设置实体燃烧时长，时长为零时熄灭。",
+      "query": "设置实体燃烧时长，时长为零时熄灭。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "设置实体燃烧持续时间",
+            "kind": "api",
+            "operation": "write",
+            "target": "entity",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetEntityOnFire",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetEntityOnFire"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "整数秒；零/负数熄灭，Bukkit tick 需明确换算取整。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-inventory-add",
+      "title": "把物品加入玩家背包，不是替换主手。",
+      "query": "把物品加入玩家背包，不是替换主手。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "query": "发放物品到玩家背包",
+            "kind": "api",
+            "operation": "write",
+            "id": "1"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SpawnItemToPlayerInv",
+          "ids": [
+            "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SpawnItemToPlayerInv"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SpawnItemToPlayerCarried"
+      ],
+      "contract_checks": [
+        "False 可能已有部分写入，不能整批重试。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-tip-client",
+      "title": "向本地玩家显示快捷栏 tip 提示",
+      "query": "向本地玩家显示快捷栏 tip 提示",
+      "side": "client",
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "向本地玩家显示快捷栏 tip 提示",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetTipMessage",
+          "ids": [
+            "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.SetTipMessage"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.SetPopupNotice"
+      ],
+      "contract_checks": [
+        "客户端仅作用于本地玩家；具体位置、时序及生命周期按合同。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-popup-client",
+      "title": "向本地玩家显示快捷栏 popup 提示及其副标题",
+      "query": "向本地玩家显示快捷栏 popup 提示及其副标题",
+      "side": "client",
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "向本地玩家显示快捷栏 popup 提示及其副标题",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetPopupNotice",
+          "ids": [
+            "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.SetPopupNotice"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.SetTipMessage"
+      ],
+      "contract_checks": [
+        "客户端仅作用于本地玩家；具体位置、时序及生命周期按合同。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-corner-client",
+      "title": "给本地玩家显示左上角通知文字",
+      "query": "给本地玩家显示左上角通知文字",
+      "side": "client",
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "给本地玩家显示左上角通知文字",
+            "kind": "api",
+            "operation": "write",
+            "target": "player",
+            "extent": "single"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "SetLeftCornerNotify",
+          "ids": [
+            "modsdk:api:client:mod.client.component.textNotifyCompClient.TextNotifyComponet.SetLeftCornerNotify"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "客户端仅作用于本地玩家；具体位置、时序及生命周期按合同。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "bukkit-sound-client",
+      "title": "Player.playSound",
+      "query": "Player.playSound",
+      "side": "client",
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "Player.playSound",
+            "kind": "api",
+            "operation": "play",
+            "target": "sound",
+            "extent": "single"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "PlayCustomMusic",
+          "ids": [
+            "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.PlayCustomMusic"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [
+        "客户端仅作用于本地玩家；具体位置、时序及生命周期按合同。"
+      ],
+      "limit": 8,
+      "max_chars": 5500
     }
   ],
   "holdout_note": "12 道最初留出题首次通过 10 道，修正一般性时机与限制分类后纳入公开回归，不再视作独立盲测。"

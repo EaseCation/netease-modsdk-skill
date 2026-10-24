@@ -1,7 +1,7 @@
 {
-  "bank_sha256": "dca09864684820730c13db81b0fc55b7646753ba84c0bfd9f7360e6a900bccb5",
+  "bank_sha256": "d713670f5638bf2cb15fff73d5c68e42257af711a0317261782296692a622e9f",
   "runtime_schema_version": 2,
-  "corpus_sha256": "6e6f8e523c85541711198152018f50749f66f69dc7370391d2b2b2a85be7841e",
+  "corpus_sha256": "b60241e56168c15620dde8052d081eab796ac0eda81b701a16fa9e97ad50b0ae",
   "cases": {
     "remote-processing": {
       "chars": 1374,
@@ -196,6 +196,181 @@
     "event-family-multiple-intents": {
       "chars": 2153,
       "hits": 2,
+      "calls": 1
+    },
+    "bukkit-title": {
+      "chars": 574,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-title-name": {
+      "chars": 574,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-title-reset": {
+      "chars": 571,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-actionbar": {
+      "chars": 578,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-rawtext": {
+      "chars": 573,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-chat-one": {
+      "chars": 571,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-message-name": {
+      "chars": 576,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-chat-broadcast": {
+      "chars": 979,
+      "hits": 2,
+      "calls": 1
+    },
+    "bukkit-chat-as-player": {
+      "chars": 555,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-chat-private-player": {
+      "chars": 568,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-tip-one": {
+      "chars": 631,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-tip-all": {
+      "chars": 588,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-scoreboard-create": {
+      "chars": 571,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-scoreboard-write": {
+      "chars": 567,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-scoreboard-read": {
+      "chars": 567,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-online": {
+      "chars": 561,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-xp-total": {
+      "chars": 558,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-xp-progress": {
+      "chars": 560,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-xp-set-total": {
+      "chars": 556,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-xp-give": {
+      "chars": 555,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-level-absolute": {
+      "chars": 947,
+      "hits": 2,
+      "calls": 1
+    },
+    "bukkit-location": {
+      "chars": 549,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-teleport-same": {
+      "chars": 544,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-teleport-dimension": {
+      "chars": 554,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-velocity": {
+      "chars": 590,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-food": {
+      "chars": 562,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-health": {
+      "chars": 970,
+      "hits": 2,
+      "calls": 1
+    },
+    "bukkit-potion": {
+      "chars": 672,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-invulnerable": {
+      "chars": 558,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-fire": {
+      "chars": 548,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-inventory-add": {
+      "chars": 565,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-tip-client": {
+      "chars": 589,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-popup-client": {
+      "chars": 597,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-corner-client": {
+      "chars": 566,
+      "hits": 1,
+      "calls": 1
+    },
+    "bukkit-sound-client": {
+      "chars": 586,
+      "hits": 1,
       "calls": 1
     }
   }

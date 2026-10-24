@@ -312,6 +312,25 @@
       ],
       "max_initial_chars": 6200,
       "max_expanded_chars": 9000
+    },
+    {
+      "id": "bukkit-message-title",
+      "request": "将 Bukkit 的 sendTitle、sendMessage 与 actionbar 迁移到 ModSDK，并确保只影响一个玩家。",
+      "references": [
+        "references/bukkit-basics.md"
+      ],
+      "source_request": [
+        "ms-title",
+        "--section",
+        "Usage",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "聊天、中央标题、动作栏与 Tip/Popup 分开；明确执行者与接收者，使用正确时间单位。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
     }
   ]
 }

@@ -383,6 +383,50 @@
       "path": "wiki/loot/trade-tables.md",
       "sha256": "ee366f73efaa0422a817e05cb64686780d81b76ab86e619db8e867b716985abe",
       "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "ms-title": {
+      "provider": "github",
+      "path": "creator/Commands/commands/title.md",
+      "sha256": "86a95dc73ed0f0295d855c40bcbb8969594d3b2e4a11320571adc5edb0510f2e",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方命令文档固定快照；参数、权限和作弊条件按目标包体核验"
+    },
+    "ms-titleraw": {
+      "provider": "github",
+      "path": "creator/Commands/commands/titleraw.md",
+      "sha256": "e8cdebd90bc1ba44698844cadcc051c5b55413c8f7caf46b66df7f0ffd9a2d1b",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方命令文档固定快照；参数、权限和作弊条件按目标包体核验"
+    },
+    "ms-tellraw": {
+      "provider": "github",
+      "path": "creator/Commands/commands/tellraw.md",
+      "sha256": "2533ebeee7026fd5a7b5d9eb2f693d5e01f59a80975393e59c5d81995d740c0e",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方命令文档固定快照；参数、权限和作弊条件按目标包体核验"
+    },
+    "ms-scoreboard": {
+      "provider": "github",
+      "path": "creator/Commands/commands/scoreboard.md",
+      "sha256": "9b0d82f6b383b7c37da647a3219eb9b21d8eca2983cffe363d5314066e619308",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方命令文档固定快照；参数、权限和作弊条件按目标包体核验"
+    },
+    "cn-messages": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/世界/消息.md",
+      "sha256": "5815bcd1d852a987319f6bdddf9663965a7d1a85cc8561522ed02a7b49e3ee4f",
+      "evidence": "ModSDK API 原文，实际调用先读取完整合同"
+    },
+    "cn-commands": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/世界/指令.md",
+      "sha256": "737fb752739adeceb4e40121417fb0261a011c4d4662ff32a977b978097541a1",
+      "evidence": "ModSDK API 原文，实际调用先读取完整合同"
     }
   },
   "digest_kind": "sha256 of UTF-8 text, BOM removed and CRLF normalized to LF"
