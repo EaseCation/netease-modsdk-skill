@@ -38,6 +38,8 @@ python3 scripts/query.py detail SetAttrValue --side server --examples 0
 - `--filter=blob:none --no-checkout`：在确定检出范围前不取全部文件内容；来源 Git 服务需支持 partial clone，GitHub 支持。
 - 稀疏检出 `docs/mcdocs`、`docs/mcguide`、`docs/mconline` 下的 Markdown、`knowledge/*.json` 和查询脚本；不检出图片、视频或整个站点源码，并设置 `GIT_LFS_SKIP_SMUDGE=1`。
 
+安装器的 Git 请求使用 HTTP/1.1，以规避部分网络环境中 HTTP/2 的传输中断；仅作用于本次命令，不修改全局 Git 配置。
+
 无需 git-lfs 或 npm。图像链接仍会保留在原文中，但媒体文件不在精简副本中。这个副本适用于文字查询；要预览或构建完整 Wiki，使用完整 Wiki 仓库。
 
 ## 配置和更新

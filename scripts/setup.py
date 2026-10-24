@@ -17,7 +17,9 @@ MARKER = 'modsdk-skill-checkout.json'
 
 def git(args, cwd=None, stdin=None):
     # 只对本次 Git 子进程生效，不依赖 git-lfs 安装，不改宿主全局配置。
-    command = ['git', '-c', 'filter.lfs.smudge=', '-c', 'filter.lfs.process=',
+    command = ['git', '-c', 'http.version=HTTP/1.1',
+               '-c', 'http.lowSpeedLimit=1', '-c', 'http.lowSpeedTime=60',
+               '-c', 'filter.lfs.smudge=', '-c', 'filter.lfs.process=',
                '-c', 'filter.lfs.required=false', *args]
     result = subprocess.run(command, cwd=cwd, input=stdin, text=True, capture_output=True,
                             env={**os.environ, 'GIT_LFS_SKIP_SMUDGE': '1', 'GIT_TERMINAL_PROMPT': '0'})
@@ -42,7 +44,9 @@ def validate_revision(root, revision):
         annotations = git(['show', revision + ':knowledge/annotations.json'], root)
         git(['cat-file', '-e', revision + ':docs/mcdocs/1-ModAPI'], root)
     except ValueError as error:
-        raise ValueError('所选 Wiki 提交缺少新版查询文件；请先发布最新版 Wiki 或选择包含查询功能的分支/标签') from error
+        if 'does not exist in' in str(error) or 'exists on disk, but not in' in str(error):
+            raise ValueError('所选 Wiki 提交缺少新版查询文件；请先发布最新版 Wiki 或选择包含查询功能的分支/标签') from error
+        raise  # 网络或对象传输失败不能伪装成旧版 Wiki。
     validate_contract(script, annotations)
 
 
