@@ -1,6 +1,6 @@
 # 自定义物品
 
-先选网易专用物品格式或经目标包体核验的标准格式；同名 `minecraft:item` 不代表整份定义能混用。
+优先目标包体可用的标准物品格式：`BP/items` 定义行为与 icon，关联 RP 的 item_texture 图集、纹理与本地化。它能满足需求时不使用专用物品格式；需要网易独有类型/组件时再核验以下扩展。相同根名 `minecraft:item` 不代表整份定义能混用。
 
 ## 网易路线的最短接线
 
@@ -13,15 +13,15 @@
 5. 使用前拦截、使用中、使用后是相关但不同的事件。查询时保留整个事件族，选定真正负责取消/修改的阶段。消耗和发放都由服务端核验，避免重复事件导致多次结算。
 6. 实机覆盖手持/副手、连续使用、堆叠分拆、耐久耗尽、容器转移和重进；仅测创造栏出现不足以确认完成。
 
-## 路线对比
+## 实际格式与扩展差异
 
-| 能力 | 中国版网易路线 | 国际版 1.21.130 数据格式 | 边界 |
+| 能力 | 原版 1.21.130 格式（优先） | 网易专用路线 | 边界 |
 | --- | --- | --- | --- |
-| 注册 | netease_items_beh + netease_items_res | `BP/items`，标准 description/components | 两套 loader、字段位置和分类结构分别核对 |
-| 纹理 | RP 表现定义关联 item_texture | 标准 item 的 icon 关联 RP 图集 | 图集机制相通，icon 的写法/位置有版本差异 |
-| 武器、耐久、食物、冷却 | 网易专门类型及支持组件 | 对应版本标准组件 | `max_damage`/durability、旧 use_duration/新 use_modifiers 等不机械改名 |
-| 新版专门组件 | 是否可用须有目标包体或网易文档依据 | 1.21.130 增加 kinetic_weapon、piercing_weapon 等 | 不能仅凭基岩版本号将其认定为网易专用物品格式已支持 |
-| 3D 持有表现 | 原版附着物路线及网易专门方案 | attachable/geometry/动画路线 | 选择资源和接口属于同一模型体系 |
+| 注册 | `BP/items`，标准 description/components | netease_items_beh + netease_items_res | 两套 loader、字段位置和分类结构分别核对 |
+| 纹理 | 标准 item 的 icon 关联 RP 图集 | RP 表现定义关联 item_texture | 图集机制相通，icon 的写法/位置有版本差异 |
+| 武器、耐久、食物、冷却 | 对应版本标准组件 | 网易专门类型及支持组件 | `max_damage`/durability、旧 use_duration/新 use_modifiers 等不机械改名 |
+| 新版专门组件 | 1.21.130 增加 kinetic_weapon、piercing_weapon 等 | 是否可用须有目标包体或网易文档依据 | 不能仅凭基岩版本号将其认定为网易专用物品格式已支持 |
+| 3D 持有表现 | attachable/geometry/动画路线 | 原版附着物路线及网易专门方案 | 选择资源和接口属于同一模型体系 |
 
 ## 按需原文
 

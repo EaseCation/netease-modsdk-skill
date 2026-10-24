@@ -171,7 +171,8 @@
         "1200"
       ],
       "review_points": [
-        "不把两套目录/格式混用，不假定所有新增组件可用。"
+        "不把两套目录/格式混用，不假定所有新增组件可用。",
+        "先核验目标包体可用的原版格式，能满足就不使用专用目录。"
       ],
       "max_initial_chars": 6200,
       "max_expanded_chars": 9000
@@ -268,6 +269,46 @@
       ],
       "review_points": [
         "先量化频率和对象数；不能把不同事件都算作 20Hz。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "shared-entity-first",
+      "request": "实体只需要原版导航、状态与动画，目标包体已经支持；应如何选型？",
+      "references": [
+        "references/entities.md",
+        "references/animations.md"
+      ],
+      "source_request": [
+        "cn-entity",
+        "--section",
+        "2. 行为包实体定义",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "使用一套共享实体体系；原版能满足时不引入网易专用模型、自定义 AI 或不必要的 Python。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "model-extension-boundary",
+      "request": "工程明确需要网易专用骨骼模型的资源能力，但实体行为仍是普通原版 JSON，应如何接入？",
+      "references": [
+        "references/rendering.md",
+        "references/entities.md"
+      ],
+      "source_request": [
+        "be-entity-rp",
+        "--section",
+        "Geometry",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "只扩展表现层；不将网易专用模型解释为一种独立的中国版实体；明确缺口才选扩展。"
       ],
       "max_initial_chars": 6200,
       "max_expanded_chars": 9000
