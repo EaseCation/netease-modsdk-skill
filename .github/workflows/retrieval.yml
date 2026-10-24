@@ -21,10 +21,14 @@ jobs:
         run: python3 scripts/setup.py
       - name: Run frozen retrieval bank
         run: python3 scripts/evaluate.py
+      - name: Check guidance sources and reading budgets
+        run: python3 scripts/evaluate.py --guides
       - name: Keep current regression receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: retrieval-report
-          path: .local/regression-report.json
+          path: |
+            .local/regression-report.json
+            .local/guidance-report.json
           retention-days: 14

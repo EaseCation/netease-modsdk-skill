@@ -1,6 +1,6 @@
 interface:
-  display_name: "网易 ModSDK API 查询"
-  short_description: "从完整模组需求检索网易 API，按端侧核验签名、限制和关联能力"
-  default_prompt: "使用 $netease-modsdk-skill 查找这个模组需求所需的 API，并核验端侧与重要限制。"
+  display_name: "网易 ModSDK 开发知识"
+  short_description: "按阶段查阅 Addon 架构与模块教程，并检索网易 API、端侧、限制及关联能力"
+  default_prompt: "使用 $netease-modsdk-skill 为这个 Addon 需求选择相关模块指引，按需核对原文与 Python API。"
 policy:
   allow_implicit_invocation: true

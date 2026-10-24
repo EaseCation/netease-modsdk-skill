@@ -1,8 +1,8 @@
-# 网易 ModSDK API 查询 Skill
+# 网易 ModSDK 开发知识 Skill
 
 公开仓库：[EaseCation/netease-modsdk-skill](https://github.com/EaseCation/netease-modsdk-skill)。
 
-这是独立的轻量 Git 仓库。Wiki 保管官方 Markdown、补充标注与唯一查询实现；本仓库提供 Agent 指引、配置、精简安装和调用入口。
+这是独立的轻量 Git 仓库。Wiki 保管官方 Markdown、中文 Bedrock 镜像、补充标注与唯一 API 查询实现；本仓库提供按阶段/模块展开的开发指引、配置、精简安装和调用入口。
 
 ## 获取 Skill
 
@@ -36,7 +36,7 @@ python3 scripts/query.py detail SetAttrValue --side server --examples 0
 
 - `--depth=1 --single-branch`：只取所需分支的最新浅层历史。
 - `--filter=blob:none --no-checkout`：在确定检出范围前不取全部文件内容；来源 Git 服务需支持 partial clone，GitHub 支持。
-- 稀疏检出 `docs/mcdocs`、`docs/mcguide`、`docs/mconline` 下的 Markdown、`knowledge/*.json` 和查询脚本；不检出图片、视频或整个站点源码，并设置 `GIT_LFS_SKIP_SMUDGE=1`。
+- 稀疏检出 `docs/mcdocs`、`docs/mcguide`、`docs/mconline`、`docs/wiki` 下的 Markdown、`knowledge/*.json` 和查询脚本；不检出图片、视频或整个站点源码，并设置 `GIT_LFS_SKIP_SMUDGE=1`。
 
 安装器的 Git 请求使用 HTTP/1.1，以规避部分网络环境中 HTTP/2 的传输中断；仅作用于本次命令，不修改全局 Git 配置。
 
@@ -71,6 +71,25 @@ ln -s /absolute/path/to/netease-modsdk-skill ~/.codex/skills/netease-modsdk-skil
 ```
 
 已有同名安装时先确认归属，避免覆盖其他内容。技能的自动选择设置在 `agents/openai.yaml`；使用指引见 [SKILL.md](SKILL.md)。
+
+## 按需开发指引
+
+[SKILL.md](SKILL.md) 保持短入口，按当前任务选择 14 个模块中的相关一篇；需要跨版判断时再加载版本说明，具体字段再读取原文章节。API 合同仍调用现有 query，不将全部教程混入 API 索引。
+
+指引覆盖工程结构、UI、粒子、Molang/数学、动画与渲染、方块/实体/物品、维度与地形，并补充数据表、状态同步及排错性能。每个模块有中外版能力对比和详情路径。国际版比较以 1.21.130 为目标；网易文档快照的版本与项目实际包体分开记录。
+
+```sh
+# 默认只输出目录
+python3 scripts/read_doc.py cn-ui
+# 按章节读取；超出默认 4,000 字符时显式分页
+python3 scripts/read_doc.py cn-ui --section 文件目录
+# 教程来源、引用和阅读路径预算
+python3 scripts/evaluate.py --guides
+```
+
+主要详情来自已绑定 Wiki；国际版补充按固定提交只下载所需 Markdown 文件并缓存，首次读取需联网，后续可离线。文本摘要统一 UTF-8 换行后比较。来源登记表由工具读取，Agent 不需要整体加载。[阅读说明](references/reading.md) 解释章节、关键词定位和分页。
+
+[evals/guidance.json](evals/guidance.json) 固定 14 条实际需求阅读路径及内容复核点；检查来源可读、引用闭合、默认不输出全文及字符预算。这不是独立 Agent 自动选路评测，也不是游戏功能验收。根入口上限 2,200 字符、单篇参考上限 2,600 字符，复杂路径可按题目明确追加预算。
 
 ## 查询和固定回归
 

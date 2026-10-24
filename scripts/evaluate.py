@@ -12,11 +12,62 @@ import time
 from config import SKILL_ROOT, read_config, resolve_root, validate_wiki
 
 
+def evaluate_guides():
+    """核对真实原文、引用闭合与阅读路径预算；内容决策仍需复核。"""
+    import re
+    from concurrent.futures import ThreadPoolExecutor
+    from read_doc import catalog, load_source
+    bank=json.loads((SKILL_ROOT/'evals/guidance.json').read_text())
+    entry=(SKILL_ROOT/'SKILL.md').read_text();errors=[]
+    if len(entry)>bank['max_entry_chars']:errors.append('技能入口超过字符预算')
+    refs=list((SKILL_ROOT/'references').glob('*.md'))
+    sources=catalog()
+    for path in [SKILL_ROOT/'SKILL.md',*refs]:
+        content=path.read_text()
+        if path in refs and len(content)>bank['max_reference_chars']:errors.append('参考页超过预算：'+path.name)
+        for target in re.findall(r'\[[^\]]*\]\(([^)]+)\)',content):
+            if '://' not in target and not target.startswith('#') and not (path.parent/target.split('#')[0]).is_file():errors.append('参考链接失效：'+target)
+        for id in re.findall(r'`((?:cn|be|ms|mirror)-[a-z-]+)`',content):
+            if id not in sources:errors.append('来源未登记：'+id)
+    def inspect_source(id):
+        try:
+            metadata,_,_,_=load_source(id)
+            return id if metadata['source_changed'] else None
+        except (OSError,ValueError) as error:return id+': '+str(error)
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        invalid=[r for r in pool.map(inspect_source,sources) if r]
+    errors += ['来源需复核：'+r for r in invalid]
+    rows=[]
+    for case in bank['cases']:
+        initial=len(entry)+sum(len((SKILL_ROOT/p).read_text()) for p in case['references'])
+        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),*case['source_request']],capture_output=True,text=True)
+        output=json.loads(proc.stdout) if proc.returncode==0 else {}
+        expanded=initial+len(proc.stdout.rstrip('\n'))
+        row_errors=[]
+        if proc.returncode:row_errors.append(proc.stderr.strip())
+        if not output.get('text'):row_errors.append('未返回指定章节')
+        if initial>case['max_initial_chars'] or expanded>case['max_expanded_chars']:row_errors.append('阅读路径超过字符预算')
+        rows.append({'id':case['id'],'initial_chars':initial,'expanded_chars':expanded,'paged':output.get('next_offset') is not None,'errors':row_errors})
+        print(('FAIL' if row_errors else 'PASS'),case['id'],initial,expanded,flush=True)
+    outline=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),'cn-ui'],capture_output=True,text=True,check=True)
+    outline_data=json.loads(outline.stdout)
+    if outline_data.get('mode')!='outline' or 'text' in outline_data:errors.append('默认读取泄漏整篇正文')
+    report={'kind':'guide-source-and-budget-check','sources':len(sources),'cases':len(rows),'passed':sum(not r['errors'] for r in rows),'errors':errors,'rows':rows,'scope':'固定阅读路径；不评估 Agent 自主路由或游戏功能'}
+    out=SKILL_ROOT/'.local';out.mkdir(exist_ok=True)
+    (out/'guidance-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps({k:report[k] for k in ('sources','cases','passed','errors')},ensure_ascii=False))
+    return 0 if not errors and report['passed']==report['cases'] else 1
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split',choices=['regression','holdout','protocol','all'],default='all')
+    parser.add_argument('--guides',action='store_true',help='检查教程来源、引用与固定阅读路径的字符预算')
     parser.add_argument('--record-baseline',action='store_true',help='全部通过后，显式记录新的成本基线；不会改题目或期望 API')
     args=parser.parse_args()
+    if args.guides:
+        if args.record_baseline or args.split!='all':raise ValueError('--guides 不与 API 题库筛选或基线记录混用')
+        return evaluate_guides()
     if args.record_baseline and args.split!='all':raise ValueError('记录基线必须运行完整题库')
     bank_path=SKILL_ROOT/'evals/cases.json';bank=json.loads(bank_path.read_text())
     root=validate_wiki(resolve_root(read_config()['MODSDK_WIKI_ROOT']))

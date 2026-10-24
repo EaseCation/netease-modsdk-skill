@@ -11,7 +11,7 @@ import tempfile
 from config import SKILL_ROOT, read_config, resolve_root, validate_contract, validate_wiki, write_config
 
 PATTERNS = ['/scripts/api_knowledge.py', '/knowledge/*.json',
-            '/docs/mcdocs/**/*.md', '/docs/mcguide/**/*.md', '/docs/mconline/**/*.md']
+            '/docs/mcdocs/**/*.md', '/docs/mcguide/**/*.md', '/docs/mconline/**/*.md', '/docs/wiki/**/*.md']
 MARKER = 'modsdk-skill-checkout.json'
 
 
@@ -93,6 +93,7 @@ def update(root, repository, ref):
     validate_revision(root, 'FETCH_HEAD')
     # 保留旧提交的 Git 可恢复状态；不 reset、不清理用户文件。
     git(['checkout', '--detach', 'FETCH_HEAD'], root)
+    git(['sparse-checkout', 'set', '--no-cone', '--stdin'], root, '\n'.join(PATTERNS) + '\n')
     validate_wiki(root)
     set_marker(root, repository, ref)
 
@@ -104,6 +105,7 @@ def status(root):
     annotation_count = len(json.loads(note.read_text())['entries'])
     result = {'wiki_root': str(root), 'runtime': 'wiki', 'runtime_path': str(script),
               'annotations': annotation_count, 'knowledge_status': 'annotated',
+              'bedrock_tutorials_present': (root / 'docs/wiki/json-ui/json-ui-intro.md').is_file(),
               'managed_text_checkout': marker(root).is_file(), 'markdown_files': sum(1 for _ in (root / 'docs').rglob('*.md'))}
     if (root / '.git').is_dir():
         result['commit'] = git(['rev-parse', 'HEAD'], root)

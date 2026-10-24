@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "cn-pack": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/13-模组SDK编程/1-Mod开发简介/3-Mod是如何工作的.md",
+      "sha256": "4ab885bd6fea9e8074796a5f9da63b3f5f12f46fe486244f93ebccb765c1d7ea",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-python": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/13-模组SDK编程/2-Python脚本开发/0-脚本开发入门.md",
+      "sha256": "39ed44a9b60ce2f43f364f35475cce07d1c3184987dfe365686e3d4b41272927",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-events": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/13-模组SDK编程/2-Python脚本开发/9-事件简介.md",
+      "sha256": "fda73aa17c24d1a5495d6f024ed46be47ef0d3e4a1ae65908c22a6421f2d3f1d",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-ui": {
+      "provider": "wiki",
+      "path": "mcguide/18-界面与交互/30-UI说明文档.md",
+      "sha256": "207568aba69c7fe806402234966f92435ba079f237c1da01b0388eebbe212f08",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-ui-bind": {
+      "provider": "wiki",
+      "path": "mcguide/18-界面与交互/70-UI数据绑定.md",
+      "sha256": "0c87c5ec67bba21b5ad855bfbf47a6f138e8b07610e607d41bb6630c59855eed",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-ui-api": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/自定义UI/通用.md",
+      "sha256": "d5551f736106ed3ebacb96c795a614e90772f83432197fcb14ce19b73d164e28",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-particle-build": {
+      "provider": "wiki",
+      "path": "mconline/15-玩法组件教程/16-自定义原版粒子/1-开始制作下雪粒子.md",
+      "sha256": "20026edeeb63ba1c576d42cae8d50319fb9456bd2d0e17e086a81356d2d4a7af",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-particle-events": {
+      "provider": "wiki",
+      "path": "mconline/15-玩法组件教程/16-自定义原版粒子/4-了解粒子事件.md",
+      "sha256": "e1a9b79bf8d7158c63a554d7b482a7871ff6ae1936071863abc70dc37f03dec9",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-particle-api": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/特效/微软粒子.md",
+      "sha256": "bdee7d7caf36c10dc57f5e9473c310ff463b16cf744b3b79f094ec27bea43a63",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-molang": {
+      "provider": "wiki",
+      "path": "mconline/15-玩法组件教程/11-精通自定义复杂的实体/1-认识Molang.md",
+      "sha256": "6069211627c6e9559e51b3bd79e244af8db058b5c09e2ff8239df0f6d68f0733",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-molang-api": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/实体/molang.md",
+      "sha256": "1b7c1631b5e68f9ec874b8d94413af4ec71d22c02aff66c8bb023c3328ad6f48",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-entity": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/3-自定义生物/01-自定义基础生物.md",
+      "sha256": "81e912f7bc11d252ec0e7f15f2833865c83571639c0e538a22d1c6590d4f6fc4",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-blocks": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/2-自定义方块/0-自定义方块概述.md",
+      "sha256": "6b29aa8396143d6b3fe7894cb53b231805cdb439a391a45568029758a7931a28",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-block-components": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/2-自定义方块/1-JSON组件.md",
+      "sha256": "97272a07bba746b38b1b6ca5f3491302dc225231526a530f3da62aadc67f036f",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-block-entity": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/2-自定义方块/4-自定义方块实体.md",
+      "sha256": "a9552e83d945656f8608815872ba4161db00503934e65a84c78d81ba02d56916",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-items": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/1-自定义物品/1-自定义基础物品.md",
+      "sha256": "1535602ea35d332ad3411595398012ec98a1333c9847dd1c0b8e811b9f121ad6",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-items-3d": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/1-自定义物品/9-自定义3D物品/1-自定义3D物品（一）.md",
+      "sha256": "33e29dfdeca7591af6d6c9dafee4c736e4a593242ed08c562e4d42ed24a762ab",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-dimensions": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/1-自定义维度.md",
+      "sha256": "fa64dbaaa1e825bb8fdf397f10d5aca4611e1bf6617ded43e9c81d6c7b148292",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-biomes": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/2-群系地貌.md",
+      "sha256": "543c9efac7ef102a6ade81970105a442430d7aba2ae728f878db381ea5601ae0",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-portals": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/5-自定义传送门.md",
+      "sha256": "de563e272aca7da44b5671908e16b3753f32c56cf80f41fd36b0c6e00c1c12ef",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-features": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/4-自定义特征.md",
+      "sha256": "f6006f8a02e2fe4f9352b3115d0aae4ed86541198fddfff9d8a6845576057ba6",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-large-features": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/6-自定义大型特征.md",
+      "sha256": "ee6f05b6ac5eed0e6ebb22ed65f91be324ff781427a223f54fb047ec785197c8",
+      "evidence": "网易教程/API 快照；具体版本见原文"
+    },
+    "cn-release": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/更新信息/3.9.md",
+      "sha256": "4f795a8b5a8c9e18c6a806b3a1c6c5051cddb6e300a785bb538dd9dc082336be",
+      "evidence": "网易教程/API 快照；具体版本见原文",
+      "line_scope": [
+        [
+          9,
+          9
+        ],
+        [
+          69,
+          69
+        ]
+      ]
+    },
+    "mirror-pack": {
+      "provider": "wiki",
+      "path": "wiki/documentation/pack-structure.md",
+      "sha256": "888596494dfa1e3dd825490ec8e47b8f951bbbeae20ccc7bb7c016a9223bfff1",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-ui": {
+      "provider": "wiki",
+      "path": "wiki/json-ui/json-ui-intro.md",
+      "sha256": "fa0a5b12d647649b6d833e22cc3d7dd5491e21f58136bd192ebc4ab65aad9f43",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-particles": {
+      "provider": "wiki",
+      "path": "wiki/particles/particles.md",
+      "sha256": "85802b502acf285cc1b6cfcb528096c8ad09018658b1264fef273bf40b1b65cc",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-math-animation": {
+      "provider": "wiki",
+      "path": "wiki/visuals/math-based-animations.md",
+      "sha256": "2255f41f335865c658f30f366beefc96999fb283bed156a045f7a1ea4e2c5ee0",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-ac": {
+      "provider": "wiki",
+      "path": "wiki/animation-controllers/animation-controllers-intro.md",
+      "sha256": "ce44894c03e82790eb2e4aa626564299dd95c2e9cb18606b7f0c05365cdfa2d1",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-animation-effects": {
+      "provider": "wiki",
+      "path": "wiki/visuals/animation-effects.md",
+      "sha256": "c85ff2e89ed789e8b3352176d4d8156bce4913b486119b6e84113094f18aae5e",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-render": {
+      "provider": "wiki",
+      "path": "wiki/entities/render-controllers.md",
+      "sha256": "14eb119798515d84e400e3cb85a958d42d1a3b848e3267cd283cb678fbd15b3b",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-blocks": {
+      "provider": "wiki",
+      "path": "wiki/blocks/blocks-intro.md",
+      "sha256": "55341fcf517560d4165f4ff305116521489093bbf3231d673f3c7b9dcfde92b7",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-entity-bp": {
+      "provider": "wiki",
+      "path": "wiki/entities/entity-intro-bp.md",
+      "sha256": "3556f533b72b50bdd5074d4013760c77707abc43bcbdbfae851b9b5d5e8a2f0e",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-entity-rp": {
+      "provider": "wiki",
+      "path": "wiki/entities/entity-intro-rp.md",
+      "sha256": "870568dfa91ada2fdbe9d365b727fa60c288d3117c1e1626c59c198448400bc2",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-attachables": {
+      "provider": "wiki",
+      "path": "wiki/items/attachables.md",
+      "sha256": "a0aebd278e0495839fcf28d400c8d6aad787fa4e13d4af5f3ad0d2582fe856ac",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "mirror-heightmap": {
+      "provider": "wiki",
+      "path": "wiki/world-generation/heightmap-noise.md",
+      "sha256": "e574ba33ae787b512072144fce9ee8adb6ad423875323ef1ff998b963c8e4328",
+      "evidence": "Bedrock 中文历史镜像；仅作机制说明，版本结论需交叉核验"
+    },
+    "be-ui": {
+      "provider": "github",
+      "path": "docs/json-ui/json-ui-intro.md",
+      "sha256": "700232ff575bfbe30aa2b73a270ab72c1fa7d5a9dd64871d23a52805d638103f",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-molang": {
+      "provider": "github",
+      "path": "docs/concepts/molang.md",
+      "sha256": "cf12b186dda4f656d25aaae2e7d0bb8c6706301be4b9fd1e096e547925394a2d",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-ac": {
+      "provider": "github",
+      "path": "docs/animation-controllers/animation-controllers-intro.md",
+      "sha256": "6f60932a299ba9f4d612e1c7e2f04293986caf6a6e8003e769c00c186fccec34",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-entity-rp": {
+      "provider": "github",
+      "path": "docs/entities/entity-intro-rp.md",
+      "sha256": "3c77d117b65d2ef91f0770a5ca6051eecdada4e4081151f8869dfd70222a6171",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-blocks": {
+      "provider": "github",
+      "path": "docs/blocks/blocks-intro.md",
+      "sha256": "bb04de4481b16b085c7a3fc16bfe9af70b8bf7e705d4d4f3925803956ae326c0",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-block-states": {
+      "provider": "github",
+      "path": "docs/blocks/block-states.md",
+      "sha256": "6bbdb86434cf449552e6ace7c69e94a951c28e5bf10ab11fe5777aae4cb001fb",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-properties": {
+      "provider": "github",
+      "path": "docs/entities/entity-properties.md",
+      "sha256": "9cce304cda43ae98b36c6942805f771780c850f5bf1fbdbe92db61bbfaa1668a",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本",
+      "section_scope": "Defining Properties"
+    },
+    "be-runtime-id": {
+      "provider": "github",
+      "path": "docs/entities/runtime-identifier.md",
+      "sha256": "824fe2a15ec1ea815c8ca041745de087627c54331fb7754792031948aa3121a0",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-items": {
+      "provider": "github",
+      "path": "docs/items/items-intro.md",
+      "sha256": "892a93d92c1f64ff8c0eeae8fd6a9885eeec9f5022b511822514de56f872c272",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-item-history": {
+      "provider": "github",
+      "path": "docs/items/item-format-history.md",
+      "sha256": "90ea64571e3cb6571e3282bafa5c48333bff2bf96d27b7274159124265df2cd6",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-jigsaw": {
+      "provider": "github",
+      "path": "docs/world-generation/jigsaw-structures.md",
+      "sha256": "533cc6c381770fbd64e0d0da8da0c3bf011c7d9de5aea8aa79586c2ee2b5da2f",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "be-format": {
+      "provider": "github",
+      "path": "docs/guide/format-version.md",
+      "sha256": "7f08300f3ba37f545011754ea203eacd335df4f71989c968bc7ccf41513514d0",
+      "repository": "Bedrock-OSS/bedrock-wiki",
+      "revision": "883d8638924820e4a7cc8783ef4d0d983243afd1",
+      "evidence": "2025-12 固定快照；方块/物品页面向 1.21.130，其他文章独立核对版本"
+    },
+    "ms-math": {
+      "provider": "github",
+      "path": "creator/Reference/Content/MolangReference/Examples/MolangConcepts/MathFunctions.md",
+      "sha256": "84a3ece23c31741c7996ca64e3b61a8a61a364e8edd2b31a91f85ce2dbba940c",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方文档 2025-12 固定快照；实验性条件以章节为准"
+    },
+    "ms-biomes": {
+      "provider": "github",
+      "path": "creator/Documents/Biomes/BiomeOverview.md",
+      "sha256": "672354c869a9a119c6b469948e66aebe0ce7f1798ebc5775084b894c97b86549",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方文档 2025-12 固定快照；实验性条件以章节为准"
+    },
+    "ms-biome-replacement": {
+      "provider": "github",
+      "path": "creator/Documents/Biomes/CustomPartialBiomeReplacement.md",
+      "sha256": "10799c3490cc4206e7905a267bf366446d798a4b0c722013c2850f789a0e2676",
+      "repository": "MicrosoftDocs/minecraft-creator",
+      "revision": "b9b196e3c9fa05e7c742d07086ebe77fd4ad37fe",
+      "evidence": "官方文档 2025-12 固定快照；实验性条件以章节为准"
+    },
+    "cn-recipes": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/5-自定义配方.md",
+      "sha256": "8539025043f4b0d9fa343739b1e71a6abdf5051c9e070539a869ef82cd04ac6c",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "cn-spawn": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/15-自定义游戏内容/4-自定义维度/3-生物生成.md",
+      "sha256": "7a2ede1e6d44002a5b06c99f76a96b9a8ba493a86a807c06cc11bf614084b1f0",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "cn-local-storage": {
+      "provider": "wiki",
+      "path": "mcdocs/1-ModAPI/接口/通用/本地存储.md",
+      "sha256": "f531ff766067d39210091317fa221580651d9608f3a6b5653bdee2df33b49a2f",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "cn-tick-performance": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/18-性能优化/Tick 事件优化.md",
+      "sha256": "810d253f5112550b83c48be4071a0590099c0ca6f0ef9941f885161f60a833ff",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "cn-performance-api": {
+      "provider": "wiki",
+      "path": "mcguide/20-玩法开发/18-性能优化/组件与接口使用优化.md",
+      "sha256": "9451724bf166d1f961ef1d2c8a0ee73775c4a12df173c7de95d4773ce76e0741",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "mirror-loot": {
+      "provider": "wiki",
+      "path": "wiki/loot/loot-tables.md",
+      "sha256": "4a60aa985559c107407efb3f7dbc8ec5a6833f85f69c2ad52563b77ef3799eef",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    },
+    "mirror-trades": {
+      "provider": "wiki",
+      "path": "wiki/loot/trade-tables.md",
+      "sha256": "ee366f73efaa0422a817e05cb64686780d81b76ab86e619db8e867b716985abe",
+      "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
+    }
+  },
+  "digest_kind": "sha256 of UTF-8 text, BOM removed and CRLF normalized to LF"
+}

@@ -1,0 +1,276 @@
+{
+  "schema_version": 1,
+  "description": "固定阅读路径与上下文预算；路径由维护者选定，检查来源可读和分页，不声称自动验证 Agent 路由或游戏行为。review_points 用于内容复核。",
+  "max_entry_chars": 2200,
+  "max_reference_chars": 2600,
+  "cases": [
+    {
+      "id": "new-addon",
+      "request": "从零组织一个带客户端界面和服务端规则的组件，先确定目录与职责。",
+      "references": [
+        "references/foundations.md"
+      ],
+      "source_request": [
+        "cn-python",
+        "--section",
+        "脚本结构",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "入口在脚本包内；双端不互相导入；建议分层不强制小项目框架。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "json-ui",
+      "request": "界面 JSON 已写好，但游戏里没有画布，也不知道 Python 应绑定哪里。",
+      "references": [
+        "references/json-ui.md"
+      ],
+      "source_request": [
+        "cn-ui",
+        "--section",
+        "_ui_defs的用法",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "区分文件清单、namespace.screen、类路径、控件路径；不走界面预设。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "particle-loop",
+      "request": "原版粒子在世界坐标播放一个周期就消失，要控制寿命和清理。",
+      "references": [
+        "references/particles.md"
+      ],
+      "source_request": [
+        "cn-particle-api",
+        "--section",
+        "Create",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "创建渠道限制优先于 looping 字段；Stop 与 Remove 不混同。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "molang-wave",
+      "request": "把 Python 的正弦公式改成 Molang，控制周期并处理世界坐标。",
+      "references": [
+        "references/molang-math.md"
+      ],
+      "source_request": [
+        "be-molang",
+        "--section",
+        "Math Functions",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "角度和弧度明确；时间单位、上下文、零分母处理。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "controller-reset",
+      "request": "实体重进后动画回到初始状态，多个转移条件又同时成立。",
+      "references": [
+        "references/animations.md"
+      ],
+      "source_request": [
+        "be-ac",
+        "--section",
+        "Animation Controller Flow",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "首个有效转移，重载恢复，客户端动画不当业务提交。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "render-invisible",
+      "request": "实体存在但模型不显示，资源文件都有，不知道简称如何串起来。",
+      "references": [
+        "references/rendering.md"
+      ],
+      "source_request": [
+        "mirror-render",
+        "--section",
+        "简单渲染控制器",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "几何 ID、纹理路径、材质及简称逐层区分。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "persistent-block",
+      "request": "自定义方块要保存自己的数据，并在模拟范围内定时工作。",
+      "references": [
+        "references/blocks.md"
+      ],
+      "source_request": [
+        "cn-block-entity",
+        "--section",
+        "添加自定义方块实体",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "方块实体数据不同于 states；tick 条件、生命周期与初始化。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "entity-state",
+      "request": "自定义生物从服务端切换形态，并让客户端动画读取同一状态。",
+      "references": [
+        "references/entities.md"
+      ],
+      "source_request": [
+        "be-properties",
+        "--section",
+        "Defining Properties",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "属性类型与 client_sync；普通变量不跨端自动同步。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "item-port",
+      "request": "将 1.21.130 的物品定义迁到中国版，图标和耐久字段放在哪里。",
+      "references": [
+        "references/items.md",
+        "references/versions.md"
+      ],
+      "source_request": [
+        "be-items",
+        "--section",
+        "Applying Textures",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "不把两套目录/格式混用，不假定所有新增组件可用。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "dimension",
+      "request": "新增独立维度并往返，要求保留原有世界。",
+      "references": [
+        "references/dimensions.md"
+      ],
+      "source_request": [
+        "cn-dimensions",
+        "--section",
+        "声明新维度",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "固定 ID；维度不等于群系；不自动废弃已有存档。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "terrain",
+      "request": "制作连续起伏的自定义地形和大型结构，比较中外版群系方案。",
+      "references": [
+        "references/worldgen.md",
+        "references/versions.md"
+      ],
+      "source_request": [
+        "ms-biomes",
+        "--section",
+        "Adding custom biomes",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "分清基础地形与后处理，不能据旧镜像断言群系全不可用。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "recipe-loot",
+      "request": "新增合成、方块掉落和生物自然生成，避免 JSON 文件放好却不生效。",
+      "references": [
+        "references/data-tables.md"
+      ],
+      "source_request": [
+        "cn-recipes",
+        "--section",
+        "有序合成配方",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "先找到消费者；配方、loot、spawn 不是相同注册方式。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "reconnect-state",
+      "request": "玩家重连后数据显示旧值，连续点击又造成两次执行。",
+      "references": [
+        "references/state-sync.md"
+      ],
+      "source_request": [
+        "cn-performance-api",
+        "--section",
+        "点对点的消息同步",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "状态拥有者、消息时序、去重和持久化边界明确。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    },
+    {
+      "id": "tick-stutter",
+      "request": "多个方块一同运行时周期卡顿，要定位耗时并安排实机观察。",
+      "references": [
+        "references/diagnostics.md"
+      ],
+      "source_request": [
+        "cn-tick-performance",
+        "--section",
+        "二、Tick 计数的潜在问题与负载均衡策略",
+        "--max-chars",
+        "1200"
+      ],
+      "review_points": [
+        "先量化频率和对象数；不能把不同事件都算作 20Hz。"
+      ],
+      "max_initial_chars": 6200,
+      "max_expanded_chars": 9000
+    }
+  ]
+}
