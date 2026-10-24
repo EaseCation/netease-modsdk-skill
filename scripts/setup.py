@@ -33,7 +33,7 @@ def marker(root):
 
 
 def set_marker(root, repository, ref):
-    marker(root).write_text(json.dumps({'owner': 'netease-api-query', 'repository': repository,
+    marker(root).write_text(json.dumps({'owner': 'netease-modsdk-skill', 'repository': repository,
                                       'ref': ref, 'commit': git(['rev-parse', 'HEAD'], root),
                                       'patterns': PATTERNS}, ensure_ascii=False, indent=2) + '\n')
 
@@ -79,7 +79,7 @@ def update(root, repository, ref):
     if not file.is_file():
         raise ValueError('--update 只更新本工具创建的精简副本；现有 Wiki 请自行按仓库流程更新')
     state = json.loads(file.read_text())
-    if state.get('owner') != 'netease-api-query':
+    if state.get('owner') != 'netease-modsdk-skill':
         raise ValueError('不是本工具管理的副本')
     if git(['status', '--porcelain', '--untracked-files=all'], root):
         raise ValueError('副本存在修改，保留现场；请先处理修改再更新')

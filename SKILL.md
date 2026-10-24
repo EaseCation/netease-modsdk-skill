@@ -1,5 +1,5 @@
 ---
-name: netease-api-query
+name: netease-modsdk-skill
 description: 查询网易我的世界中国版 ModSDK API、事件与枚举，根据完整模组需求检索相关能力并按需读取参数、限制和示例。使用 Wiki 原文与独立人工标注，默认排除 Preset 预设系统；用于开发前 API 核验，不负责构建或游戏操作。
 ---
 

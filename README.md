@@ -1,14 +1,14 @@
 # 网易 ModSDK API 查询 Skill
 
-公开仓库：[EaseCation/netease-api-query](https://github.com/EaseCation/netease-api-query)。
+公开仓库：[EaseCation/netease-modsdk-skill](https://github.com/EaseCation/netease-modsdk-skill)。
 
 这是独立的轻量 Git 仓库。Wiki 保管官方 Markdown、补充标注与唯一查询实现；本仓库提供 Agent 指引、配置、精简安装和调用入口。
 
 ## 获取 Skill
 
 ```sh
-git clone --depth=1 https://github.com/EaseCation/netease-api-query.git
-cd netease-api-query
+git clone --depth=1 https://github.com/EaseCation/netease-modsdk-skill.git
+cd netease-modsdk-skill
 ```
 
 ## 使用已有 Wiki
@@ -67,13 +67,13 @@ python3 scripts/setup.py --update
 将本仓库目录安装或符号链接到 Agent 的技能目录。例如在 macOS/Linux：
 
 ```sh
-ln -s /absolute/path/to/netease-api-query ~/.codex/skills/netease-api-query
+ln -s /absolute/path/to/netease-modsdk-skill ~/.codex/skills/netease-modsdk-skill
 ```
 
 已有同名安装时先确认归属，避免覆盖其他内容。技能的自动选择设置在 `agents/openai.yaml`；使用指引见 [SKILL.md](SKILL.md)。
 
 ## Wiki 侧验收
 
-Wiki 的检索验收入口可通过 `MODSDK_SKILL_ROOT` 指向这个独立仓库；默认查找同级 `netease-api-query`，再查 Agent 已安装目录。验收进程显式传入它正在检查的 Wiki 路径，不受 skill 本地绑定的另一个 Wiki 干扰。
+Wiki 的检索验收入口可通过 `MODSDK_SKILL_ROOT` 指向这个独立仓库；默认查找同级 `netease-modsdk-skill`，再查 Agent 已安装目录。验收进程显式传入它正在检查的 Wiki 路径，不受 skill 本地绑定的另一个 Wiki 干扰。
 
 支持 Python 3.9+。格式检查使用宿主 skill-creator 的 `quick_validate.py`；实际验证应包含绑定已有 Wiki、从最新版 Git 快照精简安装、执行真实查询和文件完整性核对。
