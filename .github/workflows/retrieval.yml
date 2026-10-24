@@ -1,0 +1,30 @@
+name: ModSDK retrieval regression
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MODSDK_WIKI_ROOT: ${{ github.workspace }}/.data/wiki
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install sparse Wiki snapshot
+        run: python3 scripts/setup.py
+      - name: Run frozen retrieval bank
+        run: python3 scripts/evaluate.py
+      - name: Keep current regression receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-report
+          path: .local/regression-report.json
+          retention-days: 14

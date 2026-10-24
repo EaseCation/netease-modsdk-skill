@@ -72,8 +72,22 @@ ln -s /absolute/path/to/netease-modsdk-skill ~/.codex/skills/netease-modsdk-skil
 
 已有同名安装时先确认归属，避免覆盖其他内容。技能的自动选择设置在 `agents/openai.yaml`；使用指引见 [SKILL.md](SKILL.md)。
 
-## Wiki 侧验收
+## 查询和固定回归
 
-Wiki 的检索验收入口可通过 `MODSDK_SKILL_ROOT` 指向这个独立仓库；默认查找同级 `netease-modsdk-skill`，再查 Agent 已安装目录。验收进程显式传入它正在检查的 Wiki 路径，不受 skill 本地绑定的另一个 Wiki 干扰。
+最新版要求 Wiki 运行时与标注协议均为 2，不兼容旧快照。复杂需求用 `resolve --plan-file -` 一次提交原子职责和约束，格式见 [查询计划](references/query-plan.md)。主候选优先匹配请求阶段，关联前后阶段仍一起返回；限制命中与正向能力分开。
 
-支持 Python 3.9+。格式检查使用宿主 skill-creator 的 `quick_validate.py`；实际验证应包含绑定已有 Wiki、从最新版 Git 快照精简安装、执行真实查询和文件完整性核对。
+稳定题库、参考能力、禁止误用项和预算均存放在本仓库 [evals/cases.json](evals/cases.json)。运行实际查询 CLI：
+
+```sh
+MODSDK_WIKI_ROOT=../netease-modsdk-wiki python3 scripts/evaluate.py
+# 人工复核题库或输出预算变更后，才显式更新基线：
+python3 scripts/evaluate.py --record-baseline
+```
+
+题库包含产品职责、改写与边界对照、关联阶段及无效计划。它冻结语义计划，评估候选召回、误推荐、未解决状态、关联事件和输出字符预算；并非对 Agent 自动拆解自然语言的独立评估，也不是游戏功能验收。`contract_checks` 是人工复核提示，不冒称已自动执行。初次留出失败保存在 [evals/history.json](evals/history.json)，修复后这些题是已知回归，不再称盲测。
+
+[evals/baseline.json](evals/baseline.json) 记录已接受的完整通过基线。改变题库哈希会要求人工复核并显式重录；任何题失败都不能记录基线。固定硬预算之外，每题输出比基线增长超过 15%（至少 128 字符容差）也会报错。字符数不是模型 token；调用数是评估器固定执行次数，不表示真实 Agent 自主调用成本。
+
+最近一次详细回执写入忽略的 `.local/regression-report.json`。GitHub Actions 在 Skill 推送和 PR 时浅克隆公开 Wiki 并执行同一题库；Wiki 部署也在构建前绑定当前提交执行它。历史 Wiki 题库与旧查询器可从 Wiki 提交 `2ae0d396c1f4e079b685e73e45245e73a515a9a7` 追溯，不维护第二套活跃题库。
+
+支持 Python 3.9+。格式检查使用宿主 skill-creator 的 `quick_validate.py`；发布应包含绑定已有 Wiki、从最新版 Git 快照精简安装、执行真实查询和文件完整性核对。

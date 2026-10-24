@@ -80,9 +80,9 @@ def validate_contract(script_text, annotation_text):
                    if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
                    and any(isinstance(t, ast.Name) and t.id == 'SCHEMA_VERSION' for t in node.targets)), None)
     annotations = json.loads(annotation_text)
-    if not isinstance(annotations, dict) or schema != 1 or annotations.get('schema_version') != 1:
+    if not isinstance(annotations, dict) or schema != 2 or annotations.get('schema_version') != 2:
         raise ValueError('Wiki 查询协议版本不匹配，请同步更新 skill 和 Wiki')
-    if not isinstance(annotations.get('entries'), list) or not isinstance(annotations.get('capabilities'), list):
+    if not isinstance(annotations.get('entries'), list):
         raise ValueError('Wiki 标注格式不完整，请使用最新版 Wiki')
 
 

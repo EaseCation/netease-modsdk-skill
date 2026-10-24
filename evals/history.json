@@ -1,0 +1,91 @@
+{
+  "description": "上一轮固定对照的历史基线，不能作为新的计划式查询的硬门槛；新版本基线由通过后的真实查询回执记录。",
+  "wiki_commit": "0dd39239a5b9728ab1c31612c519be6a140ed7ea",
+  "annotation_count": 1649,
+  "summaries": [
+    {
+      "mode": "raw",
+      "cases": 16,
+      "required": 54,
+      "initial_hits": 19,
+      "initial_complete": 2,
+      "split_hits": 46,
+      "split_complete": 9,
+      "initial_outside_reference": 93,
+      "initial_hard_negatives": 11,
+      "false_clear_coverage": 14,
+      "first_chars": 27301,
+      "fixed_path_chars": 80150
+    },
+    {
+      "mode": "old84",
+      "cases": 16,
+      "required": 54,
+      "initial_hits": 23,
+      "initial_complete": 3,
+      "split_hits": 49,
+      "split_complete": 11,
+      "initial_outside_reference": 88,
+      "initial_hard_negatives": 13,
+      "false_clear_coverage": 13,
+      "first_chars": 28422,
+      "fixed_path_chars": 82460
+    },
+    {
+      "mode": "expanded",
+      "cases": 16,
+      "required": 54,
+      "initial_hits": 32,
+      "initial_complete": 3,
+      "split_hits": 53,
+      "split_complete": 15,
+      "initial_outside_reference": 80,
+      "initial_hard_negatives": 16,
+      "false_clear_coverage": 13,
+      "first_chars": 30962,
+      "fixed_path_chars": 90756
+    },
+    {
+      "mode": "old84_lexical",
+      "cases": 16,
+      "required": 54,
+      "initial_hits": 23,
+      "initial_complete": 3,
+      "split_hits": 23,
+      "split_complete": 3,
+      "initial_outside_reference": 88,
+      "initial_hard_negatives": 13,
+      "false_clear_coverage": 13,
+      "first_chars": 27924,
+      "fixed_path_chars": 27924
+    },
+    {
+      "mode": "expanded_lexical",
+      "cases": 16,
+      "required": 54,
+      "initial_hits": 33,
+      "initial_complete": 4,
+      "split_hits": 33,
+      "split_complete": 4,
+      "initial_outside_reference": 79,
+      "initial_hard_negatives": 16,
+      "false_clear_coverage": 12,
+      "first_chars": 30506,
+      "fixed_path_chars": 30506
+    }
+  ],
+  "initial_holdout": {
+    "cases": 12,
+    "passed": 10,
+    "hits": 11,
+    "required": 13,
+    "chars": 8820,
+    "failed": [
+      "effect-before",
+      "own-backpack"
+    ],
+    "note": "初次留出检查暴露了事件时机和批量槽位区分问题；这些题此后作为已知回归题，不再视作独立盲测。"
+  },
+  "evaluation_commit": "2ae0d396c1f4e079b685e73e45245e73a515a9a7",
+  "skill_commit": "197810304b17ddd15e07debcb7a1ae09e8e0bbfe"
+}

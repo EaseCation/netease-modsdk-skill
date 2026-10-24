@@ -1,0 +1,1904 @@
+{
+  "schema_version": 1,
+  "runtime_schema_version": 2,
+  "description": "稳定产品需求回归题库；参考答案与约束须人工核对原文。计划为冻结的语义拆解，不包含目标 API 名称。检索器回归不等同于 Agent 自动拆解能力或游戏实机验收。",
+  "cases": [
+    {
+      "id": "remote-processing",
+      "title": "远程区域运行开关",
+      "query": "管理面板启用远处生产区域后，即使附近没有玩家也保持运行；开始读写前确认区域已经加载，停用时释放常驻。",
+      "side": "server",
+      "required": [
+        {
+          "label": "保持区域加载",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.SetAddArea"
+          ]
+        },
+        {
+          "label": "确认区块加载",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.CheckChunkState"
+          ]
+        },
+        {
+          "label": "释放常加载区域",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.DeleteArea"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.DeleteAllArea"
+      ],
+      "contract_checks": [
+        "取消单个区域不能误用全部清理；区块加载不是区块生成状态。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "注册指定区域为常加载区块",
+            "kind": "api",
+            "operation": "create",
+            "target": "chunk",
+            "extent": "single"
+          },
+          {
+            "id": "2",
+            "query": "区块是否已加载完成",
+            "kind": "api",
+            "operation": "read",
+            "target": "chunk",
+            "extent": "single"
+          },
+          {
+            "id": "3",
+            "query": "删除指定常加载区域",
+            "kind": "api",
+            "operation": "delete",
+            "target": "chunk",
+            "extent": "single"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "saved-respawn",
+      "title": "跨维度重生与返回点",
+      "query": "玩家可保存当前所在维度和脚下位置为重生点，死亡后在那里复活，点击返回时立刻跨维度回到保存的位置。",
+      "side": "server",
+      "required": [
+        {
+          "label": "读取脚底位置",
+          "ids": [
+            "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.GetFootPos"
+          ]
+        },
+        {
+          "label": "读取维度",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.GetEntityDimensionId"
+          ]
+        },
+        {
+          "label": "设置个人重生点",
+          "ids": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerRespawnPos"
+          ]
+        },
+        {
+          "label": "跨维度传送",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.ChangePlayerDimension"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetSpawnDimensionAndPosition"
+      ],
+      "contract_checks": [
+        "跨维度传送用头部坐标，不能直接回填脚底坐标；个人重生点不同于世界出生点。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取实体脚底坐标",
+            "kind": "api",
+            "operation": "read",
+            "target": "entity"
+          },
+          {
+            "id": "2",
+            "query": "读取实体所在维度",
+            "kind": "api",
+            "operation": "read",
+            "target": "entity"
+          },
+          {
+            "id": "3",
+            "query": "设置玩家个人重生点",
+            "kind": "api",
+            "operation": "set",
+            "target": "player_respawn",
+            "extent": "single"
+          },
+          {
+            "id": "4",
+            "query": "玩家跨维度传送",
+            "kind": "api",
+            "operation": "set",
+            "target": "player"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "equipment-modifiers",
+      "title": "装备独立属性加成",
+      "query": "装备栏更换时，按装备的唯一标识添加或撤销攻击属性加成，不能直接覆盖生物原来的基础属性值。",
+      "side": "server",
+      "required": [
+        {
+          "label": "监听装备更换",
+          "ids": [
+            "modsdk:event:server:OnNewArmorExchangeServerEvent"
+          ]
+        },
+        {
+          "label": "添加修饰符",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.AddModifier"
+          ]
+        },
+        {
+          "label": "移除修饰符",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.RemoveModifier"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetAttrValue",
+        "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetAttrMaxValue"
+      ],
+      "contract_checks": [
+        "登录时每个装备槽会触发两次更换事件；不要在回调中修改盔甲导致递归。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "玩家更换盔甲事件",
+            "kind": "event",
+            "operation": "observe"
+          },
+          {
+            "id": "2",
+            "query": "添加属性修饰符",
+            "kind": "api",
+            "operation": "create",
+            "target": "attribute_modifier"
+          },
+          {
+            "id": "3",
+            "query": "移除属性修饰符",
+            "kind": "api",
+            "operation": "delete",
+            "target": "attribute_modifier"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "container-audit",
+      "title": "方块容器库存审计",
+      "query": "后台审计指定箱子的格子数量和每格物品，允许修正某一格的数量。这是方块容器，不是玩家背包，不要给玩家发物品。",
+      "side": "server",
+      "required": [
+        {
+          "label": "容量",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chestContainerCompServer.ChestContainerCompServer.GetChestBoxSize",
+            "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetContainerSize"
+          ]
+        },
+        {
+          "label": "读取物品",
+          "ids": [
+            "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetContainerItem"
+          ]
+        },
+        {
+          "label": "修改格子数量",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chestContainerCompServer.ChestContainerCompServer.SetChestBoxItemNum"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerAllItems",
+        "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerItem",
+        "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SetInvItemNum",
+        "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SpawnItemToPlayerInv"
+      ],
+      "contract_checks": [
+        "容器坐标和维度必须明确；末影箱不属于普通容器容量接口的支持范围。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取箱子容量",
+            "kind": "api",
+            "operation": "read",
+            "target": "block_container"
+          },
+          {
+            "id": "2",
+            "query": "读取容器指定槽位物品",
+            "kind": "api",
+            "operation": "read",
+            "target": "block_container"
+          },
+          {
+            "id": "3",
+            "query": "设置箱子槽位物品数量",
+            "kind": "api",
+            "operation": "set",
+            "target": "block_container"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "independent-exhibit",
+      "title": "展示维度固定昼夜天气",
+      "query": "一个展示维度固定在中午并始终晴天，其他维度的昼夜和天气保持原样；这里的时刻与天气不能再自动变化。",
+      "side": "server",
+      "required": [
+        {
+          "label": "独立时间",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.SetUseLocalTime"
+          ]
+        },
+        {
+          "label": "设置日内时刻",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.SetLocalTimeOfDay"
+          ]
+        },
+        {
+          "label": "关闭昼夜变化",
+          "ids": [
+            "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.SetLocalDoDayNightCycle"
+          ]
+        },
+        {
+          "label": "独立天气",
+          "ids": [
+            "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetDimensionUseLocalWeather"
+          ]
+        },
+        {
+          "label": "晴天",
+          "ids": [
+            "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetDimensionLocalRain"
+          ]
+        },
+        {
+          "label": "关闭天气循环",
+          "ids": [
+            "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetDimensionLocalDoWeatherCycle"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.timeCompServer.TimeComponentServer.SetTime",
+        "modsdk:api:server:mod.server.component.timeCompServer.TimeComponentServer.SetTimeOfDay",
+        "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetRaining",
+        "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetThunder"
+      ],
+      "contract_checks": [
+        "先启用维度独立规则；全局时间天气接口不满足隔离要求。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "开启维度独立时间规则",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_time"
+          },
+          {
+            "id": "2",
+            "query": "设置维度日内时刻",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_time"
+          },
+          {
+            "id": "3",
+            "query": "关闭维度昼夜更替",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_time"
+          },
+          {
+            "id": "4",
+            "query": "开启维度独立天气规则",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_weather"
+          },
+          {
+            "id": "5",
+            "query": "设置维度降雨状态",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_weather"
+          },
+          {
+            "id": "6",
+            "query": "关闭维度天气循环",
+            "kind": "api",
+            "operation": "set",
+            "target": "dimension_weather"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "visitor-policy",
+      "title": "保留容器访问的游客权限",
+      "query": "给生存模式访客禁止放置方块、挖掘和攻击其他玩家，但仍允许打开箱子，不要通过切换游戏模式来实现。",
+      "side": "server",
+      "required": [
+        {
+          "label": "禁用建造",
+          "ids": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetBuildAbility"
+          ]
+        },
+        {
+          "label": "禁用挖掘",
+          "ids": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetMineAbility"
+          ]
+        },
+        {
+          "label": "禁用玩家攻击",
+          "ids": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetAttackPlayersAbility"
+          ]
+        },
+        {
+          "label": "允许容器访问",
+          "ids": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetOpenContainersAbility"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerGameType",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetDefaultGameType",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetDisableContainers"
+      ],
+      "contract_checks": [
+        "行为能力和权限等级不同；建造挖掘能力只影响生存模式并存档。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "禁止玩家放置方块",
+            "kind": "api",
+            "operation": "set",
+            "target": "permissions"
+          },
+          {
+            "id": "2",
+            "query": "禁止玩家破坏方块",
+            "kind": "api",
+            "operation": "set",
+            "target": "permissions"
+          },
+          {
+            "id": "3",
+            "query": "禁止玩家攻击其他玩家",
+            "kind": "api",
+            "operation": "set",
+            "target": "permissions"
+          },
+          {
+            "id": "4",
+            "query": "允许玩家打开容器",
+            "kind": "api",
+            "operation": "set",
+            "target": "permissions"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "filter-form",
+      "title": "筛选表单输入与穿透",
+      "query": "做一个筛选面板：输入文字最多二十个字符，提交时读取文字；下拉框读取当前选项的索引，点面板时不能误操作后面的游戏世界。",
+      "side": "client",
+      "required": [
+        {
+          "label": "限制长度",
+          "ids": [
+            "modsdk:api:client:mod.client.ui.controls.textEditBoxUIControl.TextEditBoxUIControl.SetEditTextMaxLength"
+          ]
+        },
+        {
+          "label": "读取文字",
+          "ids": [
+            "modsdk:api:client:mod.client.ui.controls.textEditBoxUIControl.TextEditBoxUIControl.GetEditText"
+          ]
+        },
+        {
+          "label": "读取选项",
+          "ids": [
+            "modsdk:api:client:mod.client.ui.controls.neteaseComboBoxUIControl.NeteaseComboBoxUIControl.GetSelectOptionIndex"
+          ]
+        },
+        {
+          "label": "阻止面板穿透",
+          "ids": [
+            "modsdk:api:client:mod.client.ui.controls.inputPanelUIControl.InputPanelUIControl.SetIsSwallow"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.ui.controls.labelUIControl.LabelUIControl.SetText",
+        "modsdk:api:client:mod.client.ui.controls.labelUIControl.LabelUIControl.GetText"
+      ],
+      "contract_checks": [
+        "输入框不同于文本标签；下拉框未选择时索引为负值。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置输入框最大长度",
+            "kind": "api",
+            "operation": "set",
+            "target": "ui"
+          },
+          {
+            "id": "2",
+            "query": "读取输入框文字",
+            "kind": "api",
+            "operation": "read",
+            "target": "ui"
+          },
+          {
+            "id": "3",
+            "query": "读取下拉框当前选中索引",
+            "kind": "api",
+            "operation": "read",
+            "target": "ui"
+          },
+          {
+            "id": "4",
+            "query": "输入面板吞噬点击事件",
+            "kind": "api",
+            "operation": "set",
+            "target": "ui"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "model-preview",
+      "title": "独立骨骼模型预览卡",
+      "query": "资源预览卡使用网易纸娃娃控件直接显示骨骼模型文件，可以指定初始朝向和缩放，不在世界里生成生物。",
+      "side": "client",
+      "required": [
+        {
+          "label": "直接渲染骨骼模型",
+          "ids": [
+            "modsdk:api:client:mod.client.ui.controls.neteasePaperDollUIControl.NeteasePaperDollUIControl.RenderSkeletonModel"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.ui.controls.neteasePaperDollUIControl.NeteasePaperDollUIControl.RenderEntity",
+        "modsdk:api:client:mod.client.system.clientSystem.ClientSystem.CreateClientEntityByTypeStr",
+        "modsdk:api:client:mod.client.component.modelCompClient.ModelComponentClient.SetFreeModelScale",
+        "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.SetCameraRotation"
+      ],
+      "contract_checks": [
+        "缩放与初始角度在渲染参数字典内；创建世界实体并非前置。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "直接渲染骨骼模型并设置初始旋转和缩放",
+            "kind": "api",
+            "operation": "set",
+            "target": "ui_model",
+            "must_support": [
+              "骨骼模型"
+            ]
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "inspection-camera",
+      "title": "固定观察相机并恢复",
+      "query": "展示流程把观察位置移到指定坐标，朝向指定角度并缩小视角；关闭后恢复跟随玩家，玩家本体不能被传送。",
+      "side": "client",
+      "required": [
+        {
+          "label": "分离相机",
+          "ids": [
+            "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.DepartCamera"
+          ]
+        },
+        {
+          "label": "独立位置",
+          "ids": [
+            "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.SetCameraPos"
+          ]
+        },
+        {
+          "label": "朝向",
+          "ids": [
+            "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.SetCameraRotation"
+          ]
+        },
+        {
+          "label": "视野",
+          "ids": [
+            "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.SetFov"
+          ]
+        },
+        {
+          "label": "恢复跟随",
+          "ids": [
+            "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.ResetCameraPos"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.virtualWorldCompClient.VirtualWorldCompClient.CameraSetPos",
+        "modsdk:api:client:mod.client.component.posCompClient.PosComponentClient.SetPosForClientEntity",
+        "modsdk:api:client:mod.client.component.modelCompClient.ModelComponentClient.SetFreeModelPos"
+      ],
+      "contract_checks": [
+        "SetCameraPos 必须先分离相机；恢复位置跟随有专门接口。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置摄像机独立位置",
+            "kind": "api",
+            "operation": "set",
+            "target": "camera"
+          },
+          {
+            "id": "2",
+            "query": "设置摄像机旋转朝向",
+            "kind": "api",
+            "operation": "set",
+            "target": "camera"
+          },
+          {
+            "id": "3",
+            "query": "设置摄像机视野角度",
+            "kind": "api",
+            "operation": "set",
+            "target": "camera"
+          },
+          {
+            "id": "4",
+            "query": "恢复相机跟随玩家",
+            "kind": "api",
+            "operation": "set",
+            "target": "camera"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "persistent-name",
+      "title": "单个实体名称常显与透视",
+      "query": "让一个已有名字的实体始终显示名称，即使准星没有对准它也显示，并允许名称穿过墙面可见；其他实体的名字显示不变。",
+      "side": "client",
+      "required": [
+        {
+          "label": "始终显示",
+          "ids": [
+            "modsdk:api:client:mod.client.component.nameCompClient.NameComponentClient.SetAlwaysShowName"
+          ]
+        },
+        {
+          "label": "名称深度检测",
+          "ids": [
+            "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.SetNameDeeptest"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.extraClientApi.HideNameTag",
+        "modsdk:api:client:mod.client.extraClientApi.IsHideNameTag",
+        "modsdk:api:client:mod.client.component.actorRenderCompClient.ActorRenderCompClient.SetNotRenderAtAll"
+      ],
+      "contract_checks": [
+        "名称显隐不是整个实体渲染开关；不能用全局名称隐藏处理单体需求。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "实体名字一直显示",
+            "kind": "api",
+            "operation": "set",
+            "target": "entity_name",
+            "extent": "single"
+          },
+          {
+            "id": "2",
+            "query": "设置名字透视与深度检测",
+            "kind": "api",
+            "operation": "set",
+            "target": "entity_name",
+            "extent": "single"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "particle-controls",
+      "title": "原版粒子独立状态控制",
+      "query": "给资源包原版粒子发射器做控制面板：冻结计算时保留当前画面，恢复后继续；另一个开关只隐藏画面但继续计算，最后能彻底删除这个实例。",
+      "side": "client",
+      "required": [
+        {
+          "label": "暂停逻辑",
+          "ids": [
+            "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.Pause"
+          ]
+        },
+        {
+          "label": "恢复逻辑",
+          "ids": [
+            "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.Resume"
+          ]
+        },
+        {
+          "label": "仅隐藏",
+          "ids": [
+            "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.Hide"
+          ]
+        },
+        {
+          "label": "销毁",
+          "ids": [
+            "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.Remove"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.particleControlComp.ParticleControlComp.Pause",
+        "modsdk:api:client:mod.client.component.frameAniControlComp.FrameAniControlComp.Pause",
+        "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.Stop",
+        "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.RemoveByName"
+      ],
+      "contract_checks": [
+        "Pause、Hide、Stop、Remove 职责不同；同名网易粒子接口不是这套发射器。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "暂停粒子发射器逻辑",
+            "kind": "api",
+            "operation": "pause",
+            "target": "particle_bedrock"
+          },
+          {
+            "id": "2",
+            "query": "恢复粒子发射器逻辑",
+            "kind": "api",
+            "operation": "resume",
+            "target": "particle_bedrock"
+          },
+          {
+            "id": "3",
+            "query": "隐藏粒子发射器渲染",
+            "kind": "api",
+            "operation": "set",
+            "target": "particle_bedrock"
+          },
+          {
+            "id": "4",
+            "query": "销毁粒子发射器实例",
+            "kind": "api",
+            "operation": "delete",
+            "target": "particle_bedrock",
+            "extent": "single"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "interaction-ray",
+      "title": "普通方块与生物射线选取",
+      "query": "服务端从给定起点沿方向找出射线碰到的普通方块和生物，再用命中位置判断能否交互，不是只查询自定义物理刚体。",
+      "side": "server",
+      "required": [
+        {
+          "label": "实体与方块射线",
+          "ids": [
+            "modsdk:api:server:mod.server.extraServerApi.getEntitiesOrBlockFromRay"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.Raycast"
+      ],
+      "contract_checks": [
+        "物理 Raycast 只支持自定义刚体；普通世界射线另有接口。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "射线查询实体和方块",
+            "kind": "api",
+            "operation": "read",
+            "target": "world_ray"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "entity-lifetime",
+      "title": "存档持久化与自然清除",
+      "query": "两类实体分别管理：临时对象退出存档或区块卸载时自动消失；常驻生物离玩家很远也不能被自然清掉。",
+      "side": "server",
+      "required": [
+        {
+          "label": "临时对象不存档",
+          "ids": [
+            "modsdk:api:server:mod.server.component.persistenceCompServer.PersistenceCompServer.SetPersistence"
+          ]
+        },
+        {
+          "label": "阻止距离清除",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetPersistent"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.DestroyEntity",
+        "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.KillEntity"
+      ],
+      "contract_checks": [
+        "SetPersistence 与 SetPersistent 名称相近，但控制的是不同清理机制。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "关闭实体存档持久化",
+            "kind": "api",
+            "operation": "set",
+            "target": "entity_lifetime"
+          },
+          {
+            "id": "2",
+            "query": "防止实体距离玩家太远被清除",
+            "kind": "api",
+            "operation": "set",
+            "target": "entity_lifetime"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "readonly-dashboard",
+      "title": "只读玩家与天气监控",
+      "query": "监控面板只读取玩家生命值、当前是否正在飞行、个人游戏模式和是否下雨，绝不能修改任何玩家状态或天气。",
+      "side": "server",
+      "required": [
+        {
+          "label": "读取生命",
+          "ids": [
+            "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.GetAttrValue"
+          ]
+        },
+        {
+          "label": "读取飞行状态",
+          "ids": [
+            "modsdk:api:server:mod.server.component.flyCompServer.FlyComponentServer.IsPlayerFlying"
+          ]
+        },
+        {
+          "label": "读取个人模式",
+          "ids": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetPlayerGameType"
+          ]
+        },
+        {
+          "label": "读取降雨",
+          "ids": [
+            "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.IsRaining"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.attrCompServer.AttrCompServer.SetAttrValue",
+        "modsdk:api:server:mod.server.component.flyCompServer.FlyComponentServer.ChangePlayerFlyState",
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerGameType",
+        "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetRaining"
+      ],
+      "contract_checks": [
+        "会飞与正在飞不同；个人模式与世界默认模式不同。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取当前生命值",
+            "kind": "api",
+            "operation": "read",
+            "target": "attribute"
+          },
+          {
+            "id": "2",
+            "query": "玩家是否正在飞行",
+            "kind": "api",
+            "operation": "read",
+            "target": "player"
+          },
+          {
+            "id": "3",
+            "query": "读取玩家个人游戏模式",
+            "kind": "api",
+            "operation": "read",
+            "target": "game_mode",
+            "extent": "single"
+          },
+          {
+            "id": "4",
+            "query": "当前是否下雨",
+            "kind": "api",
+            "operation": "read",
+            "target": "world_weather"
+          }
+        ],
+        "read_only": true
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "region-snapshot",
+      "title": "区域方块快照传输与恢复",
+      "query": "编辑工具选中一个长方体区域，将方块组合存成可传输的字典；随后从字典恢复该组合并放回世界，不是生成渲染模型。",
+      "side": "server",
+      "required": [
+        {
+          "label": "采集区域",
+          "ids": [
+            "modsdk:api:server:mod.server.component.blockCompServer.BlockCompServer.GetBlockPaletteBetweenPos"
+          ]
+        },
+        {
+          "label": "序列化",
+          "ids": [
+            "modsdk:api:server:mod.common.component.blockPaletteComp.BlockPaletteComponent.SerializeBlockPalette"
+          ]
+        },
+        {
+          "label": "反序列化",
+          "ids": [
+            "modsdk:api:server:mod.common.component.blockPaletteComp.BlockPaletteComponent.DeserializeBlockPalette"
+          ]
+        },
+        {
+          "label": "写回世界",
+          "ids": [
+            "modsdk:api:server:mod.server.component.blockCompServer.BlockCompServer.SetBlockByBlockPalette"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.blockCompServer.BlockCompServer.CreateMicroBlockResStr"
+      ],
+      "contract_checks": [
+        "调色板序列化用于数据传输；几何体转换不等于还原世界方块。",
+        "序列化接口返回数据字典，应归类为读取；反序列化写入调色板对象。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取两个位置之间的方块组合",
+            "kind": "api",
+            "operation": "read",
+            "target": "block_palette"
+          },
+          {
+            "id": "2",
+            "query": "序列化方块调色板为字典",
+            "kind": "api",
+            "operation": "read",
+            "target": "block_palette"
+          },
+          {
+            "id": "3",
+            "query": "反序列化方块调色板字典",
+            "kind": "api",
+            "operation": "set",
+            "target": "block_palette"
+          },
+          {
+            "id": "4",
+            "query": "按调色板放置世界方块",
+            "kind": "api",
+            "operation": "set",
+            "target": "block_palette"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "sound-instance",
+      "title": "实体声音的实例级控制",
+      "query": "给一个实体播放跟随它移动的声音，运行中可单独开关这个播放实例的循环；用户快速关闭时只停止这一条声音，其他背景音乐继续播放。",
+      "side": "client",
+      "required": [
+        {
+          "label": "绑定声音",
+          "ids": [
+            "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.PlayCustomMusic"
+          ]
+        },
+        {
+          "label": "实例循环",
+          "ids": [
+            "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.SetCustomMusicLoopById"
+          ]
+        },
+        {
+          "label": "实例停止",
+          "ids": [
+            "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.StopCustomMusicById"
+          ]
+        },
+        {
+          "label": "短时停止避让",
+          "ids": [
+            "modsdk:api:client:mod.client.component.gameCompClient.GameComponentClient.AddTimer"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.PlayGlobalCustomMusic",
+        "modsdk:api:client:mod.client.component.audioCustomCompClient.AudioCustomComponentClient.StopCustomMusic"
+      ],
+      "contract_checks": [
+        "停止同一播放实例前需关注七帧限制，原文建议延迟十五帧以上；流式音频不能同时开多个实例。"
+      ],
+      "boundary": false,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "播放绑定实体的场景音效",
+            "kind": "api",
+            "operation": "play",
+            "target": "sound",
+            "extent": "single"
+          },
+          {
+            "id": "2",
+            "query": "设置播放实例循环状态",
+            "kind": "api",
+            "operation": "set",
+            "target": "sound",
+            "extent": "single"
+          },
+          {
+            "id": "3",
+            "query": "停止指定播放实例音效",
+            "kind": "api",
+            "operation": "stop",
+            "target": "sound",
+            "extent": "single"
+          },
+          {
+            "id": "4",
+            "query": "添加单次延迟回调",
+            "kind": "api",
+            "operation": "create",
+            "target": "timer"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "permission-tree",
+      "title": "原生字符串权限树边界",
+      "query": "需要原生权限接口直接支持字符串权限节点、继承和否定节点，像服务端插件权限系统那样；不能用几个数字身份等级代替。",
+      "side": "server",
+      "required": [],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPermissionLevel",
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetOperatorCommandAbility"
+      ],
+      "contract_checks": [
+        "现有权限等级与行为能力不能证明存在原生字符串权限树；未检索到也不能证明平台绝无其他实现。"
+      ],
+      "boundary": true,
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "字符串权限节点与权限继承",
+            "kind": "api",
+            "operation": "any",
+            "target": "permissions",
+            "must_support": [
+              "字符串权限节点"
+            ]
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500,
+      "expect_no_capability_match": true,
+      "expect_limitation": true
+    },
+    {
+      "id": "remote-inventory-client",
+      "title": "客户端读取他人背包边界",
+      "query": "只在客户端查看另一个远处玩家的全部背包内容，不发送服务器请求，也不只看他手里或者身上的装备。",
+      "side": "client",
+      "required": [],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerAllItems",
+        "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerItem",
+        "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetCarriedItem",
+        "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetOffhandItem"
+      ],
+      "contract_checks": [
+        "客户端完整背包接口仅支持本地玩家；需要服务端配合的方案不满足此限定。"
+      ],
+      "boundary": true,
+      "split": "regression",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取其他玩家完整背包",
+            "kind": "api",
+            "operation": "read",
+            "target": "player_inventory",
+            "target_scope": "other_player"
+          }
+        ]
+      },
+      "limit": 8,
+      "max_chars": 5500,
+      "expect_no_capability_match": true,
+      "expect_limitation": true
+    },
+    {
+      "id": "account-not-entity",
+      "title": "账号标识与实体标识",
+      "query": "在线玩家需要稳定账号标识作为外部记录键，不要当前实体标识。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取在线玩家账号标识",
+            "kind": "api",
+            "operation": "read",
+            "target": "player"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "账号标识",
+          "ids": [
+            "modsdk:api:server:mod.server.component.httpToWebServerCompServer.HttpToWebServerCompServer.GetPlayerUid"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.extraServerApi.GetHostPlayerId"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "local-force-point",
+      "title": "局部作用点的冲量",
+      "query": "对自定义刚体施加冲量，方向用世界坐标，作用点偏移用刚体局部坐标。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "在局部作用点对刚体施加力或冲量",
+            "kind": "api",
+            "operation": "set",
+            "target": "physics"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "局部作用点施力",
+          "ids": [
+            "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPosLocal"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPos"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "effect-before",
+      "title": "状态添加前拦截",
+      "query": "实体即将获得状态效果时检查条件，不符合就取消，不能等添加完才通知。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "实体获得状态效果之前允许取消的事件",
+            "kind": "event",
+            "operation": "observe"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "添加前事件",
+          "ids": [
+            "modsdk:event:server:WillAddEffectServerEvent"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:event:server:AddEffectServerEvent"
+      ],
+      "contract_checks": [
+        "添加前事件为主推荐，同时必须返回获得时通知作为关联阶段；关联阶段不算当前阶段能力命中。"
+      ],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500,
+      "related_required": [
+        "modsdk:event:server:AddEffectServerEvent"
+      ]
+    },
+    {
+      "id": "leave-before-delete",
+      "title": "离线前读取状态",
+      "query": "玩家即将离开时保存状态，回调发生时读取玩家属性的接口必须仍然可用。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "玩家即将离开但仍能读取当前状态的事件",
+            "kind": "event",
+            "operation": "observe"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "退出前事件",
+          "ids": [
+            "modsdk:event:server:PlayerIntendLeaveServerEvent"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:event:server:DelServerPlayerEvent"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "chunk-generated",
+      "title": "区块生成历史",
+      "query": "只判断区块在存档中是否生成过，不把当前加载状态当成生成记录。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "区块是否生成过",
+            "kind": "api",
+            "operation": "read",
+            "target": "chunk"
+          }
+        ],
+        "read_only": true
+      },
+      "required": [
+        {
+          "label": "生成历史",
+          "ids": [
+            "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.IsChunkGenerated"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.chunkSourceComp.ChunkSourceCompServer.CheckChunkState"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "flight-two-states",
+      "title": "飞行能力与飞行状态",
+      "query": "只读显示玩家有没有飞行能力，以及此刻是否正在飞行，两项分开。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "玩家是否拥有飞行能力",
+            "kind": "api",
+            "operation": "read",
+            "target": "player"
+          },
+          {
+            "id": "2",
+            "query": "玩家是否正在飞行",
+            "kind": "api",
+            "operation": "read",
+            "target": "player"
+          }
+        ],
+        "read_only": true
+      },
+      "required": [
+        {
+          "label": "飞行能力",
+          "ids": [
+            "modsdk:api:server:mod.server.component.flyCompServer.FlyComponentServer.IsPlayerCanFly"
+          ]
+        },
+        {
+          "label": "飞行状态",
+          "ids": [
+            "modsdk:api:server:mod.server.component.flyCompServer.FlyComponentServer.IsPlayerFlying"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.flyCompServer.FlyComponentServer.ChangePlayerFlyState"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "thunder-observe",
+      "title": "只读雷暴状态",
+      "query": "监控只看世界当前有没有打雷，不开启或关闭雷暴。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "当前是否打雷",
+            "kind": "api",
+            "operation": "read",
+            "target": "world_weather"
+          }
+        ],
+        "read_only": true
+      },
+      "required": [
+        {
+          "label": "雷暴状态",
+          "ids": [
+            "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.IsThunder"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetThunder"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "world-spawn",
+      "title": "全局出生点",
+      "query": "管理员要调整世界出生点的维度和位置，不改某一玩家的个人重生点。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置世界出生点维度和位置",
+            "kind": "api",
+            "operation": "set",
+            "target": "world_spawn",
+            "extent": "global"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "世界出生点",
+          "ids": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.SetSpawnDimensionAndPosition"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerRespawnPos"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "own-backpack",
+      "title": "客户端本地背包",
+      "query": "本地背包界面要批量读取自己所有槽位，包含空槽位，以保持槽位索引。",
+      "side": "client",
+      "split": "holdout",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "批量读取本地玩家背包槽位",
+            "kind": "api",
+            "operation": "read",
+            "target": "player_inventory",
+            "target_scope": "local_player"
+          }
+        ],
+        "read_only": true
+      },
+      "required": [
+        {
+          "label": "批量背包",
+          "ids": [
+            "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerAllItems"
+          ]
+        }
+      ],
+      "hard_negative_ids": [],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "virtual-camera",
+      "title": "虚拟预览相机",
+      "query": "仅移动虚拟世界预览相机，不能改游戏主世界摄像机或模型的位置。",
+      "side": "client",
+      "split": "holdout",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置虚拟世界相机位置",
+            "kind": "api",
+            "operation": "set",
+            "target": "virtual_world"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "虚拟相机位置",
+          "ids": [
+            "modsdk:api:client:mod.client.component.virtualWorldCompClient.VirtualWorldCompClient.CameraSetPos"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.cameraCompClient.CameraComponentClient.SetCameraPos",
+        "modsdk:api:client:mod.client.component.virtualWorldCompClient.VirtualWorldCompClient.ModelSetPos"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "block-state-read",
+      "title": "方块状态只读",
+      "query": "读取已加载方块的状态字典来检查朝向，不放置或替换方块。",
+      "side": "server",
+      "split": "holdout",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取方块状态字典",
+            "kind": "api",
+            "operation": "read",
+            "target": "block"
+          }
+        ],
+        "read_only": true
+      },
+      "required": [
+        {
+          "label": "状态读取",
+          "ids": [
+            "modsdk:api:server:mod.server.component.blockStateCompServer.BlockStateComponentServer.GetBlockStates"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.server.component.blockStateCompServer.BlockStateComponentServer.SetBlockStates",
+        "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.SetBlockNew"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "particle-size",
+      "title": "粒子尺寸与发射体积",
+      "query": "只调整网易粒子单个粒子的最小和最大尺寸，不改变发射器覆盖的空间范围。",
+      "side": "client",
+      "split": "holdout",
+      "plan": {
+        "side": "client",
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置单个粒子最小最大尺寸",
+            "kind": "api",
+            "operation": "set",
+            "target": "particle_netease"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "粒子尺寸",
+          "ids": [
+            "modsdk:api:client:mod.client.component.particleControlComp.ParticleControlComp.SetParticleSize"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:client:mod.client.component.particleControlComp.ParticleControlComp.SetParticleVolumeSize"
+      ],
+      "contract_checks": [],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "remote-equipment-client",
+      "title": "客户端他人装备的合法读取",
+      "side": "client",
+      "query": "客户端批量查看另一个玩家的盔甲，不读取他的完整背包。",
+      "plan": {
+        "side": "client",
+        "read_only": true,
+        "intents": [
+          {
+            "id": "1",
+            "query": "批量读取玩家盔甲槽位",
+            "target": "player_equipment",
+            "operation": "read",
+            "kind": "api",
+            "target_scope": "other_player"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "批量装备",
+          "ids": [
+            "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerAllItems"
+          ]
+        }
+      ],
+      "split": "regression",
+      "boundary": false,
+      "contract_checks": [],
+      "limit": 8,
+      "max_chars": 5500,
+      "hard_negative_ids": []
+    },
+    {
+      "id": "serialize-readonly",
+      "title": "只读导出组合数据",
+      "side": "server",
+      "query": "只将已有方块调色板导出成数据字典，不改变调色板或世界中的方块。",
+      "plan": {
+        "side": "server",
+        "read_only": true,
+        "intents": [
+          {
+            "id": "1",
+            "query": "序列化方块调色板字典",
+            "target": "block_palette",
+            "operation": "read",
+            "kind": "api"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "只读序列化",
+          "ids": [
+            "modsdk:api:server:mod.common.component.blockPaletteComp.BlockPaletteComponent.SerializeBlockPalette"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:api:server:mod.common.component.blockPaletteComp.BlockPaletteComponent.DeserializeBlockPalette",
+        "modsdk:api:server:mod.server.component.blockCompServer.BlockCompServer.SetBlockByBlockPalette"
+      ],
+      "split": "regression",
+      "boundary": false,
+      "contract_checks": [],
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "reject-unknown-target",
+      "title": "reject-unknown-target",
+      "query": "无效计划必须显式拒绝",
+      "side": "server",
+      "split": "protocol",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取对象",
+            "target": "not-a-target"
+          }
+        ]
+      },
+      "required": [],
+      "hard_negative_ids": [],
+      "boundary": true,
+      "expect_error": true,
+      "limit": 8,
+      "max_chars": 5500,
+      "contract_checks": [],
+      "expected_error_contains": "未知 target"
+    },
+    {
+      "id": "reject-readonly-write",
+      "title": "reject-readonly-write",
+      "query": "无效计划必须显式拒绝",
+      "side": "server",
+      "split": "protocol",
+      "plan": {
+        "side": "server",
+        "read_only": true,
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置属性",
+            "operation": "set"
+          }
+        ]
+      },
+      "required": [],
+      "hard_negative_ids": [],
+      "boundary": true,
+      "expect_error": true,
+      "limit": 8,
+      "max_chars": 5500,
+      "contract_checks": [],
+      "expected_error_contains": "read_only 与写入操作冲突"
+    },
+    {
+      "id": "reject-readonly-override",
+      "title": "reject-readonly-override",
+      "query": "无效计划必须显式拒绝",
+      "side": "server",
+      "split": "protocol",
+      "plan": {
+        "side": "server",
+        "read_only": true,
+        "intents": [
+          {
+            "id": "1",
+            "query": "设置属性",
+            "read_only": false
+          }
+        ]
+      },
+      "required": [],
+      "hard_negative_ids": [],
+      "boundary": true,
+      "expect_error": true,
+      "limit": 8,
+      "max_chars": 5500,
+      "contract_checks": [],
+      "expected_error_contains": "子目标不能解除计划的只读约束"
+    },
+    {
+      "id": "reject-small-budget",
+      "title": "reject-small-budget",
+      "query": "无效计划必须显式拒绝",
+      "side": "server",
+      "split": "protocol",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取实体生命值"
+          },
+          {
+            "id": "2",
+            "query": "读取实体位置"
+          }
+        ]
+      },
+      "required": [],
+      "hard_negative_ids": [],
+      "boundary": true,
+      "expect_error": true,
+      "limit": 1,
+      "max_chars": 5500,
+      "contract_checks": [],
+      "expected_error_contains": "limit 至少等于子目标数"
+    },
+    {
+      "id": "reject-unknown-field",
+      "title": "reject-unknown-field",
+      "query": "无效计划必须显式拒绝",
+      "side": "server",
+      "split": "protocol",
+      "plan": {
+        "intents": [
+          {
+            "id": "1",
+            "query": "读取数据",
+            "silent_option": true
+          }
+        ]
+      },
+      "required": [],
+      "hard_negative_ids": [],
+      "boundary": true,
+      "expect_error": true,
+      "limit": 8,
+      "max_chars": 5500,
+      "contract_checks": [],
+      "expected_error_contains": "未知子目标字段"
+    },
+    {
+      "id": "dimension-finished-related",
+      "title": "维度切换完成与关联通知",
+      "query": "玩家换维度完成后刷新客户端状态，同时了解切换期间的关联事件。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "finished",
+            "query": "玩家维度改变完成后事件",
+            "kind": "event",
+            "phase": "after"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "维度改变完成",
+          "ids": [
+            "modsdk:event:server:DimensionChangeFinishServerEvent"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:event:server:DimensionChangeServerEvent"
+      ],
+      "related_required": [
+        "modsdk:event:server:DimensionChangeServerEvent"
+      ],
+      "contract_checks": [
+        "关联通知不等价于完成时机。"
+      ],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    },
+    {
+      "id": "event-family-multiple-intents",
+      "title": "多个事件族不互相挤占",
+      "query": "分别拦截状态添加与生命值变化，并了解它们的关联阶段。",
+      "side": "server",
+      "split": "regression",
+      "plan": {
+        "side": "server",
+        "intents": [
+          {
+            "id": "effect",
+            "query": "实体获得状态效果之前允许取消的事件",
+            "kind": "event",
+            "phase": "before"
+          },
+          {
+            "id": "health",
+            "query": "生物生命值变化之前事件",
+            "kind": "event",
+            "phase": "before"
+          }
+        ]
+      },
+      "required": [
+        {
+          "label": "状态添加前",
+          "ids": [
+            "modsdk:event:server:WillAddEffectServerEvent"
+          ]
+        },
+        {
+          "label": "生命值变化前",
+          "ids": [
+            "modsdk:event:server:HealthChangeBeforeServerEvent"
+          ]
+        }
+      ],
+      "hard_negative_ids": [
+        "modsdk:event:server:AddEffectServerEvent",
+        "modsdk:event:server:HealthChangeServerEvent"
+      ],
+      "related_required": [
+        "modsdk:event:server:AddEffectServerEvent",
+        "modsdk:event:server:RefreshEffectServerEvent",
+        "modsdk:event:server:RemoveEffectServerEvent",
+        "modsdk:event:server:HealthChangeServerEvent"
+      ],
+      "contract_checks": [
+        "两个事件族都返回，不让第一个事件族占满关联配额。"
+      ],
+      "boundary": false,
+      "limit": 8,
+      "max_chars": 5500
+    }
+  ],
+  "holdout_note": "12 道最初留出题首次通过 10 道，修正一般性时机与限制分类后纳入公开回归，不再视作独立盲测。"
+}
