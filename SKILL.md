@@ -27,6 +27,7 @@ description: 为网易我的世界中国版 Addon 开发按需查阅工程结构
 | 合成、掉落、交易或生物自然生成的 JSON 接线 | [数据表](references/data-tables.md) |
 | 跨端通信、状态保存、重进恢复与资源释放 | [状态与生命周期](references/state-sync.md) |
 | 已有故障定位、性能与实机验收范围 | [排错与性能](references/diagnostics.md) |
+| Python 字符串类型、中文、序列化与引擎边界 | [数据边界](references/python-boundaries.md) |
 | Bukkit 消息、标题、计分板及基础玩家操作迁移 | [常用能力迁移](references/bukkit-basics.md) |
 | 中外版迁移、格式版本或资料相互矛盾 | [版本与证据](references/versions.md) |
 

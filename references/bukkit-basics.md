@@ -27,11 +27,14 @@
 
 服务端创建 Command 组件后，明确传入执行玩家；接收者另由选择器决定。只作用于该玩家可用 `@s`，全体才用 `@a`，不要省略 entityId 让引擎随机选择执行者。
 
+定向系统通知与指令入口（NotifyOneMessage/SetCommand）的文本在 Python 2.7 调用边界转为 UTF-8 `str`，见 [数据边界](python-boundaries.md)；不推广到所有接口。
+
 ```python
-command_comp.SetCommand('/title @s times 10 40 10', player_id, False)
+command_comp.SetCommand(b'/title @s times 10 40 10', player_id, False)
 # 需要副标题时，先用同样方式设置 subtitle，再显示 title。
-raw = json.dumps({'rawtext': [{'text': title_text}]}, ensure_ascii=False)
-command_comp.SetCommand('/titleraw @s title ' + raw, player_id, False)
+raw = json.dumps({'rawtext': [{'text': title_text}]}, ensure_ascii=False)  # title_text 为 unicode
+cmd = u'/titleraw @s title ' + raw
+command_comp.SetCommand(cmd.encode('utf-8'), player_id, False)
 ```
 
 示意代码需导入 json 并取得组件；不直接拼接未转义的用户文本。title 时间为游戏 tick，与 Python 定时器单位不同。权限、作弊与极限模式限制按实际命令及 SetCommand 备注核验。showOutput 控制命令输出，不是标题可见性的开关。
@@ -41,4 +44,4 @@ command_comp.SetCommand('/titleraw @s title ' + raw, player_id, False)
 - `cn-messages` → Wiki `docs/mcdocs/1-ModAPI/接口/世界/消息.md`；`cn-commands` → 同目录 `指令.md`。参数以 query 的合同为准。
 - `ms-title`、`ms-titleraw`、`ms-tellraw`、`ms-scoreboard` → 官方固定快照 `creator/Commands/commands/<同名命令>.md`；只读对应 Usage 子节或参数。
 
-复杂任务仍拆成职责。例如全服系统通知是“在线玩家枚举＋单玩家消息”，绝对等级是“读取等级＋按差值调整”；一个名字命中不代表整个需求已完成。
+复杂任务仍拆成职责；一个名字命中不代表整个需求已完成。
