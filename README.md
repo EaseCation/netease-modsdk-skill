@@ -1,6 +1,15 @@
 # 网易 ModSDK API 查询 Skill
 
+公开仓库：[EaseCation/netease-api-query](https://github.com/EaseCation/netease-api-query)。
+
 这是独立的轻量 Git 仓库。Wiki 保管官方 Markdown、补充标注与唯一查询实现；本仓库提供 Agent 指引、配置、精简安装和调用入口。
+
+## 获取 Skill
+
+```sh
+git clone --depth=1 https://github.com/EaseCation/netease-api-query.git
+cd netease-api-query
+```
 
 ## 使用已有 Wiki
 
@@ -21,7 +30,7 @@ python3 scripts/setup.py
 python3 scripts/query.py detail SetAttrValue --side server --examples 0
 ```
 
-下载默认来自 `https://github.com/EaseCation/netease-modsdk-wiki.git` 的 `main`。可通过 `.env` 或 `--repository`、`--ref`、`--wiki-root` 选择其他明确来源、分支或标签。首次发布需要先让 Wiki 远端包含 `scripts/api_knowledge.py` 和 `knowledge/annotations.json`；旧快照会报错，不提供兼容回退。
+下载默认来自 `https://github.com/EaseCation/netease-modsdk-wiki.git` 的 `main`。可通过 `.env` 或 `--repository`、`--ref`、`--wiki-root` 选择其他明确来源、分支或标签。目标版本须包含 `scripts/api_knowledge.py` 和 `knowledge/annotations.json`；旧快照会报错，不提供兼容回退。
 
 三个配合使用的步骤减少下载量：
 

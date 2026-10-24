@@ -11,7 +11,7 @@ description: 查询网易我的世界中国版 ModSDK API、事件与枚举，�
 
 下载默认使用 `--depth=1 --filter=blob:none --no-checkout` 和非 cone 稀疏检出，只保留 Markdown、独立标注和查询脚本，禁用 LFS 下载。图片、视频和其他资产不参与 API 文本查询；精简副本不能用于完整 Wiki 网页构建。`setup.py --update` 只更新本工具创建且没有用户修改的精简副本；已有完整 Wiki 保持原有管理流程。
 
-查询实现与数据全部来自配置的 Wiki，不随 skill 复制运行时或维护第二套索引。Wiki 缺少查询入口、标注或协议版本不匹配时明确报错；应更新到相互配套的最新版，不回退旧版。首次部署须先发布含增强查询功能的 Wiki 版本，再提供 skill 的安装入口。详细配置见 [README.md](README.md)。
+查询实现与数据全部来自配置的 Wiki，不随 skill 复制运行时或维护第二套索引。Wiki 缺少查询入口、标注或协议版本不匹配时明确报错；应更新到相互配套的最新版，不回退旧版。使用已发布的最新版 Wiki；安装后可用 `setup.py --check` 查看文档和标注状态。详细配置见 [README.md](README.md)。
 
 优先把完整需求一次传给 `resolve`，指定已知端侧。例如：
 
