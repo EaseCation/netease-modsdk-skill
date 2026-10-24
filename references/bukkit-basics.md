@@ -14,7 +14,7 @@
 | 记分板目标/分数写入/侧边栏 | SetCommand 执行 scoreboard | 读取玩家分数用 GetAllPlayerScoreboardObjects；目标枚举另有接口 |
 | getExp / 总经验 | GetPlayerExp(isPercent) / GetPlayerTotalExp | 本级经验、比例、等级、总点数分开；百分比数值范围仍需核验 |
 | giveExp / 绝对等级 | AddPlayerExperience；GetPlayerLevel 后按差值 AddPlayerLevel | 负经验扣减不会自动跨级；设置总经验会重新计算等级 |
-| getLocation / 同维度 teleport | GetFootPos / SetFootPos 或 SetPos | 服务端两个位置写入接口等价；不要混同 GetPos 的读取基准 |
+| getLocation / 同维度 teleport 的坐标部分 | GetFootPos / SetFootPos 或 SetPos | 完整 Location 另查维度/朝向；两个服务端位置写入接口等价，不混同 GetPos 的读取基准 |
 | 跨维度 teleport | ChangePlayerDimension | 该接口 pos 为头部位置，脚底会低 1.62；ChangeEntityDimension 不用于玩家 |
 | setVelocity | SetPlayerMotion | SetMotion 用于非玩家生物；单位与时序仍查合同 |
 | setHealth / setFoodLevel | SetAttrValue + AttrType | HealthLevel/StarveLevel 是阈值；回血上限先读取 |
