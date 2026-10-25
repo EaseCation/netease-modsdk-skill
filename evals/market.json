@@ -455,11 +455,13 @@
           "operation": "observe",
           "required": [
             [
-              "modsdk:event:server:ServerItemUseOnEvent"
+              "modsdk:event:server:ServerItemUseOnEvent",
+              "modsdk:event:server:ServerBlockUseEvent"
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "answer_note": "自定义厨具可经ServerBlockUseEvent交互，并由下一职责GetPlayerItem读取手持物；按原文保留两条有效接入路线。"
         },
         {
           "id": "held",
@@ -527,11 +529,13 @@
           "operation": "read",
           "required": [
             [
-              "modsdk:api:server:mod.server.component.blockEntityExDataCompServer.BlockEntityExDataCompServer.GetBlockEntityData"
+              "modsdk:api:server:mod.server.component.blockEntityExDataCompServer.BlockEntityExDataCompServer.GetBlockEntityData",
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.GetBlockEntityData"
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "answer_note": "v3按组件拆分后恢复了原文已存在的BlockInfo.GetBlockEntityData；两个服务端入口均可读取自定义方块数据，但返回对象及NBT转换不同，需读合同。"
         },
         {
           "id": "damage",
@@ -923,7 +927,39 @@
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "atomic": [
+            {
+              "queries": [
+                "禁止指定玩家攻击其他玩家",
+                "关闭该角色攻击其他玩家的权限",
+                "不允许玩家攻击其他玩家"
+              ],
+              "constraints": {
+                "concepts": [
+                  "permissions",
+                  "attack",
+                  "player"
+                ],
+                "extent": "single"
+              }
+            },
+            {
+              "queries": [
+                "禁止指定玩家攻击非玩家生物",
+                "关闭该角色攻击怪物的权限",
+                "不允许玩家攻击非玩家实体"
+              ],
+              "constraints": {
+                "concepts": [
+                  "permissions",
+                  "attack",
+                  "non_player"
+                ],
+                "extent": "single"
+              }
+            }
+          ]
         },
         {
           "id": "break",
@@ -962,7 +998,37 @@
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "atomic": [
+            {
+              "queries": [
+                "禁止指定玩家开门和操作开关",
+                "关闭该角色操作门的权限",
+                "不允许一个玩家与门开关交互"
+              ],
+              "constraints": {
+                "extent": "single",
+                "concepts": [
+                  "doors",
+                  "permissions"
+                ]
+              }
+            },
+            {
+              "queries": [
+                "禁止指定玩家开启箱子容器",
+                "关闭该角色打开容器的权限",
+                "不允许一个玩家打开箱子"
+              ],
+              "constraints": {
+                "extent": "single",
+                "concepts": [
+                  "containers",
+                  "permissions"
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "move",
@@ -1290,11 +1356,14 @@
           "operation": "read",
           "required": [
             [
-              "modsdk:api:server:mod.server.component.tameCompServer.TameComponentServer.GetOwnerId"
+              "modsdk:api:server:mod.server.component.tameCompServer.TameComponentServer.GetOwnerId",
+              "modsdk:api:server:mod.server.component.actorOwnerCompServer.ActorOwnerComponentServer.GetEntityOwner",
+              "preset:api:server:Preset.Model.SdkInterface.SdkInterface.GetEntityOwner"
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "answer_note": "GetEntityOwner原文明示包括可驯服生物的主人，作为GetOwnerId的有效替代。"
         },
         {
           "id": "ride",
@@ -1335,7 +1404,35 @@
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "atomic": [
+            {
+              "queries": [
+                "监听本地跳跃按钮按下",
+                "跳跃键开始按压的事件",
+                "玩家按下跳跃键的通知"
+              ],
+              "constraints": {
+                "concepts": [
+                  "jump",
+                  "press"
+                ]
+              }
+            },
+            {
+              "queries": [
+                "监听本地跳跃按钮松开",
+                "跳跃键抬起的事件",
+                "玩家释放跳跃键的通知"
+              ],
+              "constraints": {
+                "concepts": [
+                  "jump",
+                  "release"
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "motion",
@@ -1741,11 +1838,14 @@
           "operation": "read",
           "required": [
             [
-              "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetEntitiesAroundByType"
+              "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetEntitiesAroundByType",
+              "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetEntitiesAround",
+              "preset:api:server:Preset.Model.SdkInterface.SdkInterface.GetEntitiesAround"
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "answer_note": "原需求未指定类型过滤；GetEntitiesAround同样提供半径内实体列表，使用后按对象过滤。按原文补充有效替代，不删除GetEntitiesAroundByType。"
         },
         {
           "id": "hurt",
@@ -1777,14 +1877,13 @@
           "operation": "set",
           "required": [
             [
-              "modsdk:api:server:mod.server.component.actionCompServer.ActionCompServer.SetMobKnockback"
-            ],
-            [
+              "modsdk:api:server:mod.server.component.actionCompServer.ActionCompServer.SetMobKnockback",
               "modsdk:api:server:mod.server.component.actorMotionCompServer.ActorMotionComponentServer.SetMotion"
             ]
           ],
           "forbidden": [],
-          "expected_state": "matched"
+          "expected_state": "matched",
+          "answer_note": "SetMobKnockback与SetMotion是替代入口，不要求同时调用；原冻结生成器错误地把竖线替代写成两组必需能力。原提交保留供追溯。"
         },
         {
           "id": "animation",

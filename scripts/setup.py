@@ -13,7 +13,7 @@ from config import SKILL_ROOT, read_config, resolve_root, validate_contract, val
 from network import git as bounded_git, clear_circuits, NetworkError
 from upstream import check_updates, STATE as UPDATE_STATE
 
-PATTERNS = ['/scripts/api_knowledge.py', '/knowledge/*.json',
+PATTERNS = ['/scripts/api_knowledge.py', '/knowledge/*.json', '/knowledge/README.md',
             '/docs/mcdocs/**/*.md', '/docs/mcguide/**/*.md', '/docs/mconline/**/*.md', '/docs/wiki/**/*.md']
 MARKER = 'modsdk-skill-checkout.json'
 
@@ -50,6 +50,10 @@ def validate_revision(root, revision):
             raise ValueError('所选 Wiki 提交缺少新版查询文件；请先发布最新版 Wiki 或选择包含查询功能的分支/标签') from error
         raise  # 网络或对象传输失败不能伪装成旧版 Wiki。
     validate_contract(script, annotations)
+    for file in ('concepts.json','recipes.json'):
+        text = git(['show', revision + ':knowledge/' + file], root, network=True)
+        if json.loads(text).get('schema_version') != 3:
+            raise ValueError('Wiki 能力知识协议不匹配')
 
 
 def clone(root, repository, ref):

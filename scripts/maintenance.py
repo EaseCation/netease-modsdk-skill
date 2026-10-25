@@ -17,6 +17,10 @@ from network import atomic_json, git, load_json, run_bounded, sanitize, file_loc
 LEDGER = SKILL_ROOT / '.local/maintenance/ledger.json'
 TRANSACTION = SKILL_ROOT / '.local/maintenance/transaction.json'
 ANNOTATIONS = 'knowledge/annotations.json'
+KNOWLEDGE_FILES = (ANNOTATIONS, 'knowledge/concepts.json', 'knowledge/recipes.json')
+
+def knowledge_digest(root):
+    return digest(b''.join(name.encode()+b'\0'+(root/name).read_bytes() for name in KNOWLEDGE_FILES))
 
 
 def enabled():
@@ -127,7 +131,7 @@ def capture_query(arguments, root, invoke):
             with file_lock(LEDGER.with_suffix('.lock')):
                 state = ledger()
                 row = {'at': time.time(), 'wiki_root': str(root), 'command': command, 'query': request,
-                       'chars': len(captured.getvalue()), 'unresolved': output.get('unresolved_intents', []),
+                       'chars': len(captured.getvalue()), 'unresolved': output.get('unresolved_intents', [g['id'] for g in output.get('intents',[]) if g.get('state','matched')!='matched']),
                        'candidates': [r.get('name') or r.get('id') for r in output.get('results', [])[:8] if r.get('name') or r.get('id')],
                        'error': error}
                 state['observations'] = (state['observations'] + [row])[-60:]
@@ -227,7 +231,7 @@ def begin():
     if previous and previous.get('phase') not in ('published', 'closed'):
         raise ValueError('已有未完成整理，先 inspect 并继续原记录，不覆盖其回执')
     atomic_json(TRANSACTION, transaction)
-    return {'ready': True, 'login': identity['login'], 'wiki_root': str(root), 'editable': [ANNOTATIONS]}
+    return {'ready': True, 'login': identity['login'], 'wiki_root': str(root), 'editable': list(KNOWLEDGE_FILES)}
 
 
 def transaction_state():
@@ -240,30 +244,31 @@ def transaction_state():
 
 
 def inspect_changes(root, state):
-    if changed_paths(root) - {ANNOTATIONS}:
-        raise ValueError('发现白名单外的修改；只允许维护独立 annotations.json，保留其他文件并停止')
-    before = json.loads(git(['show', state['base'] + ':' + ANNOTATIONS], root))
-    current = json.loads((root / ANNOTATIONS).read_text(encoding='utf8'))
-    if {k:v for k,v in before.items() if k != 'entries'} != {k:v for k,v in current.items() if k != 'entries'}:
-        raise ValueError('不能修改标注协议或顶层结构')
-    left = {r['id']: r for r in before['entries']}
-    right = {r['id']: r for r in current['entries']}
-    changed = [id for id in left.keys() | right.keys() if left.get(id) != right.get(id)]
-    if not 1 <= len(changed) <= 20:
-        raise ValueError('每轮整理须有 1–20 条实质标注变更；大批量或仅格式变化需单独处理')
-    allowed = {'id','source_sha256','authority','tags','aliases','questions','usage','cautions','related','source_dependencies','retrieval'}
-    for id in changed:
-        old, new = left.get(id, {}), right.get(id)
-        if new is None:
-            continue
-        if set(new) - allowed or new.get('authority') != 'curated_note' or new.get('retrieval') != old.get('retrieval'):
-            raise ValueError('不能扩张字段或改检索约束；问题涉及过滤规则时另行处理：' + id)
-        if len(new.get('usage', '')) > max(400, len(old.get('usage', ''))):
-            raise ValueError('补充正文过长：' + id)
-        for key, cap, width in [('aliases',24,100),('questions',6,160),('cautions',6,240),('related',12,500)]:
-            entries = new.get(key, [])
-            if not isinstance(entries, list) or len(entries) > max(cap, len(old.get(key, []))) or any(not isinstance(x, str) or len(x) > width for x in entries):
-                raise ValueError('标注字段超出紧凑预算：' + id + ':' + key)
+    if changed_paths(root) - set(KNOWLEDGE_FILES):
+        raise ValueError('发现白名单外修改；只允许维护独立能力知识文件，保留现场')
+    changed=[]
+    for filename in KNOWLEDGE_FILES:
+        before=json.loads(git(['show',state['base']+':'+filename],root))
+        current=json.loads((root/filename).read_text(encoding='utf8'))
+        if {k:v for k,v in before.items() if k!='entries'} != {k:v for k,v in current.items() if k!='entries'}:
+            raise ValueError('不能修改知识协议或顶层结构')
+        left={x['id']:x for x in before['entries']};right={x['id']:x for x in current['entries']}
+        for key in left.keys()|right.keys():
+            old,new=left.get(key,{}),right.get(key)
+            if old==new:continue
+            changed.append(filename+'#'+key)
+            if new is None:continue
+            if filename==ANNOTATIONS:
+                allowed={'id','source_sha256','authority','tags','aliases','questions','usage','cautions','related','source_dependencies','facts','inferred'}
+                if set(new)-allowed or new.get('authority')!='curated_note' or new.get('inferred')!=old.get('inferred'):
+                    raise ValueError('标注字段非法；推断数据只能通过独立编译器维护变更')
+                if len(new.get('usage',''))>max(400,len(old.get('usage',''))):raise ValueError('补充正文过长')
+                for field,cap,width in [('aliases',24,100),('questions',6,160),('cautions',6,240),('related',12,500)]:
+                    values=new.get(field,[])
+                    if not isinstance(values,list) or len(values)>max(cap,len(old.get(field,[]))) or any(not isinstance(x,str) or len(x)>width for x in values):raise ValueError('标注超出紧凑预算')
+            elif len(json.dumps(new,ensure_ascii=False))>max(6000,len(json.dumps(old,ensure_ascii=False))):
+                raise ValueError('概念或组合记录超出紧凑预算')
+    if not 1<=len(changed)<=20:raise ValueError('每轮须有 1–20 条知识变更，大批量迁移单独处理')
     return sorted(changed)
 
 
@@ -318,9 +323,9 @@ def validate():
     changed = inspect_changes(root, state)
     if not state['probes']:
         raise ValueError('尚未记录本轮问题的基线复现')
-    note_hash = digest((root / ANNOTATIONS).read_bytes())
+    note_hash = knowledge_digest(root)
     env = {**os.environ, 'MODSDK_WIKI_ROOT': str(root), 'MODSDK_MAINTAINER_MODE': '0', 'MODSDK_UPDATE_CHECK_HOURS': '0'}
-    for flags in ([], ['--guides']):
+    for flags in ([], ['--guides'], ['--market']):
         result = run_bounded([sys.executable, str(SKILL_ROOT / 'scripts/evaluate.py'), *flags], env=env, timeout=900)
         if result.returncode:
             raise ValueError('回归失败，未允许提交；查看 .local 下的最新验收回执。' + sanitize(result.stderr))
@@ -328,9 +333,9 @@ def validate():
         after = probe_result(root, probe['spec'])
         if not after['passed'] or (probe['before']['passed'] and after['chars'] > probe['before']['chars'] + max(256, int(probe['before']['chars'] * .25))):
             raise ValueError('本轮复现未改善或输出预算退化，未允许提交：' + probe['spec']['issue_id'])
-    if note_hash != digest((root / ANNOTATIONS).read_bytes()) or state['tools'] != tool_fingerprint():
+    if note_hash != knowledge_digest(root) or state['tools'] != tool_fingerprint():
         raise ValueError('验收期间文件发生变化，请复核后重新验证')
-    state['receipt'] = {'notes_sha256': note_hash, 'tools': state['tools'], 'validated_at': time.time(), 'changed': changed}
+    state['receipt'] = {'knowledge_sha256': note_hash, 'tools': state['tools'], 'validated_at': time.time(), 'changed': changed}
     atomic_json(TRANSACTION, state)
     return {'passed': True, 'changed_entries': len(changed)}
 
@@ -338,7 +343,7 @@ def validate():
 def publish():
     root, values, state = transaction_state()
     receipt = state.get('receipt', {})
-    if (receipt.get('notes_sha256') != digest((root / ANNOTATIONS).read_bytes()) or
+    if (receipt.get('knowledge_sha256') != knowledge_digest(root) or
         receipt.get('tools') != tool_fingerprint() or time.time() - receipt.get('validated_at', 0) > 86400):
         raise ValueError('缺少对应当前内容的有效回归回执；先 validate，不重录基线')
     identity = permission(values)  # 每次提交/重试推送都重新核验实际登录者。
@@ -353,16 +358,18 @@ def publish():
     if git(['ls-remote', '--get-url', canonical], root) != canonical:
         raise ValueError('Git 写入地址被 URL rewrite 改写；写入不得走公开下载代理')
     if candidate is None:
-        git(['add', '--', ANNOTATIONS], root)
+        git(['add', '--', *KNOWLEDGE_FILES], root)
         staged = git(['diff','--cached','--name-only'],root).splitlines()
-        if staged != [ANNOTATIONS] or digest(git(['show', ':' + ANNOTATIONS], root).encode()) != digest((root / ANNOTATIONS).read_text().strip().encode()):
+        if not staged or set(staged)-set(KNOWLEDGE_FILES) or any(digest(git(['show', ':'+name],root,strip_output=False).encode()) != digest((root/name).read_bytes()) for name in staged):
             raise ValueError('暂存内容变化，保留现场并停止')
         git(['commit','-m','改进检索标注与开发补充'],root)
         candidate = git(['rev-parse','HEAD'],root)
         state.update({'commit': candidate, 'phase': 'committed'})
         atomic_json(TRANSACTION,state)
-    if changed_paths(root) or git(['rev-parse',candidate+'^'],root) != state['base'] or git(['diff','--name-only',state['base'],candidate],root).splitlines() != [ANNOTATIONS]:
+    if changed_paths(root) or git(['rev-parse',candidate+'^'],root) != state['base'] or set(git(['diff','--name-only',state['base'],candidate],root).splitlines()) - set(KNOWLEDGE_FILES):
         raise ValueError('提交包含未验收内容，停止推送并保留现场')
+    if knowledge_digest(root) != receipt['knowledge_sha256'] or tool_fingerprint() != receipt['tools']:
+        raise ValueError('提交过程改变了已验收内容，停止推送并保留提交')
     if identity['remote_head'] != candidate:
         result = run_bounded(['git','-c','credential.helper=','-c','credential.helper=!gh auth git-credential',
                               '-c','http.version=HTTP/1.1',*clear_http_headers(root),'push',canonical,'HEAD:refs/heads/main'], cwd=root, timeout=90,

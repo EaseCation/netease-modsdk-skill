@@ -30,10 +30,10 @@ python3 scripts/maintenance.py checkpoint --work-complete
 
 1. `inspect` 阅读少量待处理项与最近查询，核对原文，区分真实缺口与预期边界。无需修改的项用 `dismiss <issue_id> --reason '复核结论'`，保留解释；不能仅因经过一段时间就清空。
 2. `begin` 检查 gh 登录者对配置 Wiki 的写权限、origin、main 最新提交和干净工作区。现有修改、分叉、无权限或网络失败时保留现场；不修改原始 MD、检索器、部署配置或其他任务文件。
-3. 编辑前用 `probe case.json` 固定复现与原始结果。文件仅含 `issue_id`、语义 `plan`、期望 API 完整 ID 数组 `required_ids`、禁止误用 ID 数组 `forbidden_ids`、`max_chars`。能力边界题可额外声明 `expect_no_capability_match: true` 并提供禁止误用 ID。先从 detail 确认 ID，不为过关把需求改成目标 API 名称。复现文件放 `.local/maintenance/`。
-4. 仅改 `knowledge/annotations.json`，每轮 1–20 条：中文基础能力标签、同义表达、简短职责/限制及有依据的关联。保持原文哈希和引用依据；不写具体虚构玩法、编辑日期或重复合同。此入口不修改 retrieval 过滤事实；需要改检索机制时单独报告。
-5. `validate` 运行完整固定 API 回归、教程来源/预算检查和本轮复现。所有检查通过、内容未变且回执未过期才能发布；禁止重录基线、删题或降低门槛来消除失败。复现题目的长期入库属于 Skill 题库维护，本流程不顺带推送 Skill。
-6. `publish` 重新检查当前登录者写权限、main 是否前进、文件指纹与白名单，仅提交本轮标注并普通推送 main。Git 凭据由同一 gh 登录提供；写入不经过公开下载代理。失败保留已验证提交，网络恢复后可重试同一 publish，不重复创建提交、不强推。
+3. 编辑前用 `probe case.json` 固定复现与原始结果。文件仅含 `issue_id`、语义 `plan`、期望 API 完整 ID 数组 `required_ids`、禁止误用 ID 数组 `forbidden_ids`、`max_chars`。能力边界题可额外声明 `expect_no_capability_match: true` 并提供禁止误用 ID。先从 `query.py --verbose detail` 确认完整 ID，不为过关把需求改成目标 API 名称。复现文件放 `.local/maintenance/`。
+4. 先读配置 Wiki 的 `knowledge/README.md`；仅改 `knowledge/annotations.json`、`concepts.json`、`recipes.json`，每轮合计 1–20 条：中文基础能力标签、同义表达、简短职责/限制及有依据的关联。保持原文哈希和引用依据；不写具体虚构玩法、编辑日期或重复合同。能力事实须保留正确端侧的原文依据；概念和组合变更须校验全部引用、重新构建并跑完整回归。推断字段和检索代码另行维护。
+5. `validate` 运行完整固定 API 与市场需求回归、教程来源/预算检查和本轮复现。所有检查通过、内容未变且回执未过期才能发布；禁止重录基线、删题或降低门槛来消除失败。复现题目的长期入库属于 Skill 题库维护，本流程不顺带推送 Skill。
+6. `publish` 重新检查当前登录者写权限、main 是否前进、文件指纹与白名单，仅提交本轮能力知识并普通推送 main。Git 凭据由同一 gh 登录提供；写入不经过公开下载代理。失败保留已验证提交，网络恢复后可重试同一 publish，不重复创建提交、不强推。
 
 发布成功会标记关联问题已处理并写入整理时间。若本轮均为误报且没有改动，用 `close --reason '结论'` 结束整理记录。上游前进时停止旧回执发布，保留已做工作并按最新原文重新复核；不要用 reset 清理现场。
 

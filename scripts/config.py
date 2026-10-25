@@ -85,14 +85,14 @@ def validate_contract(script_text, annotation_text):
                    if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
                    and any(isinstance(t, ast.Name) and t.id == 'SCHEMA_VERSION' for t in node.targets)), None)
     annotations = json.loads(annotation_text)
-    if not isinstance(annotations, dict) or schema != 2 or annotations.get('schema_version') != 2:
+    if not isinstance(annotations, dict) or schema != 3 or annotations.get('schema_version') != 3:
         raise ValueError('Wiki 查询协议版本不匹配，请同步更新 skill 和 Wiki')
     if not isinstance(annotations.get('entries'), list):
         raise ValueError('Wiki 标注格式不完整，请使用最新版 Wiki')
 
 
 def validate_wiki(root):
-    required = [root / 'scripts/api_knowledge.py', root / 'knowledge/annotations.json']
+    required = [root / 'scripts/api_knowledge.py', root / 'knowledge/annotations.json', root / 'knowledge/concepts.json', root / 'knowledge/recipes.json']
     missing = [str(p.relative_to(root)) for p in required if not p.is_file()]
     if missing:
         raise ValueError('Wiki 版本不满足要求，缺少 ' + '、'.join(missing) + '；请使用已发布查询功能的最新版 Wiki，不提供旧版回退')
@@ -100,4 +100,7 @@ def validate_wiki(root):
     if not api_dir.is_dir() or not any(api_dir.rglob('*.md')):
         raise ValueError('未找到 ModSDK Markdown。请运行本技能 scripts/setup.py 或检查 MODSDK_WIKI_ROOT')
     validate_contract(required[0].read_text(encoding='utf8'), required[1].read_text(encoding='utf8'))
+    for file in required[2:]:
+        if json.loads(file.read_text()).get('schema_version') != 3:
+            raise ValueError('Wiki 知识协议不匹配，请同步更新 Wiki 与 Skill')
     return root

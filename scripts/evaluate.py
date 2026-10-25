@@ -138,10 +138,16 @@ def evaluate_operations():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split',choices=['regression','holdout','protocol','all'],default='all')
+    parser.add_argument('--market', action='store_true', help='验证冻结的市场能力需求')
+    parser.add_argument('--market-variant', choices=['all','original','development','holdout'], default='all')
     parser.add_argument('--operations',action='store_true',help='隔离核验安装、网络与会话机制')
     parser.add_argument('--guides',action='store_true',help='检查教程来源、引用与固定阅读路径的字符预算')
     parser.add_argument('--record-baseline',action='store_true',help='全部通过后，显式记录新的成本基线；不会改题目或期望 API')
     args=parser.parse_args()
+    if args.market:
+        if args.guides or args.operations or args.record_baseline or args.split!='all': raise ValueError('--market 单独运行')
+        from market_evaluation import evaluate_market
+        return evaluate_market(args.market_variant)
     if args.operations:
         if args.guides or args.record_baseline or args.split!='all':raise ValueError('--operations 单独运行')
         return evaluate_operations()
@@ -181,20 +187,27 @@ def main():
         forbidden=sorted(set(ids)&set(case.get('hard_negative_ids',[])))
         if forbidden:errors.append('推荐了禁止误用的接口')
         expected_unresolved = {i['id'] for i in case['plan']['intents']} if case.get('expect_no_capability_match') else set()
-        if not case.get('expect_error') and set(output.get('unresolved_intents',[])) != expected_unresolved:errors.append('子目标未完成状态与预期不符')
+        if not case.get('expect_error'):
+            # v2 candidates 只表示分配了候选；v3 未解决项还包括尚未核验的能力事实。
+            # 原有必需 ID、负例、端侧和预算断言保持；新增状态与分组一致性校验。
+            groups=output.get('intents',[])
+            actual_unresolved={g['id'] for g in groups if g.get('state','matched')!='matched'}
+            if 'unresolved_intents' in output and set(output['unresolved_intents']) != actual_unresolved:errors.append('子目标未完成状态与分组不一致')
+            if case.get('expect_no_capability_match') and actual_unresolved != expected_unresolved:errors.append('能力边界未保留未解决状态')
+            if any((g.get('missing') or g.get('missing_roles')) and not g.get('state') for g in groups):errors.append('未知能力冒充完整覆盖')
         if case.get('expect_no_capability_match') and ids:errors.append('支持边界被当作可用能力')
         if case.get('expect_limitation') and not output.get('limitations'):errors.append('未提供限制证据')
-        if case['plan'].get('read_only') and any(r.get('operation') not in ('read','observe') for r in output.get('results',[])):errors.append('只读约束泄漏')
+        if case['plan'].get('read_only') and any(by_key[r['id']].get('annotation',{}).get('facts',{}).get('operation',by_key[r['id']].get('annotation',{}).get('inferred',{}).get('operation')) not in ('read','observe') for r in output.get('results',[])):errors.append('只读约束泄漏')
         for result in output.get('results',[]):
             record=by_key[result['id']]
             if record['scope']!='modsdk':errors.append('默认范围泄漏到 Preset')
             if record['side'] not in (case['side'],'common'):errors.append('端侧不匹配')
-            if result.get('match_type')!='capability_text':errors.append('限制证据混入能力候选')
+            if result['id'] in {x['id'] for x in output.get('limitations',[])}:errors.append('限制证据混入能力候选')
         related_ids=[by_key[r['id']]['id'] for r in output.get('related',[])]
         if set(case.get('related_required',[]))-set(related_ids):errors.append('遗漏关联阶段事件')
         for result in output.get('related',[]):
             record=by_key[result['id']]
-            if record['kind']!='event' or result.get('match_type')!='related_phase':errors.append('关联阶段类型不正确')
+            if record['kind']!='event' or not result.get('related_to'):errors.append('关联阶段类型不正确')
             if record['scope']!='modsdk' or record['side'] not in (case['side'],'common'):errors.append('关联阶段范围或端侧泄漏')
         chars=len((proc.stderr if proc.returncode else proc.stdout).rstrip('\n'));calls=1
         if chars>case['max_chars'] or len(ids)>case['limit']:errors.append('超出硬预算')

@@ -21,6 +21,8 @@ jobs:
         run: python3 scripts/setup.py
       - name: Run frozen retrieval bank
         run: python3 scripts/evaluate.py
+      - name: Run market capability regressions
+        run: python3 scripts/evaluate.py --market
       - name: Check guidance sources and reading budgets
         run: python3 scripts/evaluate.py --guides
       - name: Check source and session operations
@@ -34,4 +36,5 @@ jobs:
             .local/regression-report.json
             .local/guidance-report.json
             .local/operations-report.json
+            .local/market-report.json
           retention-days: 14

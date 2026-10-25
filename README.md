@@ -127,3 +127,5 @@ python3 scripts/evaluate.py --record-baseline
 最近一次详细回执写入忽略的 `.local/regression-report.json`。GitHub Actions 在 Skill 推送和 PR 时浅克隆公开 Wiki 并执行同一题库；Wiki 部署也在构建前绑定当前提交执行它。历史 Wiki 题库与旧查询器可从 Wiki 提交 `2ae0d396c1f4e079b685e73e45245e73a515a9a7` 追溯，不维护第二套活跃题库。
 
 支持 Python 3.9+。格式检查使用宿主 skill-creator 的 `quick_validate.py`；发布应包含绑定已有 Wiki、从最新版 Git 快照精简安装、执行真实查询和文件完整性核对。
+
+查询数据使用 v3：概念、能力事实及组合关系统一维护在 Wiki，网页与 Skill 共用构建产物。`evaluate.py --market` 执行市场复杂需求与改述回归；旧成本基线保留用于对照。协议不匹配时同步升级 Wiki 与本 Skill，不回退旧索引。

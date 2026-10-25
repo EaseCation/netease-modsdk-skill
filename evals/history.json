@@ -97,5 +97,389 @@
     "after_hits": 34,
     "required": 34,
     "note": "冻结语义计划，通过实际查询运行时比较；随后四条客户端对照加入正式 CLI 回归，未计入此对照。合同提示用于复核，不等于游戏实机验收。"
-  }
+  },
+  "protocol_baselines": [
+    {
+      "runtime_schema_version": 2,
+      "wiki_commit": "3c7ccfca1bd6b33d3543954a89aea1ab6dcf0104",
+      "skill_commit": "be8a7417b56ba9e9ceaf49b7a6c840f3c4ca1a9c",
+      "baseline": {
+        "bank_sha256": "d713670f5638bf2cb15fff73d5c68e42257af711a0317261782296692a622e9f",
+        "runtime_schema_version": 2,
+        "corpus_sha256": "b60241e56168c15620dde8052d081eab796ac0eda81b701a16fa9e97ad50b0ae",
+        "cases": {
+          "remote-processing": {
+            "chars": 1374,
+            "hits": 3,
+            "calls": 1
+          },
+          "saved-respawn": {
+            "chars": 1757,
+            "hits": 4,
+            "calls": 1
+          },
+          "equipment-modifiers": {
+            "chars": 1371,
+            "hits": 3,
+            "calls": 1
+          },
+          "container-audit": {
+            "chars": 1362,
+            "hits": 3,
+            "calls": 1
+          },
+          "independent-exhibit": {
+            "chars": 2805,
+            "hits": 6,
+            "calls": 1
+          },
+          "visitor-policy": {
+            "chars": 1799,
+            "hits": 4,
+            "calls": 1
+          },
+          "filter-form": {
+            "chars": 1855,
+            "hits": 4,
+            "calls": 1
+          },
+          "model-preview": {
+            "chars": 1312,
+            "hits": 1,
+            "calls": 1
+          },
+          "inspection-camera": {
+            "chars": 2075,
+            "hits": 5,
+            "calls": 1
+          },
+          "persistent-name": {
+            "chars": 972,
+            "hits": 2,
+            "calls": 1
+          },
+          "particle-controls": {
+            "chars": 1775,
+            "hits": 4,
+            "calls": 1
+          },
+          "interaction-ray": {
+            "chars": 576,
+            "hits": 1,
+            "calls": 1
+          },
+          "entity-lifetime": {
+            "chars": 959,
+            "hits": 2,
+            "calls": 1
+          },
+          "readonly-dashboard": {
+            "chars": 1756,
+            "hits": 4,
+            "calls": 1
+          },
+          "region-snapshot": {
+            "chars": 1952,
+            "hits": 4,
+            "calls": 1
+          },
+          "sound-instance": {
+            "chars": 1814,
+            "hits": 4,
+            "calls": 1
+          },
+          "permission-tree": {
+            "chars": 663,
+            "hits": 0,
+            "calls": 1
+          },
+          "remote-inventory-client": {
+            "chars": 1009,
+            "hits": 0,
+            "calls": 1
+          },
+          "account-not-entity": {
+            "chars": 569,
+            "hits": 1,
+            "calls": 1
+          },
+          "local-force-point": {
+            "chars": 578,
+            "hits": 1,
+            "calls": 1
+          },
+          "effect-before": {
+            "chars": 1448,
+            "hits": 1,
+            "calls": 1
+          },
+          "leave-before-delete": {
+            "chars": 603,
+            "hits": 1,
+            "calls": 1
+          },
+          "chunk-generated": {
+            "chars": 559,
+            "hits": 1,
+            "calls": 1
+          },
+          "flight-two-states": {
+            "chars": 952,
+            "hits": 2,
+            "calls": 1
+          },
+          "thunder-observe": {
+            "chars": 546,
+            "hits": 1,
+            "calls": 1
+          },
+          "world-spawn": {
+            "chars": 573,
+            "hits": 1,
+            "calls": 1
+          },
+          "own-backpack": {
+            "chars": 591,
+            "hits": 1,
+            "calls": 1
+          },
+          "virtual-camera": {
+            "chars": 551,
+            "hits": 1,
+            "calls": 1
+          },
+          "block-state-read": {
+            "chars": 556,
+            "hits": 1,
+            "calls": 1
+          },
+          "particle-size": {
+            "chars": 567,
+            "hits": 1,
+            "calls": 1
+          },
+          "remote-equipment-client": {
+            "chars": 589,
+            "hits": 1,
+            "calls": 1
+          },
+          "serialize-readonly": {
+            "chars": 593,
+            "hits": 1,
+            "calls": 1
+          },
+          "reject-unknown-target": {
+            "chars": 39,
+            "hits": 0,
+            "calls": 1
+          },
+          "reject-readonly-write": {
+            "chars": 30,
+            "hits": 0,
+            "calls": 1
+          },
+          "reject-readonly-override": {
+            "chars": 27,
+            "hits": 0,
+            "calls": 1
+          },
+          "reject-small-budget": {
+            "chars": 37,
+            "hits": 0,
+            "calls": 1
+          },
+          "reject-unknown-field": {
+            "chars": 34,
+            "hits": 0,
+            "calls": 1
+          },
+          "dimension-finished-related": {
+            "chars": 853,
+            "hits": 1,
+            "calls": 1
+          },
+          "event-family-multiple-intents": {
+            "chars": 2153,
+            "hits": 2,
+            "calls": 1
+          },
+          "bukkit-title": {
+            "chars": 574,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-title-name": {
+            "chars": 574,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-title-reset": {
+            "chars": 571,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-actionbar": {
+            "chars": 578,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-rawtext": {
+            "chars": 573,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-chat-one": {
+            "chars": 571,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-message-name": {
+            "chars": 576,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-chat-broadcast": {
+            "chars": 979,
+            "hits": 2,
+            "calls": 1
+          },
+          "bukkit-chat-as-player": {
+            "chars": 555,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-chat-private-player": {
+            "chars": 568,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-tip-one": {
+            "chars": 631,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-tip-all": {
+            "chars": 588,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-scoreboard-create": {
+            "chars": 571,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-scoreboard-write": {
+            "chars": 567,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-scoreboard-read": {
+            "chars": 567,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-online": {
+            "chars": 561,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-xp-total": {
+            "chars": 558,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-xp-progress": {
+            "chars": 560,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-xp-set-total": {
+            "chars": 556,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-xp-give": {
+            "chars": 555,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-level-absolute": {
+            "chars": 947,
+            "hits": 2,
+            "calls": 1
+          },
+          "bukkit-location": {
+            "chars": 549,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-teleport-same": {
+            "chars": 544,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-teleport-dimension": {
+            "chars": 554,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-velocity": {
+            "chars": 590,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-food": {
+            "chars": 562,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-health": {
+            "chars": 970,
+            "hits": 2,
+            "calls": 1
+          },
+          "bukkit-potion": {
+            "chars": 672,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-invulnerable": {
+            "chars": 558,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-fire": {
+            "chars": 548,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-inventory-add": {
+            "chars": 565,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-tip-client": {
+            "chars": 589,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-popup-client": {
+            "chars": 597,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-corner-client": {
+            "chars": 566,
+            "hits": 1,
+            "calls": 1
+          },
+          "bukkit-sound-client": {
+            "chars": 586,
+            "hits": 1,
+            "calls": 1
+          }
+        }
+      }
+    }
+  ]
 }

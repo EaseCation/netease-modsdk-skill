@@ -1,9 +1,11 @@
-# 查询计划协议 2
+# 查询计划协议 3
 
 `query.py schema` 给出当前受控枚举。根节点仅接受 `intents`（1–12 项）、`side`、`scope`、`read_only`。每个子目标 ID 不重复；不要夹带目标 API 答案。复杂需求超过 12 项时分批提交并保留职责清单。
 
 | 子目标字段 | 用法 |
 | --- | --- |
+| concepts | 可选能力概念 ID 数组；通过 schema 查询，词表由 Wiki 维护 |
+| action / subject / object / property / qualifiers | 可选的角色概念 ID 或数组；未知不填，不能凭语义相似推断已核验事实 |
 | id / query | 唯一职责 ID / 中文基础能力描述 |
 | kind | api、event、enum、document、all；事件明确使用 event |
 | side / scope | server、client、common、any / modsdk、preset、all；一般继承根节点 |
@@ -22,6 +24,10 @@
 
 输入计划时把筛选条件写入 JSON，不混用文本查询的操作/对象参数。`--limit` 限主候选（1–24），`--per-intent` 为 1–3；关联事件独立去重返回，仍受总字符预算限制。超预算明确报错，不静默丢失合同。
 
-输出中 `intents` 保留每项候选和状态；`results` 是去重主候选；`related` 是事件族其他阶段；`limitations` 是限制证据；`prerequisites` 是前置关系。关联事件包含 `related_to` 指向主候选，不能拿它满足当前阶段的能力断言。仅主候选匹配时 status 为 candidates，表示待读合同而非已验证。no_capability_match、timing_review、budget_limited、prerequisite_conflict 均保留为未解决项。
+默认 JSON 仅保留候选及子目标对应关系。每项 `intents` 用 `id` 关联输入，省略正常状态；出现 `state`（partial、unknown、no_capability_match、timing_review 等）就表示尚未完整解决。`missing`/`missing_roles` 指出缺口。空字段、重复查询、版本与哈希不默认返回；诊断时显式加全局 `--verbose`。
 
-同一事件族不同阶段应一起供 Agent 理解，不混同触发时机；只读、对象和端侧约束仍需独立执行。普通读写接口的 related 不会因此自动混入只读搜索结果，完整关联可从 detail 查看。
+`detail` 默认保留参数、返回、重要备注、组件和紧凑来源路径；返回短 ID，需要完整身份或来源哈希时加 `--verbose`。参数列表为空时省略，原文缺合同会明确标出 documentation_status，不能误当成无参数 API。
+
+`workflows` 返回通用组合步骤、必要 API 和进一步原文路径。恢复、动画接线等能力可能需要完整流程，不强求单个函数。事件族关联仍在 `related` 中返回，不替代指定阶段。默认只补充必要互补能力；确需比较替代路线再增加 per-intent，不能靠无限扩大候选覆盖需求。
+
+明确冲突与未知分开：已核验的端侧、对象或属性冲突不作为支持推荐；未知操作分类不会直接删掉答案。引用概念来自 Wiki 词表，不在 Skill 或调用脚本中复制同义词表。所有接口最终仍读 detail 的合同与限制。

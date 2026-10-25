@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "runtime_schema_version": 2,
+  "runtime_schema_version": 3,
   "description": "稳定产品需求回归题库；参考答案与约束须人工核对原文。计划为冻结的语义拆解，不包含目标 API 名称。检索器回归不等同于 Agent 自动拆解能力或游戏实机验收。",
   "cases": [
     {
