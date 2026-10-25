@@ -138,16 +138,23 @@ def evaluate_operations():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split',choices=['regression','holdout','protocol','all'],default='all')
+    parser.add_argument('--market-expanded', action='store_true', help='执行新增独立市场产品回归')
     parser.add_argument('--market', action='store_true', help='验证冻结的市场能力需求')
     parser.add_argument('--market-variant', choices=['all','original','development','holdout'], default='all')
     parser.add_argument('--operations',action='store_true',help='隔离核验安装、网络与会话机制')
     parser.add_argument('--guides',action='store_true',help='检查教程来源、引用与固定阅读路径的字符预算')
     parser.add_argument('--record-baseline',action='store_true',help='全部通过后，显式记录新的成本基线；不会改题目或期望 API')
     args=parser.parse_args()
+    if args.market_expanded:
+        if args.market or args.guides or args.operations or args.record_baseline or args.split!='all' or args.market_variant!='all':raise ValueError('--market-expanded 单独运行')
+        from market_evaluation import evaluate_expansion
+        return evaluate_expansion()
     if args.market:
         if args.guides or args.operations or args.record_baseline or args.split!='all': raise ValueError('--market 单独运行')
-        from market_evaluation import evaluate_market
-        return evaluate_market(args.market_variant)
+        from market_evaluation import evaluate_market, evaluate_expansion
+        result = evaluate_market(args.market_variant)
+        if result or args.market_variant!='all': return result
+        return evaluate_expansion()
     if args.operations:
         if args.guides or args.record_baseline or args.split!='all':raise ValueError('--operations 单独运行')
         return evaluate_operations()

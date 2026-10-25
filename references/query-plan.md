@@ -1,11 +1,11 @@
 # 查询计划协议 3
 
-`query.py schema` 给出当前受控枚举。根节点仅接受 `intents`（1–12 项）、`side`、`scope`、`read_only`。每个子目标 ID 不重复；不要夹带目标 API 答案。复杂需求超过 12 项时分批提交并保留职责清单。
+`query.py schema` 给出受控字段；`schema <概念词>` 查局部词表，`schema --all-concepts` 才展开全部概念。根节点仅接受 `intents`（1–12 项）、`side`、`scope`、`read_only`。每个子目标 ID 不重复；不要夹带目标 API 答案。复杂需求超过 12 项时分批提交并保留职责清单。
 
 | 子目标字段 | 用法 |
 | --- | --- |
 | concepts | 可选能力概念 ID 数组；通过 schema 查询，词表由 Wiki 维护 |
-| action / subject / object / property / qualifiers | 可选的角色概念 ID 或数组；未知不填，不能凭语义相似推断已核验事实 |
+| action / subject / object / property / qualifiers | 操作／施动者／作用对象／属性／限定的概念 ID 或数组；明确分配的角色分别核对，未知不填 |
 | id / query | 唯一职责 ID / 中文基础能力描述 |
 | kind | api、event、enum、document、all；事件明确使用 event |
 | side / scope | server、client、common、any / modsdk、preset、all；一般继承根节点 |

@@ -1624,7 +1624,30 @@
         }
       ],
       "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
-      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360",
+      "first_system_v3": {
+        "hits": 3,
+        "required": 4,
+        "chars": 890,
+        "errors": [
+          "entity:遗漏入口"
+        ],
+        "candidates": {
+          "entity": [
+            "AddEntityTextMarker"
+          ],
+          "point": [
+            "AddStaticMarker"
+          ],
+          "zoom_in": [
+            "ZoomIn"
+          ],
+          "zoom_out": [
+            "ZoomOut"
+          ]
+        },
+        "review_note": "首轮输出已冻结；后续复核后成为回归样本，修订后成绩不作为盲测成绩。"
+      }
     },
     {
       "id": "forward-fishing",
@@ -1716,7 +1739,28 @@
         }
       ],
       "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
-      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360",
+      "first_system_v3": {
+        "hits": 3,
+        "required": 3,
+        "chars": 852,
+        "errors": [],
+        "candidates": {
+          "state": [
+            "GetPlayerIsFishing"
+          ],
+          "hook": [
+            "GetPlayerFishHookEntity"
+          ],
+          "start": [
+            "PlayerStartFishingServerEvent"
+          ],
+          "reel": [
+            "SendMsg"
+          ]
+        },
+        "review_note": "首轮输出已冻结；后续复核后成为回归样本，修订后成绩不作为盲测成绩。"
+      }
     },
     {
       "id": "forward-light",
@@ -1808,7 +1852,32 @@
         }
       ],
       "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
-      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360",
+      "first_system_v3": {
+        "hits": 0,
+        "required": 3,
+        "chars": 762,
+        "errors": [
+          "main_hand:遗漏入口",
+          "off_hand:遗漏入口",
+          "light_level:遗漏入口"
+        ],
+        "candidates": {
+          "main_hand": [
+            "GetIP"
+          ],
+          "off_hand": [
+            "GetIP"
+          ],
+          "light_level": [
+            "GetBlockNew"
+          ],
+          "dynamic": [
+            "SetBlockRenderDistance"
+          ]
+        },
+        "review_note": "首轮输出已冻结；后续复核后成为回归样本，修订后成绩不作为盲测成绩。"
+      }
     },
     {
       "id": "forward-subtitles",
@@ -1904,7 +1973,30 @@
         }
       ],
       "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
-      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360",
+      "first_system_v3": {
+        "hits": 3,
+        "required": 4,
+        "chars": 834,
+        "errors": [
+          "text:遗漏入口"
+        ],
+        "candidates": {
+          "sound": [
+            "PlaySoundClientEvent"
+          ],
+          "text": [
+            "RenderBlockGeometryModel"
+          ],
+          "opacity": [
+            "SetAlpha"
+          ],
+          "save": [
+            "SetConfigData"
+          ]
+        },
+        "review_note": "首轮输出已冻结；后续复核后成为回归样本，修订后成绩不作为盲测成绩。"
+      }
     }
   ],
   "grading": "候选命中与完整能力核验分开：candidate要求源合同支持的入口，不把未知状态强行改成matched；partial/unverified必须保留缺口，不宣称平台不支持。",

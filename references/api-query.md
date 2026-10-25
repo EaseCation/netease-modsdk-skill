@@ -2,7 +2,7 @@
 
 入口：`python3 <技能目录>/scripts/query.py`。只在需要 Python 接口合同时读取本页。
 
-先把完整需求拆为原子职责，一项只负责一种对象、一个操作或一个事件时机。通过 `resolve --plan-file -` 从 stdin 一次提交 JSON；不要把复杂需求当作单个关键词串，也不要事先猜 API 名称。已知端侧写在根节点，事件单独用 `kind: event`。例如：
+每项只查一种对象、一个操作或事件时机。区分施动者、作用对象、输入和效果；触发背景、数据用途不等于接口能力。通过 `resolve --plan-file -` 从 stdin 提交 JSON；不猜 API 名称。端侧可写在根节点，事件用 `kind: event`：
 
 ```sh
 python3 <本技能目录>/scripts/query.py resolve --plan-file - --limit 8 <<'JSON'
@@ -17,9 +17,11 @@ python3 <本技能目录>/scripts/query.py detail <候选短ID1> <候选短ID2> 
 
 - 只读需求设 `read_only: true`；否定条件写入 `exclude_targets` 或 `exclude`，不要让被否定的词变成正向命中。保留对象类型、单个/全局范围，以及本人/其他玩家的区别。
 - `target` 等值使用受控枚举，不确定时省略或调用 `schema` 查看，不发明字段。完整计划约束和输出说明见 [references/query-plan.md](query-plan.md)。
+- 角色歧义时用 `schema <概念词>` 查局部词表，填写明确的角色；不猜 ID 或通读词表。
 - `results` 按子目标分配候选，默认每项一条，再补必需前置与互补能力；`--per-intent 2` 可增加候选。`limit` 至少覆盖子目标数。按 `intents[].candidates` 核对各职责，不能把返回了八条理解为需求完整。
 - `related` 返回同一事件族的关联阶段。添加前、获得时、刷新和移除事件可同时返回，主候选按请求阶段优先排序；关联事件不当作该阶段的替代。`phase` 只是索引中的保守分类，取消能力、参数可修改性、确切时机仍查原文。`timing_review` 表示主候选阶段未匹配。
 - `limitations` 是限制或未核实能力的证据，不是支持能力的推荐。`prerequisites` 标明必需前置；子目标的 `state`、`missing` 与缺失角色必须继续核验；`workflows` 提供必要组合步骤和原文入口，不能把一个候选当成整个能力。
+- 替代候选不能合并成完整能力。事件先核对行为，再查阶段与取消字段。
 
 - 默认 `--scope modsdk` 排除 Preset API、预设零件及预设教程。只有用户明确要使用或研究预设时传 `--scope preset`；明确比较两套框架时传 `--scope all`。“不要预设”不构成放开范围的理由。
 - 当前为 ModSDK 3.9 文档快照（含 3.8 基础文档），并非全部接口的引入版本。其他目标版本不能由此证明兼容；`--sdk-version` 会拒绝不支持的版本。
@@ -34,4 +36,4 @@ python3 <本技能目录>/scripts/query.py detail <候选短ID1> <候选短ID2> 
 - 默认输出预算 18000 字符；超限会明确报错。先减少候选或示例，关键备注不能省略后当作已核验。枚举通过 `detail AttrType --part raw` 读取，原文片段通过 `section 'mcdocs/…/工具.md' 'AddTimer > 服务端接口'` 获取。
 - 本地原文或标注变化后自动重建；标注依据的章节哈希变化会阻止构建，须复核补充信息后更新哈希。
 
-回复开发者时给出必要 API、端侧、重要限制及来源；多 API 组合说明各自职责，并指出未确定的能力。查询成功不证明能力完整或玩法已通过实机测试。
+回复包含 API、端侧、限制、来源与组合职责。检索成功不证明玩法已通过实机测试。

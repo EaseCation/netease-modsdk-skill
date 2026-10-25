@@ -85,23 +85,79 @@ def evaluate_market(variant='all'):
             shutil.copy2(source,destination)
         for source in (root/'knowledge').glob('*.json'):shutil.copy2(source,isolated/'knowledge'/source.name)
         results=[]
-        for expand in (False,True):
-            if expand:
+        for expand in ('original','unrelated','duplicate'):
+            if expand!='original':
                 file=isolated/'knowledge/annotations.json';notes=json.loads(file.read_text())
                 target=next(a for a in notes['entries'] if a['id'].endswith('ItemCompServer.SetInvItemNum') and '@' not in a['id'])
-                target['aliases']+=['无关说明甲','无关说明乙','无关说明丙','无关说明丁','无关说明戊','无关说明己']
+                target['aliases']+=['无关说明甲','无关说明乙','无关说明丙','无关说明丁','无关说明戊','无关说明己'] if expand=='unrelated' else target['aliases'][:1]*32
                 file.write_text(json.dumps(notes,ensure_ascii=False))
             proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'search','修改玩家背包指定槽位的物品数量','--side','server','--operation','set','--limit','1'],env={**env,'MODSDK_WIKI_ROOT':str(isolated)},capture_output=True,text=True)
             if proc.returncode:raise ValueError('别名扩充验收失败：'+proc.stderr)
             results.append(json.loads(proc.stdout)['results'][0]['name'])
-        if results!=['SetInvItemNum','SetInvItemNum']:errors.append('无关别名扩充导致数量接口退化')
+        if results!=['SetInvItemNum']*3:errors.append('无关或重复别名导致数量接口退化')
+        # 降低真实文档的标注完备度，验证未知分类仍能从原文召回；不修改生产知识。
+        file=isolated/'knowledge/annotations.json';notes=json.loads(file.read_text())
+        target=next(a for a in notes['entries'] if a['id'].endswith('HurtCompServer.Hurt'))
+        target['facts']={'status':'unknown','concepts':[]}
+        target['inferred']['operation']='unknown'
+        file.write_text(json.dumps(notes,ensure_ascii=False))
+        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'resolve','对生物造成伤害并记录攻击来源','--side','server','--kind','api','--operation','write','--limit','1'],env={**env,'MODSDK_WIKI_ROOT':str(isolated)},capture_output=True,text=True,check=True)
+        unknown=json.loads(proc.stdout)
+        if not unknown.get('results') or unknown['results'][0]['name']!='Hurt' or not unknown['intents'][0].get('state'):errors.append('未知分类被过滤或错误宣称完整')
     checks.append('alias_extension_preserves_capability_rank')
+    checks.append('unreviewed_contract_remains_discoverable')
     role_plan={'side':'server','intents':[{'id':'count','query':'修改背包槽位数量','kind':'api','operation':'set','object':['inventory'],'property':['count']}]}
     proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'resolve','--plan-file','-','--limit','1'],input=json.dumps(role_plan,ensure_ascii=False),env=env,capture_output=True,text=True,check=True)
     role_output=json.loads(proc.stdout)
     if not role_output.get('results') or role_output['results'][0]['name']!='SetInvItemNum' or role_output['intents'][0].get('state'):errors.append('显式对象/属性匹配失败')
     checks.append('explicit_roles_use_verified_facts')
+    scope_plan={'side':'client','intents':[{'id':'scope','query':'读取其他玩家完整背包','kind':'api','operation':'read','object':['inventory'],'target_scope':'other_player'}]}
+    proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'resolve','--plan-file','-','--limit','1'],input=json.dumps(scope_plan,ensure_ascii=False),env=env,capture_output=True,text=True,check=True)
+    scoped=json.loads(proc.stdout)
+    if scoped.get('results') or not scoped.get('limitations') or not scoped['intents'][0].get('state'):errors.append('显式对象角色绕过作用范围条件')
+    checks.append('role_and_target_share_scope_constraints')
+    for subject,object_,expected in [('player','non_player','SetAttackMobsAbility'),('non_player','player',None)]:
+        plan={'side':'server','intents':[{'id':'actor','query':'控制攻击权限','kind':'api','operation':'set','subject':[subject],'object':[object_],'action':['attack'],'qualifiers':['permissions'],'extent':'single'}]}
+        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'resolve','--plan-file','-','--limit','1'],input=json.dumps(plan,ensure_ascii=False),env=env,capture_output=True,text=True,check=True)
+        role=json.loads(proc.stdout);names=[r['name'] for r in role.get('results',[])]
+        if expected and expected not in names:errors.append('显式施动者/作用对象召回失败')
+        if not expected and (set(names)&{'SetAttackPlayersAbility','SetAttackMobsAbility'} or not role['intents'][0].get('state')):errors.append('交换角色后仍被错误确认为相同权限能力')
+    checks.append('subject_and_object_are_not_interchangeable')
     report={'kind':'market-capability-regression','bank_version':bank['schema_version'],'corpus_sha256':index['corpus_sha256'],'cases':len(rows),'passed':sum(not r['errors'] for r in rows),'chars':totals,'errors':errors,'checks':checks,'rows':rows}
     out=SKILL_ROOT/'.local';out.mkdir(exist_ok=True);(out/'market-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({k:report[k] for k in ('cases','passed','chars','errors')},ensure_ascii=False))
     return 0 if report['passed']==report['cases'] and not errors else 1
+
+
+def evaluate_expansion():
+    bank=json.loads((SKILL_ROOT/'evals/market-expansion.json').read_text())
+    root=resolve_root(read_config()['MODSDK_WIKI_ROOT']);env={**os.environ,'MODSDK_MAINTAINER_MODE':'0'}
+    subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'build'],env=env,capture_output=True,text=True,check=True)
+    index=json.loads((root/'.api-index/index.json').read_text());bykey={r['key']:r for r in index['records']}
+    rows=[];total=0
+    for case in bank['cases']:
+        cmd=[sys.executable,str(SKILL_ROOT/'scripts/query.py'),'--max-chars',str(case['max_chars']),'resolve','--plan-file','-','--limit',str(case['limit'])]
+        process=subprocess.run(cmd,input=json.dumps(case['plan'],ensure_ascii=False),env=env,capture_output=True,text=True,timeout=120)
+        output=json.loads(process.stdout) if not process.returncode else {};errors=[]
+        if process.returncode:errors.append(process.stderr.strip())
+        groups={x['id']:x for x in output.get('intents',[])};workflows={x['intent']:x for x in output.get('workflows',[])};hits=0;needed=0
+        for goal in case['expectations']:
+            group=groups.get(goal['intent'],{});ids={bykey[k]['id'] for k in group.get('candidates',[])}
+            for required in goal['required']:
+                needed+=1
+                if ids&set(required):hits+=1
+                else:errors.append(goal['intent']+':遗漏入口')
+            if goal.get('recipe'):
+                needed+=1
+                if workflows.get(goal['intent'],{}).get('id')==goal['recipe']:hits+=1
+                else:errors.append(goal['intent']+':遗漏能力链')
+            if ids&set(goal['forbidden']):errors.append(goal['intent']+':错误替代')
+            if goal['coverage'] in ('partial','unverified') and not group.get('state'):errors.append(goal['intent']+':缺口被标为完整')
+        chars=len(process.stdout.rstrip('\n'));total+=chars
+        rows.append({'id':case['id'],'chars':chars,'calls':1,'hits':hits,'required':needed,'errors':errors,'output':output})
+        print(('FAIL' if errors else 'PASS'),'expanded',case['id'],f'{hits}/{needed}',chars,'; '.join(errors),flush=True)
+    report={'cases':len(rows),'passed':sum(not r['errors'] for r in rows),'hits':sum(r['hits'] for r in rows),'required':sum(r['required'] for r in rows),'chars':total,'corpus_sha256':index['corpus_sha256'],'errors':[],'rows':rows}
+    if total>bank['total_chars_budget']:report['errors'].append('超过扩展场景总预算')
+    (SKILL_ROOT/'.local/market-expansion-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps({k:report[k] for k in ('cases','passed','hits','required','chars','errors')},ensure_ascii=False))
+    return 0 if report['passed']==report['cases'] and not report['errors'] else 1

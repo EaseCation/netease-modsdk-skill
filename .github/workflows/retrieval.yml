@@ -37,4 +37,5 @@ jobs:
             .local/guidance-report.json
             .local/operations-report.json
             .local/market-report.json
+            .local/market-expansion-report.json
           retention-days: 14
