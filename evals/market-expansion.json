@@ -65,7 +65,109 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "use",
+          "required": [
+            [
+              "modsdk:event:server:ServerItemTryUseEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "ui",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.extraClientApi.CreateUI",
+              "modsdk:api:client:mod.client.extraClientApi.PushScreen"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "item_view",
+          "required": [],
+          "forbidden": [],
+          "coverage": "candidate",
+          "recipe": "ui.item-display"
+        },
+        {
+          "intent": "item_data_read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerItem"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "item_data_write",
+          "required": [],
+          "forbidden": [],
+          "coverage": "candidate",
+          "recipe": "item.instance-data"
+        },
+        {
+          "intent": "slot_change",
+          "required": [],
+          "forbidden": [
+            "modsdk:event:server:InventoryItemChangedServerEvent"
+          ],
+          "coverage": "unverified",
+          "note": "通用背包变化事件没有可取消字段；自定义容器的尝试放入事件只覆盖自己的容器路线。"
+        }
+      ],
+      "first_v3": {
+        "chars": 1465,
+        "candidates": {
+          "use": [
+            "ServerItemTryUseEvent"
+          ],
+          "ui": [
+            "CreateUI"
+          ],
+          "item_view": [
+            "SetParticleMaxNum"
+          ],
+          "item_data_read": [
+            "GetInvItemModEnchantData"
+          ],
+          "item_data_write": [
+            "SetBlockEntityData"
+          ],
+          "slot_change": [
+            "InventoryItemChangedServerEvent"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 3436,
+        "candidates": {
+          "use": [
+            "ServerItemTryUseEvent"
+          ],
+          "ui": [
+            "RegisterUI"
+          ],
+          "item_view": [
+            "SetUiItem"
+          ],
+          "item_data_read": [
+            "GetInvItemModEnchantData"
+          ],
+          "item_data_write": [
+            "SetExtraData"
+          ],
+          "slot_change": [
+            "InventoryItemChangedServerEvent"
+          ]
+        }
+      }
     },
     {
       "id": "cross-save-bag",
@@ -127,7 +229,116 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "save",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.configCompClient.ConfigCompClient.SetConfigData"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "load",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.configCompClient.ConfigCompClient.GetConfigData"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "account",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.httpToWebServerCompServer.HttpToWebServerCompServer.GetPlayerUid"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "permission",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.GetPlayerOperation",
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.GetPlayerAbilities"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "binding",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.playerViewCompClient.PlayerViewCompClient.RegisterCustomKeyMapping"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "sync",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.NotifyToClient"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1188,
+        "candidates": {
+          "save": [
+            "NotifyToServer"
+          ],
+          "load": [
+            "GetConfigData"
+          ],
+          "account": [
+            "GetPlayerUid"
+          ],
+          "permission": [
+            "GetPlayerAbilities"
+          ],
+          "binding": [
+            "SimulateTouchWithMouse"
+          ],
+          "sync": [
+            "NotifyToClient"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2742,
+        "candidates": {
+          "save": [
+            "DeserializeBlockPalette"
+          ],
+          "load": [
+            "GetModConfigJson"
+          ],
+          "account": [
+            "GetPlayerUid"
+          ],
+          "permission": [
+            "GetPlayerAbilities"
+          ],
+          "binding": [
+            "RegisterCustomKeyMapping"
+          ],
+          "sync": [
+            "NotifyToClient"
+          ]
+        }
+      }
     },
     {
       "id": "grave-recovery",
@@ -189,7 +400,115 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "death",
+          "required": [
+            [
+              "modsdk:event:server:PlayerDieEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "inventory",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerAllItems"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "drop_control",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.EnableKeepInventory"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "grave",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.SetBlockNew"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "protection",
+          "required": [
+            [
+              "modsdk:event:server:ServerPlayerTryDestroyBlockEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "recover",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.CreateEngineItemEntity"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1345,
+        "candidates": {
+          "death": [
+            "PlayerDieEvent"
+          ],
+          "inventory": [
+            "GetPlayerItem"
+          ],
+          "drop_control": [
+            "EnableKeepInventory"
+          ],
+          "grave": [
+            "SetBlockNew"
+          ],
+          "protection": [
+            "ServerPlayerTryDestroyBlockEvent"
+          ],
+          "recover": [
+            "GetBlockTileEntityWholeCustomData"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 3019,
+        "candidates": {
+          "death": [
+            "PlayerDieEvent"
+          ],
+          "inventory": [
+            "GetPlayerAllItems"
+          ],
+          "drop_control": [
+            "EnableKeepInventory"
+          ],
+          "grave": [
+            "SetRigidBodyFlag"
+          ],
+          "protection": [
+            "ServerPlayerTryDestroyBlockEvent"
+          ],
+          "recover": [
+            "CreateEngineItemEntity"
+          ]
+        }
+      }
     },
     {
       "id": "factory-logistics",
@@ -251,7 +570,115 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "tick",
+          "required": [
+            [
+              "modsdk:event:server:ServerBlockEntityTickEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "container_read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetContainerItem"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "container_write",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SpawnItemToContainer"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "hopper",
+          "required": [
+            [
+              "modsdk:event:server:HopperTryPullInServerEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "animation",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.blockInfoCompClient.BlockInfoComponentClient.SetEnableBlockEntityAnimations"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "command",
+          "required": [
+            [
+              "modsdk:event:server:CustomCommandTriggerServerEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1617,
+        "candidates": {
+          "tick": [
+            "ServerBlockUseEvent"
+          ],
+          "container_read": [
+            "GetContainerItem"
+          ],
+          "container_write": [
+            "SetPlayerAllItems"
+          ],
+          "hopper": [
+            "ServerItemUseOnEvent"
+          ],
+          "animation": [
+            "PlayAnimation"
+          ],
+          "command": [
+            "DelServerPlayerEvent"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 3590,
+        "candidates": {
+          "tick": [
+            "ServerPlaceBlockEntityEvent"
+          ],
+          "container_read": [
+            "GetContainerItem"
+          ],
+          "container_write": [
+            "SetPlayerAllItems"
+          ],
+          "hopper": [
+            "ServerItemUseOnEvent"
+          ],
+          "animation": [
+            "PlayCustomMusic"
+          ],
+          "command": [
+            "CustomCommandTriggerServerEvent"
+          ]
+        }
+      }
     },
     {
       "id": "waypoint-travel",
@@ -312,7 +739,116 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "position",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.posCompServer.PosComponentServer.GetFootPos"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "dimension",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.GetEntityDimensionId"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "permission",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.GetPlayerOperation"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "level",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.GetPlayerLevel"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "charge",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.levelCompServer.LevelComponentServer.AddPlayerLevel"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "teleport",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.ChangePlayerDimension"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1348,
+        "candidates": {
+          "position": [
+            "GetFootPos"
+          ],
+          "dimension": [
+            "GetEngineActor"
+          ],
+          "permission": [
+            "GetCommandPermissionLevel"
+          ],
+          "level": [
+            "GetPlayerLevel"
+          ],
+          "charge": [
+            "SetInvItemNum"
+          ],
+          "teleport": [
+            "ChangePlayerDimension",
+            "SetBlockNew"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2654,
+        "candidates": {
+          "position": [
+            "GetFootPos"
+          ],
+          "dimension": [
+            "GetPos"
+          ],
+          "permission": [
+            "GetCommandPermissionLevel"
+          ],
+          "level": [
+            "GetPlayerLevel"
+          ],
+          "charge": [
+            "AddPlayerLevel"
+          ],
+          "teleport": [
+            "ChangePlayerDimension"
+          ]
+        }
+      }
     },
     {
       "id": "pet-capture",
@@ -374,7 +910,117 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "spawn",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.CreateEngineEntityByTypeStr"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "snapshot",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.GetEntityNBTTags"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "remove",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.DestroyEntity"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "partial",
+          "note": "销毁入口已确认，但所有自定义死亡/掉落回调行为需要实机验证。"
+        },
+        {
+          "intent": "restore",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.system.serverSystem.ServerSystem.CreateEngineEntityByNBT"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "navigate",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.moveToCompServer.MoveToComponentServer.SetMoveSetting"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "owner",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.tameCompServer.TameComponentServer.GetOwnerId",
+              "modsdk:api:server:mod.server.component.actorOwnerCompServer.ActorOwnerComponentServer.GetEntityOwner"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1227,
+        "candidates": {
+          "spawn": [
+            "SpawnCustomModule"
+          ],
+          "snapshot": [
+            "SaveExtraData"
+          ],
+          "remove": [
+            "RemoveEntityMotion"
+          ],
+          "restore": [
+            "CreateEngineEntityByNBT"
+          ],
+          "navigate": [
+            "SetBlockNew"
+          ],
+          "owner": [
+            "GetOwnerId"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2639,
+        "candidates": {
+          "spawn": [
+            "SpawnCustomModule"
+          ],
+          "snapshot": [
+            "GetEntityNBTTags"
+          ],
+          "remove": [
+            "DestroyEntity"
+          ],
+          "restore": [
+            "CreateEngineEntityByNBT"
+          ],
+          "navigate": [
+            "SetMoveSetting"
+          ],
+          "owner": [
+            "IsTamed"
+          ]
+        }
+      }
     },
     {
       "id": "season-survival",
@@ -436,7 +1082,114 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "time",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.timeCompServer.TimeComponentServer.GetTime"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "biome",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.biomeCompServer.BiomeCompServer.GetBiomeName"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "weather",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.weatherCompServer.WeatherComponentServer.SetRaining"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "crop",
+          "required": [],
+          "forbidden": [
+            "modsdk:event:server:BlockRandomTickServerEvent"
+          ],
+          "coverage": "unverified",
+          "note": "原文只描述配置了random_tick的自定义方块，不能证明可取消原版作物生长。"
+        },
+        {
+          "intent": "equipment",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerItem"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "damage",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.hurtCompServer.HurtCompServer.Hurt"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1097,
+        "candidates": {
+          "time": [
+            "GetTime"
+          ],
+          "biome": [
+            "GetBlockNew"
+          ],
+          "weather": [
+            "SetRaining"
+          ],
+          "crop": [
+            "BlockRandomTickServerEvent"
+          ],
+          "equipment": [
+            "GetPlayerItem"
+          ],
+          "damage": [
+            "Hurt"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2672,
+        "candidates": {
+          "time": [
+            "GetPlayerTotalExp"
+          ],
+          "biome": [
+            "GetIntPos"
+          ],
+          "weather": [
+            "SetRaining"
+          ],
+          "crop": [
+            "BlockRandomTickServerEvent"
+          ],
+          "equipment": [
+            "GetEntityItem"
+          ],
+          "damage": [
+            "SetAttackDamage"
+          ]
+        }
+      }
     },
     {
       "id": "moving-structure",
@@ -498,7 +1251,115 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "capture",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockCompServer.BlockCompServer.GetBlockPaletteBetweenPos"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "save",
+          "required": [
+            [
+              "modsdk:api:server:mod.common.component.blockPaletteComp.BlockPaletteComponent.SerializeBlockPalette"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "geometry",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.blockGeometryCompClient.BlockGeometryCompClient.CombineBlockPaletteToGeometry"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "render",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.actorRenderCompClient.ActorRenderCompClient.AddActorBlockGeometry"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "ride",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.rideCompServer.RideCompServer.SetRiderRideEntity"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "eject",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.rideCompServer.RideCompServer.StopEntityRiding"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1077,
+        "candidates": {
+          "capture": [
+            "GetFootPos"
+          ],
+          "save": [
+            "SerializeBlockPalette"
+          ],
+          "geometry": [
+            "GetBlankBlockPalette"
+          ],
+          "render": [
+            "SetActorBlockGeometryVisible"
+          ],
+          "ride": [
+            "SetRiderRideEntity"
+          ],
+          "eject": [
+            "SetRiderRideEntity"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2703,
+        "candidates": {
+          "capture": [
+            "DetectStructure"
+          ],
+          "save": [
+            "SerializeBlockPalette"
+          ],
+          "geometry": [
+            "AddActorBlockGeometry"
+          ],
+          "render": [
+            "SetActorBlockGeometryVisible"
+          ],
+          "ride": [
+            "SetRiderRideEntity"
+          ],
+          "eject": [
+            "StopEntityRiding"
+          ]
+        }
+      }
     },
     {
       "id": "villager-editor",
@@ -560,7 +1421,496 @@
         ]
       },
       "limit": 10,
-      "max_chars": 6000
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "name",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.nameCompServer.NameComponentServer.SetName"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "partial",
+          "note": "服务端SetName只核验改名；常显需客户端或另核原生数据路线。"
+        },
+        {
+          "intent": "profession",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.SetVariant",
+              "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.SetMarkVariant"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "partial",
+          "note": "变种与职业不能等同，具体职业组件映射尚未核验。"
+        },
+        {
+          "intent": "experience",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.expCompServer.ExpComponentServer.AddPlayerExperience",
+            "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.SetTradeLevel"
+          ],
+          "coverage": "unverified",
+          "note": "交易等级不等于当前交易经验，未核验到直接改写该数值的接口。"
+        },
+        {
+          "intent": "trade_read",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.GetTradeLevel"
+          ],
+          "coverage": "unverified",
+          "note": "交易等级不是交易列表；实体NBT可作为进一步调查入口，但Offers字段契约尚未核验。"
+        },
+        {
+          "intent": "trade_write",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.entityDefinitionsCompServer.EntityDefinitionsCompServer.SetTradeLevel"
+          ],
+          "coverage": "unverified",
+          "note": "设置交易等级不支持修改花费和出售物品；未核验NBT字段及原地写入路线。"
+        },
+        {
+          "intent": "template",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.configCompClient.ConfigCompClient.SetConfigData"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "first_v3": {
+        "chars": 1280,
+        "candidates": {
+          "name": [
+            "SetName"
+          ],
+          "profession": [
+            "SetVariant"
+          ],
+          "experience": [
+            "AddPlayerExperience"
+          ],
+          "trade_read": [
+            "GetTradeLevel"
+          ],
+          "trade_write": [
+            "SetTradeLevel"
+          ],
+          "template": [
+            "DeserializeBlockPalette"
+          ]
+        }
+      },
+      "v2_reference": {
+        "chars": 2719,
+        "candidates": {
+          "name": [
+            "SetName"
+          ],
+          "profession": [
+            "SetMarkVariant"
+          ],
+          "experience": [
+            "AddPlayerExperience"
+          ],
+          "trade_read": [
+            "GetTradeLevel"
+          ],
+          "trade_write": [
+            "SetTradeLevel"
+          ],
+          "template": [
+            "DeserializeBlockPalette"
+          ]
+        }
+      }
+    },
+    {
+      "id": "forward-minimap",
+      "market_id": "4643772833624227325",
+      "cohort": "system-forward",
+      "request": "在小地图显示生物和固定坐标标记，并支持放大缩小地图。",
+      "source_claim_excerpt": "新增地图放大缩小功能；在暮色世界自动标记Boss的坐标点。",
+      "derived": "职责是依据公开能力声明设计的验证路线，不代表作者使用了这些API。自动收杆和不改方块的真实动态光源仍待核实。",
+      "source": {
+        "item_id": "4643772833624227325",
+        "res_name": "创艺小地图[传送点]",
+        "download_num": "1248659",
+        "stars": 4.5,
+        "mod_version": "2.12",
+        "fetched_at": "2026-10-25T11:59:01.630842Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "entity",
+            "query": "在小地图上添加跟随实体的图标标记",
+            "kind": "api",
+            "side": "client",
+            "operation": "create"
+          },
+          {
+            "id": "point",
+            "query": "在小地图上添加固定世界坐标的图标标记",
+            "kind": "api",
+            "side": "client",
+            "operation": "create"
+          },
+          {
+            "id": "zoom_in",
+            "query": "放大小地图显示比例",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          },
+          {
+            "id": "zoom_out",
+            "query": "缩小小地图显示比例",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 6,
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "entity",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.minimapUIControl.MiniMapUIControl.AddEntityMarker"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "point",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.minimapUIControl.MiniMapUIControl.AddStaticMarker"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "zoom_in",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.minimapUIControl.MiniMapUIControl.ZoomIn"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "zoom_out",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.minimapUIControl.MiniMapUIControl.ZoomOut"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+    },
+    {
+      "id": "forward-fishing",
+      "market_id": "4655099638782933868",
+      "cohort": "system-forward",
+      "request": "自动钓鱼期间保留正常耐久消耗，能够识别钓鱼状态及鱼漂。",
+      "source_claim_excerpt": "使用2.6新的API，自动钓鱼时鱼竿会正常掉耐久了。",
+      "derived": "职责是依据公开能力声明设计的验证路线，不代表作者使用了这些API。自动收杆和不改方块的真实动态光源仍待核实。",
+      "source": {
+        "item_id": "4655099638782933868",
+        "res_name": "【HP】自动钓鱼",
+        "download_num": "137407",
+        "stars": 4.3,
+        "mod_version": "2.7",
+        "fetched_at": "2026-10-25T12:00:48.586178Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "state",
+            "query": "读取玩家是否处于钓鱼状态",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "hook",
+            "query": "取得玩家钓鱼产生的鱼漂实体标识",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "start",
+            "query": "玩家开始钓鱼并生成鱼钩时的通知",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "reel",
+            "query": "模拟玩家收杆并按照原版规则消耗钓竿耐久",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 6,
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "state",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.GetPlayerIsFishing"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "hook",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerFishHookEntity"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "start",
+          "required": [
+            [
+              "modsdk:event:server:PlayerStartFishingServerEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "reel",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetBanPlayerFishing"
+          ],
+          "coverage": "unverified"
+        }
+      ],
+      "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+    },
+    {
+      "id": "forward-light",
+      "market_id": "4675185852888887123",
+      "cohort": "system-forward",
+      "request": "按主手与副手持有物照明，确认光照读取与动态光源控制的能力边界。",
+      "source_claim_excerpt": "手持指定光源方块可以持续照明；副手装备了发光物品或方块也可以发光。",
+      "derived": "职责是依据公开能力声明设计的验证路线，不代表作者使用了这些API。自动收杆和不改方块的真实动态光源仍待核实。",
+      "source": {
+        "item_id": "4675185852888887123",
+        "res_name": "真·移动光源",
+        "download_num": "92931",
+        "stars": 3.8,
+        "mod_version": "3.6",
+        "fetched_at": "2026-10-25T11:59:12.621549Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "main_hand",
+            "query": "查询本地玩家当前主手物品",
+            "kind": "api",
+            "side": "client",
+            "operation": "read"
+          },
+          {
+            "id": "off_hand",
+            "query": "查询本地玩家副手装备的物品",
+            "kind": "api",
+            "side": "client",
+            "operation": "read"
+          },
+          {
+            "id": "light_level",
+            "query": "读取指定坐标的方块光照等级",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "dynamic",
+            "query": "创建跟随实体移动的真实动态光源，保持周围方块不变",
+            "kind": "api",
+            "side": "client",
+            "operation": "create"
+          }
+        ]
+      },
+      "limit": 6,
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "main_hand",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetCarriedItem",
+              "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerItem"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "off_hand",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetOffhandItem",
+              "modsdk:api:client:mod.client.component.itemCompClient.ItemCompClient.GetPlayerItem"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "light_level",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.GetBlockLightLevel"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "dynamic",
+          "required": [],
+          "forbidden": [],
+          "coverage": "unverified"
+        }
+      ],
+      "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
+    },
+    {
+      "id": "forward-subtitles",
+      "market_id": "4651338365655529554",
+      "cohort": "system-forward",
+      "request": "监听声音并显示字幕，允许调整背景透明度和跨存档保存配置。",
+      "source_claim_excerpt": "将游戏中的声音以文字的形式显示；增加背景透明度调整、自定义声音的中文名称（跨存档）。",
+      "derived": "职责是依据公开能力声明设计的验证路线，不代表作者使用了这些API。自动收杆和不改方块的真实动态光源仍待核实。",
+      "source": {
+        "item_id": "4651338365655529554",
+        "res_name": "【HP】PC同款-声音字幕",
+        "download_num": "1125499",
+        "stars": 4.8,
+        "mod_version": "3.3",
+        "fetched_at": "2026-10-25T11:59:18.300410Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "sound",
+            "query": "监听客户端场景音效或界面音效播放的事件",
+            "kind": "event",
+            "side": "client",
+            "operation": "observe"
+          },
+          {
+            "id": "text",
+            "query": "设置界面标签控件的字幕文字",
+            "kind": "api",
+            "side": "client",
+            "operation": "set",
+            "target": "ui"
+          },
+          {
+            "id": "opacity",
+            "query": "调整界面背景图像控件透明度",
+            "kind": "api",
+            "side": "client",
+            "operation": "set",
+            "target": "ui"
+          },
+          {
+            "id": "save",
+            "query": "将字幕设置保存为跨存档共享的本地配置",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 6,
+      "max_chars": 6000,
+      "expectations": [
+        {
+          "intent": "sound",
+          "required": [
+            [
+              "modsdk:event:client:PlaySoundClientEvent"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "text",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.labelUIControl.LabelUIControl.SetText"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "opacity",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.baseUIControl.BaseUIControl.SetAlpha"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        },
+        {
+          "intent": "save",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.configCompClient.ConfigCompClient.SetConfigData"
+            ]
+          ],
+          "forbidden": [],
+          "coverage": "candidate"
+        }
+      ],
+      "frozen_engine_sha256": "0beeb1b4e925f9530ad2f3a329d4bf06a8925f4bc343f5495181747e77d3c175",
+      "frozen_corpus_sha256": "bb0744357287711c5be1f4e1965cc110b47976b1e9f12177618b1f0ea66bb360"
     }
-  ]
+  ],
+  "grading": "候选命中与完整能力核验分开：candidate要求源合同支持的入口，不把未知状态强行改成matched；partial/unverified必须保留缺口，不宣称平台不支持。",
+  "first_run_files": [
+    "market-expansion-first.json",
+    "market-expansion-v2.json"
+  ],
+  "total_chars_budget": 28000
 }
