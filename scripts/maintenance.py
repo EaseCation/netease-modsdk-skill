@@ -172,7 +172,7 @@ def repo_slug(url):
 
 
 def github(slug, endpoint):
-    result = run_bounded(['gh', 'api', '--hostname', 'github.com', endpoint], timeout=30,
+    result = run_bounded(['gh', 'api', '--hostname', 'github.com', endpoint], timeout=int(read_config()['MODSDK_NETWORK_TIMEOUT']),
                          env={**os.environ, 'GH_HOST': 'github.com', 'GH_PROMPT_DISABLED': '1'})
     if result.returncode:
         raise ValueError('GitHub 登录、权限或网络检查失败；停止维护，保留本地记录。' + sanitize(result.stderr))

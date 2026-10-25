@@ -76,11 +76,11 @@ ln -s /absolute/path/to/netease-modsdk-skill ~/.codex/skills/netease-modsdk-skil
 
 首次使用执行 `python3 scripts/session.py`。默认在使用时每 24 小时检查配置的 Wiki 分支/标签，不安装后台定时任务；可用 `MODSDK_UPDATE_CHECK_HOURS` 调整，设为 0 禁用自动检查。`setup.py --check` 始终只检查本地；`setup.py --check-updates` 显式检查上游，受管且无用户修改的副本用 `setup.py --update` 更新。完整 Wiki 工作区不自动 pull/reset。
 
-网络请求有总超时和有限次数：默认单次 30 秒，一次直连；只有配置 `MODSDK_GITHUB_PROXY_PREFIX` 时才追加一次代理尝试。安装/更新过程另有 180 秒预算，失败恢复最多追加 30 秒。Git 使用 HTTP/1.1，失败后进入 15 分钟冷却；已缓存原文与 API 查询仍可离线使用。超时会终止本次进程树，错误会明确告知代理、切换网络及下一步，不无限重试。
+网络请求有总超时和有限次数：默认单次 60 秒，一次直连；只有配置 `MODSDK_GITHUB_PROXY_PREFIX` 时才追加一次代理尝试。安装/更新过程另有 180 秒预算，失败恢复最多追加 30 秒。Git 使用 HTTP/1.1，失败后进入 15 分钟冷却；已缓存原文与 API 查询仍可离线使用。超时会终止本次进程树，错误会明确告知代理、切换网络及下一步，不无限重试。
 
 ```dotenv
 MODSDK_UPDATE_CHECK_HOURS=24
-MODSDK_NETWORK_TIMEOUT=30
+MODSDK_NETWORK_TIMEOUT=60
 # 可选：可信服务须支持完整 GitHub URL 前缀模式及所需 Git/raw 请求
 MODSDK_GITHUB_PROXY_PREFIX=https://your-trusted-proxy.example/
 ```

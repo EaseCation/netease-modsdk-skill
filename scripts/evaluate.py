@@ -102,9 +102,11 @@ def evaluate_operations():
         run('maintenance.py','record','--query','检索复盘集成核验','--summary','检查重复问题重新打开',settings=active)
         state=json.loads(log.read_text());assert len(state['issues'])==1 and state['issues'][0]['occurrences']==2 and state['issues'][0]['status']=='pending'
         checks.append('reminder_requires_time_and_task_boundary_and_deduplicates')
-        # 本地 bare 仓库是真实 Git 上游，避免此检查依赖外部连通性。
+        # 只验证 ls-remote 的引用检查；对象库可为未补齐图片的稀疏副本。
         remote=Path(temp)/'upstream.git'
-        subprocess.run(['git','clone','--bare','--shared',str(root),str(remote)],check=True,capture_output=True)
+        subprocess.run(['git','init','--bare',str(remote)],check=True,capture_output=True)
+        objects=subprocess.check_output(['git','rev-parse','--git-path','objects'],cwd=root,text=True).strip()
+        (remote/'objects/info/alternates').write_text(str((root/objects).resolve())+'\n')
         head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
         subprocess.run(['git','--git-dir',str(remote),'update-ref','refs/heads/main',head],check=True)
         settings={'MODSDK_WIKI_REPOSITORY':str(remote),'MODSDK_WIKI_REF':'main','MODSDK_UPDATE_CHECK_HOURS':'24'}

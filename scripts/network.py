@@ -55,7 +55,7 @@ def sanitize(text):
     return text[:800]
 
 
-def run_bounded(command, *, cwd=None, stdin=None, timeout=30, env=None):
+def run_bounded(command, *, cwd=None, stdin=None, timeout=60, env=None):
     """超时后结束本次进程树，避免 Git 子进程/凭据提示继续悬挂。"""
     binary = isinstance(stdin, bytes)
     process = subprocess.Popen(command, cwd=cwd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -216,7 +216,7 @@ def fetch_public(url, max_bytes=2_000_000):
         error = ''
         for route in routes:
             try:
-                result = run_bounded([sys.executable, str(Path(__file__).resolve()), '--http-worker', route, str(max_bytes)],
+                result = run_bounded([sys.executable, str(Path(__file__).resolve()), '--http-worker', route, str(max_bytes), values['MODSDK_NETWORK_TIMEOUT']],
                                      stdin=b'', timeout=int(values['MODSDK_NETWORK_TIMEOUT']))
                 if result.returncode == 0:
                     return result.stdout
@@ -229,12 +229,12 @@ def fetch_public(url, max_bytes=2_000_000):
         raise NetworkError(network_message(error))
 
 
-def _http_worker(url, max_bytes):
+def _http_worker(url, max_bytes, timeout):
     import urllib.request
     import urllib.error
     try:
         request = urllib.request.Request(url, headers={'User-Agent': 'netease-modsdk-skill', 'Accept-Encoding': 'identity'})
-        with urllib.request.urlopen(request, timeout=15) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             data = response.read(max_bytes + 1)
         if len(data) > max_bytes:
             print('PERMANENT:来源文件超过大小预算', file=sys.stderr)
@@ -251,6 +251,8 @@ def _http_worker(url, max_bytes):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 4 and sys.argv[1] == '--http-worker':
-        sys.exit(_http_worker(sys.argv[2], int(sys.argv[3])))
+    if len(sys.argv) == 5 and sys.argv[1] == '--http-worker':
+        sys.exit(_http_worker(sys.argv[2], int(sys.argv[3]), int(sys.argv[4])))
+    print('PERMANENT:下载器参数版本不匹配，请更新 Skill',file=sys.stderr)
+    sys.exit(2)
     raise SystemExit('此模块由安装器和原文读取器调用。')

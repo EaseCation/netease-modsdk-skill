@@ -10,7 +10,7 @@ KEYS = ('MODSDK_WIKI_ROOT', 'MODSDK_WIKI_REPOSITORY', 'MODSDK_WIKI_REF',
 DEFAULTS = {'MODSDK_WIKI_ROOT': '.data/wiki',
             'MODSDK_WIKI_REPOSITORY': 'https://github.com/EaseCation/netease-modsdk-wiki.git',
             'MODSDK_WIKI_REF': 'main', 'MODSDK_UPDATE_CHECK_HOURS': '24',
-            'MODSDK_NETWORK_TIMEOUT': '30', 'MODSDK_GITHUB_PROXY_PREFIX': ''}
+            'MODSDK_NETWORK_TIMEOUT': '60', 'MODSDK_GITHUB_PROXY_PREFIX': ''}
 
 
 def read_config():
