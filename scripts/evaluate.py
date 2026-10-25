@@ -140,9 +140,49 @@ def evaluate_operations():
     print(json.dumps(report,ensure_ascii=False));return 0
 
 
+def evaluate_requests():
+    """固定真实自然语言与规范计划；检查结果、状态、流程和运行协议。"""
+    bank_path=SKILL_ROOT/'evals/request-contract.json'
+    bank=json.loads(bank_path.read_text());rows=[]
+    env={**os.environ,'MODSDK_MAINTAINER_MODE':'0'}
+    for case in bank['cases']:
+        cmd=[sys.executable,str(SKILL_ROOT/'scripts/query.py'),'resolve','--plan-file','-']
+        proc=subprocess.run(cmd,input=json.dumps({'intents':[case['intent']]},ensure_ascii=False),capture_output=True,text=True,env=env,timeout=120)
+        output=json.loads(proc.stdout) if proc.returncode==0 else {};errors=[]
+        if proc.returncode:errors.append(proc.stderr.strip())
+        group=next(iter(output.get('intents',[])),{});state=group.get('state','matched')
+        names={r['name'] for r in output.get('results',[])}
+        if case['required'] and not names & set(case['required']):errors.append('遗漏必需能力')
+        if names & set(case.get('forbidden',[])):errors.append('错误替代')
+        if state not in case['states']:errors.append('状态不符：'+state)
+        if not set(case.get('missing',[]))<=set(group.get('missing',[])):errors.append('丢失必需条件')
+        if case['intent'].get('requirements')!=group.get('unverified'):errors.append('未建模条件未原样保留')
+        if case.get('recipe') not in (None,*[w['id'] for w in output.get('workflows',[])]):errors.append('遗漏流程')
+        if not set(case.get('review',[]))<=set(x['name'] for x in output.get('review',[])):errors.append('丢失待核验入口')
+        if not set(case.get('missing_roles',[]))<=set(group.get('missing_roles',[])):errors.append('丢失合同维度')
+        chars=len(proc.stdout.rstrip('\n'))
+        if chars>bank['max_case_chars']:errors.append('超过输出预算')
+        rows.append({'id':case['id'],'chars':chars,'state':state,'errors':errors,'output':output})
+        print(('FAIL' if errors else 'PASS'),'request',case['id'],chars,'; '.join(errors),flush=True)
+    schema_proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'schema'],capture_output=True,text=True,env=env,check=True)
+    schema=json.loads(schema_proc.stdout);errors=[]
+    if schema.get('query_protocol')!=4 or not {'mode','hints','requirements','concepts','action','subject','object','property','qualifiers'}<=set(schema['intent_fields']):errors.append('运行时协议发现不完整')
+    from config import validate_contract
+    try:validate_contract('SCHEMA_VERSION = 3', '{"schema_version":3,"entries":[]}')
+    except ValueError:pass
+    else:errors.append('旧请求引擎未拒绝')
+    root=resolve_root(read_config()['MODSDK_WIKI_ROOT']);index=json.loads((root/'.api-index/index.json').read_text())
+    report={'query_protocol':schema['query_protocol'],'corpus_sha256':index['corpus_sha256'],'bank_sha256':hashlib.sha256(bank_path.read_bytes()).hexdigest(),'cases':len(rows),'passed':sum(not r['errors'] for r in rows),'chars':sum(r['chars'] for r in rows),'errors':errors,'rows':rows,'scope':'真实查询 CLI；非独立模型生成计划评测、非游戏实机'}
+    (SKILL_ROOT/'.local').mkdir(exist_ok=True)
+    (SKILL_ROOT/'.local/request-contract-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+    print(json.dumps({k:report[k] for k in ('cases','passed','chars','errors')},ensure_ascii=False))
+    return 0 if not errors and report['passed']==report['cases'] else 1
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split',choices=['regression','holdout','protocol','all'],default='all')
+    parser.add_argument('--requests',action='store_true',help='检查自然语言与规范请求合同')
     parser.add_argument('--market-expanded', action='store_true', help='执行新增独立市场产品回归')
     parser.add_argument('--market', action='store_true', help='验证冻结的市场能力需求')
     parser.add_argument('--market-variant', choices=['all','original','development','holdout'], default='all')
@@ -150,6 +190,9 @@ def main():
     parser.add_argument('--guides',action='store_true',help='检查教程来源、引用与固定阅读路径的字符预算')
     parser.add_argument('--record-baseline',action='store_true',help='全部通过后，显式记录新的成本基线；不会改题目或期望 API')
     args=parser.parse_args()
+    if args.requests:
+        if args.market or args.market_expanded or args.guides or args.operations or args.record_baseline or args.split!='all':raise ValueError('--requests 单独运行')
+        return evaluate_requests()
     if args.market_expanded:
         if args.market or args.guides or args.operations or args.record_baseline or args.split!='all' or args.market_variant!='all':raise ValueError('--market-expanded 单独运行')
         from market_evaluation import evaluate_expansion

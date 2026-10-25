@@ -29,6 +29,8 @@ jobs:
         run: python3 scripts/evaluate.py
       - name: Run market capability regressions
         run: python3 scripts/evaluate.py --market
+      - name: Check request contracts
+        run: python3 scripts/evaluate.py --requests
       - name: Check guidance sources and reading budgets
         run: python3 scripts/evaluate.py --guides
       - name: Check source and session operations
@@ -39,6 +41,7 @@ jobs:
         with:
           name: retrieval-report
           path: |
+            .local/request-contract-report.json
             .local/regression-report.json
             .local/guidance-report.json
             .local/operations-report.json

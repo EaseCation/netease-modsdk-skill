@@ -1,33 +1,31 @@
-# 查询计划协议 3
+# 查询请求协议 4
 
-`query.py schema` 给出受控字段；`schema <概念词>` 查局部词表，`schema --all-concepts` 才展开全部概念。根节点仅接受 `intents`（1–12 项）、`side`、`scope`、`read_only`。每个子目标 ID 不重复；不要夹带目标 API 答案。复杂需求超过 12 项时分批提交并保留职责清单。
+知识数据仍为 v3；请求协议独立版本化，旧引擎明确报错。`query.py schema` 从运行时字段定义生成清单；`schema <概念词>` 查局部词表，`--all-concepts` 才展开全部概念。不要把下面说明当作另一套字段定义。
 
-| 子目标字段 | 用法 |
+根节点接受 intents（1–12 项）、side、scope、read_only。每项 query 非空、id 唯一；超过 12 项分批并保留职责清单。JSON 计划不混用命令行的操作/对象过滤参数。
+
+| 字段 | 决策规则 |
 | --- | --- |
-| concepts | 可选能力概念 ID 数组；通过 schema 查询，词表由 Wiki 维护 |
-| action / subject / object / property / qualifiers | 操作／施动者／作用对象／属性／限定的概念 ID 或数组；明确分配的角色分别核对，未知不填 |
-| id / query | 唯一职责 ID / 中文基础能力描述 |
-| kind | api、event、enum、document、all；事件明确使用 event |
-| side / scope | server、client、common、any / modsdk、preset、all；一般继承根节点 |
-| operation | read、write、create、set、delete、play、pause、resume、stop、observe、any；write 是变更操作的统称 |
-| read_only | true 将 API 限为读取、事件限为观察；不能在子目标解除根节点只读 |
-| target | `schema` 中的对象类别，如 player_inventory、player_equipment、block_container；不确定时省略 |
-| extent | single、many、global、dimension、any |
-| target_scope | local_player、other_player、all_players、any；用于区分客户端完整背包读取限制 |
-| phase | before、after、change、any；仅事件，影响排序但不排除关联阶段 |
-| batch | bulk、any；明确需要批量结果时使用 |
-| exclude_targets | 明确排除的对象类别数组 |
-| exclude | 排除候选能力说明中的精确词组数组；不是任意自然语言逻辑解析器 |
-| must_support | 必须有正向文本证据的精确词组数组；限制文本不能满足要求 |
+| mode | atomic 查单项操作；workflow 查整体接入路线；默认 auto。已知流程的各步允许不同操作，不强迫都匹配最终动作 |
+| query | 动作＋对象＋属性/内容＋必要限定；去除无关玩法背景，保留改变答案的条件 |
+| kind / side / scope | 见 schema 枚举；事件单列 kind=event；一般继承根节点端侧和范围 |
+| operation | 明确填写 read/set/create/delete/play/pause/resume/stop/observe；write 泛指变更，覆盖各类写操作；混合流程省略 |
+| target / extent / target_scope / batch | 对象类别、单个/全局/维度范围、本人/其他/全部玩家、批量返回；取值来自 schema |
+| concepts | 必需能力概念；缺事实报告缺口，明确冲突才排除 |
+| action / subject / object / property / qualifiers | 概念 ID 或数组，明确动作/施动者/作用对象/属性/限定。不要将同一概念随意分配到多个角色 |
+| hints | 可选概念线索，仅辅助召回排序，不参与完整覆盖与排除；没有线索就不填 |
+| requirements | 尚未建模的关键条件文本数组；始终作为未核验条件返回，需读原文确认，不因词面命中自动满足 |
+| read_only | true 限读取/观察，子目标不能解除根节点只读 |
+| phase | 仅事件；before/after/change/any。阶段用于排序，取消和字段修改另核验 |
+| exclude_targets / exclude | 排除对象类别/能力说明中的精确词组；不是任意逻辑解析器 |
+| must_support | 要求正向说明中存在的精确词组；不是同义词检索，证据缺失不证明平台不支持 |
 
-`must_support` 不会自动归一所有近义词，缺少文本证据表示尚未核实，不代表平台不支持。对象、操作和范围部分来自原文及组件名称的规则推断，仍需读详情；阶段 change 表示“发生/变化时”，不能擅自解释为 after。需要取消能力时，查询中保留取消职责并核对参数。
+已明确的结构化操作优先于文字推断；AI 须保证两者一致。未指定操作时由 Wiki 共享操作词表辅助识别，多类操作返回 split_required。工作流操作与单 API 共用 write 的上位关系。
 
-输入计划时把筛选条件写入 JSON，不混用文本查询的操作/对象参数。`--limit` 限主候选（1–24），`--per-intent` 为 1–3；关联事件独立去重返回，仍受总字符预算限制。超预算明确报错，不静默丢失合同。
+默认输出仅保留候选和职责对应关系，正常状态省略。query_incomplete 是未识别核心能力，evidence_missing 是对应事实不足；partial 表示部分已核验。missing、missing_roles 和 unverified 指向仍需核对的概念、合同维度或文字条件。no_capability_match 表示没有推荐候选；均不等同于平台不支持。流程未确认返回 workflow_unverified，不能把其中单个 API 当作完整方案。
 
-默认 JSON 仅保留候选及子目标对应关系。每项 `intents` 用 `id` 关联输入，省略正常状态；出现 `state`（partial、unknown、no_capability_match、timing_review 等）就表示尚未完整解决。`missing`/`missing_roles` 指出缺口。空字段、重复查询、版本与哈希不默认返回；诊断时显式加全局 `--verbose`。
+匹配只针对已表达的条件；提交和读取结果时均须对照原始需求。候选名称正确不等于生命周期、对象归属和范围正确。替代候选不能合并成完整覆盖，只有有来源的组合关系可以连接步骤。
 
-`detail` 默认保留参数、返回、重要备注、组件和紧凑来源路径；返回短 ID，需要完整身份或来源哈希时加 `--verbose`。参数列表为空时省略，原文缺合同会明确标出 documentation_status，不能误当成无参数 API。
+review 保留取消能力等必要条件尚未核验的入口，不能作为已支持的步骤，也不能解释为不支持；读其合同后再决定。workflows 提供步骤、前置条件和来源；related 是同族关联事件。phase=change 不等于 after，timing_review 不能当作所需阶段已满足。
 
-`workflows` 返回通用组合步骤、必要 API 和进一步原文路径。恢复、动画接线等能力可能需要完整流程，不强求单个函数。事件族关联仍在 `related` 中返回，不替代指定阶段。默认只补充必要互补能力；确需比较替代路线再增加 per-intent，不能靠无限扩大候选覆盖需求。
-
-明确冲突与未知分开：已核验的端侧、对象或属性冲突不作为支持推荐；未知操作分类不会直接删掉答案。引用概念来自 Wiki 词表，不在 Skill 或调用脚本中复制同义词表。所有接口最终仍读 detail 的合同与限制。
+`--limit` 1–24，`--per-intent` 1–3；默认每职责一个候选再补必要前置，关联事件独立返回，整体受字符预算约束。detail 保留完整合同和紧凑 source，诊断版本、证据和哈希使用 --verbose；缺合同会标明 documentation_status。搜索后批量读必要合同，不先下载整库到上下文。

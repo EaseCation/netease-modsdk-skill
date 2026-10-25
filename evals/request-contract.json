@@ -1,0 +1,342 @@
+{
+  "description": "手机原始问法与规范请求对照；前19项及首轮输出在实现前冻结，追加必要条件待核验与流程范围不变量。真实查询回归，不代表独立模型评测或游戏实机。",
+  "max_case_chars": 3000,
+  "cases": [
+    {
+      "id": "inventory-natural",
+      "intent": {
+        "query": "获取玩家背包物品",
+        "side": "server"
+      },
+      "required": [
+        "GetPlayerItem",
+        "GetPlayerAllItems"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "online-natural",
+      "intent": {
+        "query": "获取所有在线玩家 id",
+        "side": "server"
+      },
+      "required": [
+        "GetPlayerList"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "gamemode-natural",
+      "intent": {
+        "query": "设置玩家为创造模式",
+        "side": "server"
+      },
+      "required": [
+        "SetPlayerGameType"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "audio-natural",
+      "intent": {
+        "query": "给玩家播放自定义音效",
+        "side": "client"
+      },
+      "required": [
+        "PlayCustomMusic"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "chat-natural",
+      "intent": {
+        "query": "监听玩家聊天内容",
+        "side": "server"
+      },
+      "required": [
+        "ServerChatEvent"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "world-compound",
+      "intent": {
+        "query": "把自定义数据保存到世界并重进后读取",
+        "side": "server"
+      },
+      "required": [],
+      "states": [
+        "split_required"
+      ]
+    },
+    {
+      "id": "world-read",
+      "intent": {
+        "query": "重进后读取世界自定义数据",
+        "side": "server"
+      },
+      "required": [
+        "GetExtraData"
+      ],
+      "states": [
+        "matched"
+      ],
+      "forbidden": [
+        "GetBlockEntityData"
+      ]
+    },
+    {
+      "id": "ui-phrase-a",
+      "intent": {
+        "query": "做自定义界面并打开",
+        "side": "client",
+        "concepts": [
+          "ui",
+          "interface_open"
+        ]
+      },
+      "required": [],
+      "states": [
+        "matched"
+      ],
+      "recipe": "ui.open"
+    },
+    {
+      "id": "ui-phrase-b",
+      "intent": {
+        "query": "自定义界面创建",
+        "side": "client",
+        "concepts": [
+          "ui",
+          "interface_open"
+        ]
+      },
+      "required": [],
+      "states": [
+        "matched"
+      ],
+      "recipe": "ui.open"
+    },
+    {
+      "id": "ui-normalized",
+      "intent": {
+        "query": "创建自定义界面实例",
+        "side": "client",
+        "mode": "workflow",
+        "operation": "create",
+        "object": [
+          "ui"
+        ]
+      },
+      "required": [],
+      "states": [
+        "matched"
+      ],
+      "recipe": "ui.open"
+    },
+    {
+      "id": "inventory-concept",
+      "intent": {
+        "query": "读取玩家背包物品",
+        "side": "server",
+        "concepts": [
+          "inventory_contents"
+        ]
+      },
+      "required": [
+        "GetPlayerItem",
+        "GetPlayerAllItems"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "online-concept",
+      "intent": {
+        "query": "获取所有在线玩家 id",
+        "side": "server",
+        "concepts": [
+          "online_players"
+        ]
+      },
+      "required": [
+        "GetPlayerList"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "extra-hard-concept",
+      "intent": {
+        "query": "获取所有在线玩家 id",
+        "side": "server",
+        "concepts": [
+          "online_players",
+          "inventory_contents"
+        ]
+      },
+      "required": [
+        "GetPlayerList"
+      ],
+      "states": [
+        "partial"
+      ],
+      "missing": [
+        "inventory_contents"
+      ]
+    },
+    {
+      "id": "extra-soft-hint",
+      "intent": {
+        "query": "获取所有在线玩家 id",
+        "side": "server",
+        "hints": [
+          "inventory_contents"
+        ]
+      },
+      "required": [
+        "GetPlayerList"
+      ],
+      "states": [
+        "matched"
+      ]
+    },
+    {
+      "id": "world-normalized",
+      "intent": {
+        "query": "读取世界级自定义数据",
+        "side": "server",
+        "mode": "atomic",
+        "operation": "read",
+        "target": "world",
+        "property": [
+          "custom_data"
+        ],
+        "concepts": [
+          "world_data"
+        ]
+      },
+      "required": [
+        "GetExtraData"
+      ],
+      "states": [
+        "matched"
+      ],
+      "forbidden": [
+        "GetBlockEntityData"
+      ]
+    },
+    {
+      "id": "world-route",
+      "intent": {
+        "query": "持久化世界级自定义数据并读取",
+        "side": "server",
+        "mode": "workflow",
+        "concepts": [
+          "world_data",
+          "persistence"
+        ]
+      },
+      "required": [],
+      "states": [
+        "matched"
+      ],
+      "recipe": "world.data"
+    },
+    {
+      "id": "unmodeled-requirement",
+      "intent": {
+        "query": "获取在线玩家列表",
+        "side": "server",
+        "requirements": [
+          "结果按首次进入存档的时间排序"
+        ]
+      },
+      "required": [
+        "GetPlayerList"
+      ],
+      "states": [
+        "partial"
+      ]
+    },
+    {
+      "id": "unparsed",
+      "intent": {
+        "query": "请帮我找个合适的东西",
+        "side": "server"
+      },
+      "required": [],
+      "states": [
+        "query_incomplete",
+        "no_capability_match"
+      ]
+    },
+    {
+      "id": "unknown-fact",
+      "intent": {
+        "query": "读取实体的数据标记",
+        "side": "server"
+      },
+      "required": [],
+      "states": [
+        "evidence_missing",
+        "query_incomplete",
+        "partial",
+        "no_capability_match"
+      ]
+    },
+    {
+      "id": "pending-cancellation",
+      "intent": {
+        "id": "slot_change",
+        "query": "玩家交换背包物品槽位前允许取消的事件",
+        "kind": "event",
+        "side": "server",
+        "operation": "observe"
+      },
+      "required": [],
+      "states": [
+        "evidence_missing"
+      ],
+      "forbidden": [
+        "InventoryItemChangedServerEvent"
+      ],
+      "review": [
+        "InventoryItemChangedServerEvent"
+      ]
+    },
+    {
+      "id": "workflow-scope-unverified",
+      "intent": {
+        "query": "持久化世界级自定义数据并读取",
+        "side": "server",
+        "mode": "workflow",
+        "concepts": [
+          "world_data",
+          "persistence"
+        ],
+        "extent": "dimension"
+      },
+      "required": [],
+      "states": [
+        "partial"
+      ],
+      "recipe": "world.data",
+      "missing_roles": [
+        "extent"
+      ]
+    }
+  ]
+}

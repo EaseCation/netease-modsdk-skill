@@ -110,7 +110,7 @@ python3 scripts/evaluate.py --guides
 
 ## 查询和固定回归
 
-最新版要求 Wiki 运行时与标注协议均为 2，不兼容旧快照。复杂需求用 `resolve --plan-file -` 一次提交原子职责和约束，格式见 [查询计划](references/query-plan.md)。主候选优先匹配请求阶段，关联前后阶段仍一起返回；限制命中与正向能力分开。
+最新版要求查询请求协议 4、知识数据协议 v3，不兼容旧请求引擎。运行 `query.py schema` 发现实际字段；复杂需求用 `resolve --plan-file -` 提交单项职责或整体流程及其约束，格式见 [查询计划](references/query-plan.md)。主候选优先匹配请求阶段，关联前后阶段仍一起返回；限制命中与正向能力分开。
 
 稳定题库、参考能力、禁止误用项和预算均存放在本仓库 [evals/cases.json](evals/cases.json)。运行实际查询 CLI：
 
@@ -128,7 +128,7 @@ python3 scripts/evaluate.py --record-baseline
 
 支持 Python 3.9+。格式检查使用宿主 skill-creator 的 `quick_validate.py`；发布应包含绑定已有 Wiki、从最新版 Git 快照精简安装、执行真实查询和文件完整性核对。
 
-查询数据使用 v3：概念、能力事实及组合关系统一维护在 Wiki，网页与 Skill 共用构建产物。`evaluate.py --market` 执行市场复杂需求与改述回归；旧成本基线保留用于对照。协议不匹配时同步升级 Wiki 与本 Skill，不回退旧索引。
+查询数据使用 v3：概念、能力事实及组合关系统一维护在 Wiki，网页与 Skill 共用构建产物。`evaluate.py --market` 执行市场复杂需求与改述回归，`evaluate.py --requests` 检查原始问法、规范请求、证据状态和协议发现；旧成本基线保留用于对照。协议不匹配时同步升级 Wiki 与本 Skill，不回退旧索引。
 
 市场检查包括原 5 个产品的 15 组表达，以及 [扩展题库](evals/market-expansion.json) 的 13 个产品、70 项职责；`--market-expanded` 可单独执行后者。首轮输入、代码指纹和失败摘要保留在题库，参与修正后只称回归。新增四产品首轮命中 9/14 个必需入口，这个结果不会被修正后的成绩覆盖。
 

@@ -325,7 +325,7 @@ def validate():
         raise ValueError('尚未记录本轮问题的基线复现')
     note_hash = knowledge_digest(root)
     env = {**os.environ, 'MODSDK_WIKI_ROOT': str(root), 'MODSDK_MAINTAINER_MODE': '0', 'MODSDK_UPDATE_CHECK_HOURS': '0'}
-    for flags in ([], ['--guides'], ['--market']):
+    for flags in ([], ['--guides'], ['--market'], ['--requests']):
         result = run_bounded([sys.executable, str(SKILL_ROOT / 'scripts/evaluate.py'), *flags], env=env, timeout=900)
         if result.returncode:
             raise ValueError('回归失败，未允许提交；查看 .local 下的最新验收回执。' + sanitize(result.stderr))

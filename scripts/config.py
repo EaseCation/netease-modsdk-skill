@@ -84,6 +84,8 @@ def validate_contract(script_text, annotation_text):
     schema = next((node.value.value for node in tree.body
                    if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant)
                    and any(isinstance(t, ast.Name) and t.id == 'SCHEMA_VERSION' for t in node.targets)), None)
+    protocol = next((node.value.value for node in tree.body if isinstance(node,ast.Assign) and isinstance(node.value,ast.Constant) and any(isinstance(t,ast.Name) and t.id=='QUERY_PROTOCOL' for t in node.targets)),None)
+    if protocol != 4:raise ValueError('查询请求协议不匹配；请同步更新 Wiki 与 Skill 到支持请求协议 4 的版本')
     annotations = json.loads(annotation_text)
     if not isinstance(annotations, dict) or schema != 3 or annotations.get('schema_version') != 3:
         raise ValueError('Wiki 查询协议版本不匹配，请同步更新 skill 和 Wiki')
