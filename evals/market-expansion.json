@@ -1,0 +1,566 @@
+{
+  "schema_version": 1,
+  "runtime_schema_version": 3,
+  "description": "不同市场产品的独立扩展样本。输入在首次检索前冻结；首轮结果不可覆盖。商品功能与工程路线分别记录。",
+  "wiki_commit": "ec589c2feaba8d5cf091d1231162aaf12b559b93",
+  "skill_commit": "7c84afafaca1fbb01860c051ff0d06fadde3339a",
+  "cases": [
+    {
+      "id": "portable-bag",
+      "market_id": "4649207720393205174",
+      "request": "手持使用背包打开独立物品界面，显示槽位物品和数量，并保存每个背包实例的内容。",
+      "derived": "物品实例数据存储及交换拦截是本轮选择的工程路线，不代表原作者实现。",
+      "source": {
+        "item_id": "4649207720393205174",
+        "res_name": "[MI4C]背包",
+        "download_num": "2598434",
+        "stars": 4.7,
+        "mod_version": "3.8",
+        "fetched_at": "2026-10-25T04:48:44.609879Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "use",
+            "query": "玩家长按使用手持物品时通知服务端",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "ui",
+            "query": "打开自定义物品存储界面",
+            "kind": "api",
+            "side": "client",
+            "operation": "create"
+          },
+          {
+            "id": "item_view",
+            "query": "在界面物品格显示物品图标和数量",
+            "kind": "api",
+            "side": "client",
+            "operation": "set"
+          },
+          {
+            "id": "item_data_read",
+            "query": "读取玩家手持物品的自定义附加数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "item_data_write",
+            "query": "保存手持物品实例的自定义数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          },
+          {
+            "id": "slot_change",
+            "query": "玩家交换背包物品槽位前允许取消的事件",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "cross-save-bag",
+      "market_id": "4648843392334304083",
+      "request": "个人空间背包跨存档保存，按账号区分内容；房主管理访问许可，自定义快捷键能在游戏设置中改键。",
+      "derived": "跨存档采用客户端本地数据作为待核验路线，不扩张为跨设备云同步。",
+      "source": {
+        "item_id": "4648843392334304083",
+        "res_name": "空间背包",
+        "download_num": "1427652",
+        "stars": 4.7,
+        "mod_version": "3.8",
+        "fetched_at": "2026-10-25T04:48:51.462098Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "save",
+            "query": "在客户端保存跨存档可读取的本地字典数据",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          },
+          {
+            "id": "load",
+            "query": "从客户端本地存储读取字典数据",
+            "kind": "api",
+            "side": "client",
+            "operation": "read"
+          },
+          {
+            "id": "account",
+            "query": "获取指定玩家的稳定账号标识",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "permission",
+            "query": "查询玩家是否拥有操作员权限",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "binding",
+            "query": "注册可在游戏设置里改键的自定义快捷键",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          },
+          {
+            "id": "sync",
+            "query": "服务端向指定玩家客户端发送背包数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "grave-recovery",
+      "market_id": "4669125544644872468",
+      "request": "死亡时生成墓碑保存随身物品，自己取回时在玩家位置掉落；阻止其他玩家拆除墓碑。",
+      "derived": "只验证死亡与回收链的运行入口，不宣称已复制全部墓碑规则。",
+      "source": {
+        "item_id": "4669125544644872468",
+        "res_name": "墓碑2.0",
+        "download_num": "1347084",
+        "stars": 4.4,
+        "mod_version": "2.9",
+        "fetched_at": "2026-10-25T04:45:58.654837Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "death",
+            "query": "在玩家死亡时接收服务端事件",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "inventory",
+            "query": "读取玩家背包全部物品并包含附加数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "drop_control",
+            "query": "只控制一个玩家死亡时是否掉落物品",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "grave",
+            "query": "在死亡坐标放置自定义墓碑方块",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "protection",
+            "query": "玩家即将破坏方块时取消这次破坏",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "recover",
+            "query": "在指定坐标生成带完整物品数据的掉落物",
+            "kind": "api",
+            "side": "server",
+            "operation": "create"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "factory-logistics",
+      "market_id": "4660029760038751629",
+      "request": "机器通过漏斗搬运和过滤物品，方块实体周期性加工，显示运转动画，并通过模组命令打开教程。",
+      "derived": "方块实体加工循环是依据机器功能选择的实现路线，不推断原作者使用哪个模型系统。",
+      "source": {
+        "item_id": "4660029760038751629",
+        "res_name": "机械动力-联动版",
+        "download_num": "491573",
+        "stars": 4.2,
+        "mod_version": "3.9",
+        "fetched_at": "2026-10-25T04:46:05.235070Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "tick",
+            "query": "监听自定义方块实体的周期更新",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "container_read",
+            "query": "读取箱子指定槽位中的物品数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "container_write",
+            "query": "写入容器指定槽位的物品",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "hopper",
+            "query": "漏斗从容器拉取物品之前的事件",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "animation",
+            "query": "为自定义方块实体播放运转动画",
+            "kind": "api",
+            "side": "client",
+            "operation": "play"
+          },
+          {
+            "id": "command",
+            "query": "监听玩家执行模组注册的自定义命令",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "waypoint-travel",
+      "market_id": "4653663364937945085",
+      "request": "保存跨维度坐标点，玩家互相传送；房主限制使用权限，并可收取玩家等级作为传送费用。",
+      "source": {
+        "item_id": "4653663364937945085",
+        "res_name": "标点传送",
+        "download_num": "1718390",
+        "stars": 4.7,
+        "mod_version": "3.9",
+        "fetched_at": "2026-10-25T04:46:12.474540Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "position",
+            "query": "读取玩家脚下的位置",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "dimension",
+            "query": "读取目标玩家所在维度",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "permission",
+            "query": "读取指定玩家的权限等级",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "level",
+            "query": "读取玩家当前经验等级",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "charge",
+            "query": "扣除玩家指定数量的经验等级",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          },
+          {
+            "id": "teleport",
+            "query": "将玩家传送到指定维度和坐标",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "pet-capture",
+      "market_id": "4650336421829332107",
+      "request": "宠物可以捕捉、收回、重新放出并跟随，保留个体状态。",
+      "derived": "选取实体序列化与重建方案做能力验证；原文没有声明使用NBT，也未承诺能复制所有模组内部状态。",
+      "source": {
+        "item_id": "4650336421829332107",
+        "res_name": "像素精灵",
+        "download_num": "494191",
+        "stars": 4.4,
+        "mod_version": "3.9",
+        "fetched_at": "2026-10-25T04:46:19.306816Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "spawn",
+            "query": "在世界中生成指定类型的自定义生物",
+            "kind": "api",
+            "side": "server",
+            "operation": "create"
+          },
+          {
+            "id": "snapshot",
+            "query": "读取实体的完整NBT数据用于保存",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "remove",
+            "query": "移除指定实体而不触发生物死亡掉落",
+            "kind": "api",
+            "side": "server",
+            "operation": "delete"
+          },
+          {
+            "id": "restore",
+            "query": "根据保存的NBT创建实体",
+            "kind": "api",
+            "side": "server",
+            "operation": "create"
+          },
+          {
+            "id": "navigate",
+            "query": "让生物寻路走向指定坐标",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          },
+          {
+            "id": "owner",
+            "query": "读取被驯服宠物的主人",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "season-survival",
+      "market_id": "4667838870582268762",
+      "request": "季节影响降雨和农作物，温度取决于群系、天气和装备，极端温度会造成伤害。",
+      "derived": "取消作物随机刻是待核验的实现候选；不存在此事件能力不等于整个季节功能不可实现。",
+      "source": {
+        "item_id": "4667838870582268762",
+        "res_name": "更科学的mc-四季更替",
+        "download_num": "191658",
+        "stars": 4.4,
+        "mod_version": "3.8",
+        "fetched_at": "2026-10-25T04:52:06.542391Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "time",
+            "query": "获取当前世界累计经历的游戏时间",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "biome",
+            "query": "查询指定坐标所在的群系名称",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "weather",
+            "query": "设置降雨持续时间和晴天持续时间",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "crop",
+            "query": "监听并取消原版农作物的随机刻生长",
+            "kind": "event",
+            "side": "server",
+            "operation": "observe"
+          },
+          {
+            "id": "equipment",
+            "query": "读取玩家盔甲栏物品以判断温度防护",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "damage",
+            "query": "对过热玩家施加指定数值的环境伤害",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "moving-structure",
+      "market_id": "4646079130464191417",
+      "request": "将玩家搭建的方块建筑组装为可驾驶载具，保存结构，在实体上显示方块外观并管理乘客。",
+      "derived": "方块调色板转几何并附着实体是工程探索方案，不把原作者宣传当作具体API支持证据。",
+      "source": {
+        "item_id": "4646079130464191417",
+        "res_name": "自定义载具（达芬奇之船）",
+        "download_num": "253994",
+        "stars": 4.2,
+        "mod_version": "3.6",
+        "fetched_at": "2026-10-25T04:48:58.784054Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "capture",
+            "query": "读取两个坐标之间的方块组合",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "save",
+            "query": "将方块调色板序列化成可保存的数据",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "geometry",
+            "query": "将方块调色板转换为可渲染的几何模型",
+            "kind": "api",
+            "side": "client",
+            "operation": "create"
+          },
+          {
+            "id": "render",
+            "query": "把方块几何模型附加到实体上显示",
+            "kind": "api",
+            "side": "client",
+            "operation": "set"
+          },
+          {
+            "id": "ride",
+            "query": "让指定玩家成为坐骑的乘客",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "eject",
+            "query": "强制指定乘客结束骑乘",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    },
+    {
+      "id": "villager-editor",
+      "market_id": "4675728130743506088",
+      "request": "编辑村民名字、职业、经验和交易表，保存模板；修改原版数据后尽量不依赖模组继续运行。",
+      "derived": "交易表写入方案与卸载后的持久性必须分别核验，不凭改名或临时组件状态推定永久生效。",
+      "source": {
+        "item_id": "4675728130743506088",
+        "res_name": "自定义村民交易",
+        "download_num": "346942",
+        "stars": 4.4,
+        "mod_version": "3.0",
+        "fetched_at": "2026-10-25T04:52:18.775561Z"
+      },
+      "plan": {
+        "intents": [
+          {
+            "id": "name",
+            "query": "修改村民名称并让名称始终显示",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "profession",
+            "query": "设置村民的职业和变种",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "experience",
+            "query": "设置村民当前交易经验值",
+            "kind": "api",
+            "side": "server",
+            "operation": "set"
+          },
+          {
+            "id": "trade_read",
+            "query": "读取村民的完整交易列表",
+            "kind": "api",
+            "side": "server",
+            "operation": "read"
+          },
+          {
+            "id": "trade_write",
+            "query": "修改村民交易的花费物品和出售物品",
+            "kind": "api",
+            "side": "server",
+            "operation": "write"
+          },
+          {
+            "id": "template",
+            "query": "保存可在其他存档读取的村民模板数据",
+            "kind": "api",
+            "side": "client",
+            "operation": "write"
+          }
+        ]
+      },
+      "limit": 10,
+      "max_chars": 6000
+    }
+  ]
+}
