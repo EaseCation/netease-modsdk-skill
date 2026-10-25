@@ -1,0 +1,2063 @@
+{
+  "schema_version": 1,
+  "runtime_schema_version": 3,
+  "description": "市场声明驱动的固定检索回归；三个表达版本分别为原始、开发改述、留出改述。API事实依据原文，不以宣传证明实现。",
+  "total_chars_budget": 22000,
+  "sources": [
+    {
+      "item_id": "4686818977661804124",
+      "name": "CUFFED-手铐工艺",
+      "download_num": "358993",
+      "fetched_at": "2026-10-25T03:06:26.857847Z",
+      "capability_excerpt": "上肢被限制：无法攻击、无法破坏方块、无法开门开箱子，并播放受限动画。下肢被限制：无法移动、无法跳跃。手持道具点击其他玩家，交替点击挣脱按钮解除控制。"
+    },
+    {
+      "item_id": "4673101585038515024",
+      "name": "横扫之刃·Java极致还原版",
+      "download_num": "722217",
+      "fetched_at": "2026-10-25T03:06:29.243100Z",
+      "capability_excerpt": "攻击冷却和指示器UI；切换物品及攻击会重置冷却。横扫对周围生物造成额外伤害和击退，附魔等级影响伤害；支持工具抬手动画。"
+    },
+    {
+      "item_id": "4634134309906527450",
+      "name": "连锁采集&一键种植",
+      "download_num": "135680950",
+      "fetched_at": "2026-10-25T03:06:47.222140Z",
+      "capability_excerpt": "连锁采集有自定义连锁，可连锁或种植一切方块。长按1秒并拖动即可移动按钮位置。新增：自定义按键绑定的功能，支持键盘和手柄。新增：撤销连锁。"
+    },
+    {
+      "item_id": "4683470236322125740",
+      "name": "森罗物语：厨房 -石磨更新",
+      "download_num": "771484",
+      "fetched_at": "2026-10-25T03:06:52.976969Z",
+      "capability_excerpt": "无UI沉浸式烹饪：切菜、炒菜、煲汤。美食拥有新buff，包括以饥饿值替代血量减少。可交互的装饰方块、新工具与新装备。"
+    },
+    {
+      "item_id": "4647952405786615727",
+      "name": "冰火传说·龙骑士[新增玩法]",
+      "download_num": "3453311",
+      "fetched_at": "2026-10-25T03:06:58.446751Z",
+      "capability_excerpt": "驯服的龙可骑乘；持续长按跳跃键向上，松开下落。骑乘时吐息按钮可持续吐息、转动龙头。新增宫殿维度。"
+    }
+  ],
+  "cases": [
+    {
+      "id": "chain",
+      "market_id": "4634134309906527450",
+      "request": "连锁采集与一键种植：玩家挖掉一个方块后识别相邻同类方块和朝向，用当前工具连锁破坏并正常掉落；可撤销连锁恢复方块；种植时消耗背包种子，支持自定义快捷键和拖动操作按钮。",
+      "max_chars": 6000,
+      "limit": 12,
+      "intents": [
+        {
+          "id": "break",
+          "queries": [
+            "玩家挖掉方块后触发通知",
+            "玩家完成一次挖掘后收到方块破坏事件",
+            "监听玩家成功摧毁方块"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:server:DestroyBlockEvent"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:event:server:EntityPlaceBlockAfterServerEvent"
+          ],
+          "expected_state": "matched",
+          "phase": "after"
+        },
+        {
+          "id": "block",
+          "queries": [
+            "读取指定坐标方块的名称和朝向状态",
+            "查询某格方块是什么以及它的方向",
+            "拿到方块名称与状态信息"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.GetBlockNew"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.redStoneCompServer.RedStoneComponentServer.GetBlockPoweredState"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "harvest",
+          "queries": [
+            "使用玩家当前工具模拟挖掘方块并产生正常掉落",
+            "让角色拿手中工具采掉一格方块，沿用掉落和耐久规则",
+            "由玩家手持工具执行方块破坏"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "write",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.PlayerDestroyBlock"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SetItemTierLevel"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "undo",
+          "queries": [
+            "恢复之前被连锁破坏的多个方块",
+            "把先前拆掉的一片方块还原",
+            "撤销对一批方块的破坏操作"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "write",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.AddBlockProtectField"
+          ],
+          "expected_state": "matched",
+          "recipe": "block.restore"
+        },
+        {
+          "id": "plant",
+          "queries": [
+            "在指定坐标放置农作物方块",
+            "把指定位置换成作物",
+            "写入指定位置的农作物方块"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.SetBlockNew"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "consume",
+          "queries": [
+            "修改玩家背包指定槽位的种子数量",
+            "扣掉背包某格的部分种子",
+            "设置背包格子内剩余物品个数"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SetInvItemNum"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SetInvItemExchange"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "key",
+          "queries": [
+            "监听玩家自定义键盘按键按下和松开",
+            "游戏内键盘键的按下和抬起事件",
+            "接收自定义快捷键按压与释放"
+          ],
+          "kind": "event",
+          "side": "client",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:client:OnKeyPressInGame"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:event:client:OnKeyboardControllerLayoutChangeClientEvent"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "drag",
+          "queries": [
+            "拖动屏幕按钮时修改控件位置",
+            "调整界面按钮相对父容器的坐标",
+            "把UI控件挪到拖动后的位置"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.baseUIControl.BaseUIControl.SetPosition"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:client:mod.client.ui.controls.buttonUIControl.ButtonUIControl.SetButtonHoverInCallback"
+          ],
+          "expected_state": "matched"
+        }
+      ],
+      "before": {
+        "reliable": 1,
+        "output_chars": 3469,
+        "results": {
+          "intents": [
+            {
+              "id": "break",
+              "query": "玩家挖掉方块后触发通知",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "after",
+              "candidates": [
+                "9faaa6befd30"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "block",
+              "query": "读取指定坐标方块的名称和朝向状态",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "ea0e43548335"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "harvest",
+              "query": "使用玩家当前工具模拟挖掘方块并产生正常掉落",
+              "kind": "api",
+              "operation": "write",
+              "requested_phase": "any",
+              "candidates": [
+                "da5398332c0d"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "undo",
+              "query": "恢复之前被连锁破坏的多个方块",
+              "kind": "api",
+              "operation": "write",
+              "requested_phase": "any",
+              "candidates": [
+                "0e20deebbe01"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "plant",
+              "query": "在指定坐标放置农作物方块",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "ca0706a80be4"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "consume",
+              "query": "修改玩家背包指定槽位的种子数量",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "ee63f60e2c4d"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "key",
+              "query": "监听玩家自定义键盘按键按下和松开",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "8b7bce4d16dd"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "drag",
+              "query": "拖动屏幕按钮时修改控件位置",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "bcb181c70b80"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            }
+          ],
+          "results": [
+            {
+              "name": "EntityPlaceBlockAfterServerEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "9faaa6befd30",
+              "description": "触发时机：当生物成功放置方块后触发",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "after"
+            },
+            {
+              "name": "GetBlockPoweredState",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "ea0e43548335",
+              "description": "获取某个坐标方块的充能状态",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "RedStoneComponentServer",
+              "tags": [
+                "红石",
+                "充能状态",
+                "方块查询"
+              ]
+            },
+            {
+              "name": "SetItemTierLevel",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "da5398332c0d",
+              "description": "设置工具类物品的挖掘等级",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ItemCompServer",
+              "tags": [
+                "工具等级",
+                "挖掘等级",
+                "属性设置"
+              ]
+            },
+            {
+              "name": "AddBlockProtectField",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "0e20deebbe01",
+              "description": "设置一个方块无法被玩家/实体破坏的区域",
+              "match_type": "capability_text",
+              "operation": "create",
+              "component": "GameComponentServer",
+              "tags": [
+                "方块保护",
+                "区域注册",
+                "破坏限制"
+              ]
+            },
+            {
+              "name": "SetBlockNew",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "ca0706a80be4",
+              "description": "设置某一位置的方块",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "BlockInfoComponentServer",
+              "tags": [
+                "方块设置",
+                "方块替换",
+                "方块状态",
+                "邻居更新"
+              ]
+            },
+            {
+              "name": "SetInvItemExchange",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "ee63f60e2c4d",
+              "description": "交换玩家背包物品",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ItemCompServer",
+              "tags": [
+                "背包物品",
+                "槽位交换",
+                "物品修改"
+              ]
+            },
+            {
+              "name": "OnKeyboardControllerLayoutChangeClientEvent",
+              "kind": "event",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "8b7bce4d16dd",
+              "description": "键盘按键映射改变事件",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "change"
+            },
+            {
+              "name": "SetButtonHoverInCallback",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "bcb181c70b80",
+              "description": "设置鼠标进入按钮时触发的悬浮回调函数",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ButtonUIControl",
+              "tags": [
+                "按钮控件",
+                "悬浮进入",
+                "回调设置"
+              ]
+            }
+          ],
+          "related": [],
+          "limitations": [],
+          "prerequisites": {},
+          "unresolved_intents": [],
+          "assessment": "按子目标分配的候选，不代表需求已验证或可直接实现；须核对参数、限制和前置条件。"
+        }
+      }
+    },
+    {
+      "id": "kitchen",
+      "market_id": "4683470236322125740",
+      "request": "无菜单沉浸式厨房：使用食材点击厨具方块进行烹饪，读取并扣除手持食材；保存和恢复厨具加工状态。特殊食物效果在玩家受到伤害前拦截伤害，改为消耗饥饿值。",
+      "max_chars": 6000,
+      "limit": 12,
+      "intents": [
+        {
+          "id": "interact",
+          "queries": [
+            "玩家用物品点击自定义厨具方块时的事件",
+            "监听手中食材用在厨具方块上",
+            "物品对自定义方块使用的通知"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:server:ServerItemUseOnEvent"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "held",
+          "queries": [
+            "读取玩家当前手持物品及数量",
+            "查询主手拿着什么和剩余几个",
+            "获得当前手持物品信息"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetPlayerItem"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "consume",
+          "queries": [
+            "修改玩家手持槽位的物品数量",
+            "把当前选中背包格的食材数量减一",
+            "设置手持食材所在槽位的数量"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.SetInvItemNum"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "save",
+          "queries": [
+            "保存自定义方块实体的加工状态数据",
+            "将加工进度写入自定义方块的数据",
+            "更新自定义方块实体存储内容"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "write",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockInfoCompServer.BlockInfoComponentServer.SetBlockEntityData"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "load",
+          "queries": [
+            "读取自定义方块实体保存的加工状态数据",
+            "取回厨具方块实体的状态",
+            "读取方块保存的自定义数据"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.blockEntityExDataCompServer.BlockEntityExDataCompServer.GetBlockEntityData"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "damage",
+          "queries": [
+            "玩家受到伤害之前修改或取消本次伤害",
+            "在扣血前把实体即将受到的伤害改为零",
+            "拦截伤害计算并修改伤害数值"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:server:DamageEvent"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:event:server:OnPlayerBlockedByShieldBeforeServerEvent"
+          ],
+          "expected_state": "matched",
+          "phase": "before"
+        },
+        {
+          "id": "hunger_read",
+          "queries": [
+            "读取玩家当前饥饿值",
+            "查看角色食物条还剩多少",
+            "读取玩家饱食度当前值"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.GetPlayerHunger"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "hunger_set",
+          "queries": [
+            "设置玩家当前饥饿值",
+            "直接改变角色食物条数值",
+            "将玩家当前饱食度设为给定值"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetPlayerHunger"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        }
+      ],
+      "before": {
+        "reliable": 7,
+        "output_chars": 4608,
+        "results": {
+          "intents": [
+            {
+              "id": "interact",
+              "query": "玩家用物品点击自定义厨具方块时的事件",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "c06f0347a72c"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "held",
+              "query": "读取玩家当前手持物品及数量",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "60b5a6115256"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "consume",
+              "query": "修改玩家手持槽位的物品数量",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "39c0ca91f05d"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "save",
+              "query": "保存自定义方块实体的加工状态数据",
+              "kind": "api",
+              "operation": "write",
+              "requested_phase": "any",
+              "candidates": [
+                "a1defc0241fc"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "load",
+              "query": "读取自定义方块实体保存的加工状态数据",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "958f2a6a4f99"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "damage",
+              "query": "玩家受到伤害之前修改或取消本次伤害",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "before",
+              "candidates": [
+                "f0c13c6e6fe9"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "hunger_read",
+              "query": "读取玩家当前饥饿值",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "c4814e631849"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "hunger_set",
+              "query": "设置玩家当前饥饿值",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "ff1221b9df40"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            }
+          ],
+          "results": [
+            {
+              "name": "ServerItemUseOnEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "c06f0347a72c",
+              "description": "玩家在对方块使用物品之前服务端抛出的事件。",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "before",
+              "tags": [
+                "物品使用",
+                "方块交互",
+                "事件监听",
+                "行为拦截"
+              ]
+            },
+            {
+              "name": "GetPlayerItem",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "60b5a6115256",
+              "description": "获取玩家物品，支持获取背包，盔甲栏，副手以及主手物品",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "ItemCompServer",
+              "tags": [
+                "物品读取",
+                "背包查询",
+                "装备查询",
+                "手持物品"
+              ]
+            },
+            {
+              "name": "SetInvItemNum",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "39c0ca91f05d",
+              "description": "设置玩家背包物品数目",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ItemCompServer",
+              "tags": [
+                "背包操作",
+                "物品数量",
+                "槽位修改",
+                "物品清除"
+              ]
+            },
+            {
+              "name": "SetBlockEntityData",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "a1defc0241fc",
+              "description": "用于设置方块（包括自定义方块）的数据",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "BlockInfoComponentServer",
+              "tags": [
+                "方块实体",
+                "数据设置",
+                "方块数据"
+              ]
+            },
+            {
+              "name": "GetBlockEntityData",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "958f2a6a4f99",
+              "description": "用于获取方块（包括自定义方块）的数据，如需修改，请使用setblockentitydata接口",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "BlockEntityExDataCompServer",
+              "tags": [
+                "方块实体",
+                "数据读取",
+                "方块数据"
+              ]
+            },
+            {
+              "name": "OnPlayerBlockedByShieldBeforeServerEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "f0c13c6e6fe9",
+              "description": "触发时机：玩家使用盾牌抵挡伤害之前触发",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "before"
+            },
+            {
+              "name": "GetPlayerHunger",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "c4814e631849",
+              "description": "获取玩家饥饿度，展示在UI饥饿度进度条上，初始值为20，即每一个鸡腿代表2个饥饿度。 **饱和度(saturation)** ：玩家当前饱和度，初始值为5，最大值始终为玩家当前饥饿度(hunger)，该值直接影响玩家**饥饿度(hunger)**。1）增加方法：吃食物。2）减少方法：每触发一次**消耗事件**，该值减少",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家属性",
+                "饥饿值",
+                "参数读取"
+              ]
+            },
+            {
+              "name": "SetPlayerHunger",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "ff1221b9df40",
+              "description": "设置玩家饥饿度。",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家属性",
+                "饥饿值",
+                "参数设置"
+              ]
+            }
+          ],
+          "related": [
+            {
+              "name": "ServerItemTryUseEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "88ab55be72fd",
+              "description": "玩家点击右键尝试使用物品时服务端抛出的事件。",
+              "match_type": "related_phase",
+              "operation": "observe",
+              "phase": "before",
+              "tags": [
+                "物品使用",
+                "事件监听",
+                "行为拦截"
+              ],
+              "related_to": "c06f0347a72c"
+            },
+            {
+              "name": "ServerBlockUseEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "7ed39565911b",
+              "description": "触发时机：玩家右键点击新版自定义方块（或者通过接口AddBlockItemListenForUseEvent增加监听的MC原生游戏方块）时服务端抛出该事件（该事件tick执行，需要注意效率问题）。",
+              "match_type": "related_phase",
+              "operation": "observe",
+              "phase": "change",
+              "tags": [
+                "方块交互",
+                "事件监听",
+                "行为拦截"
+              ],
+              "related_to": "c06f0347a72c"
+            },
+            {
+              "name": "ItemUseOnAfterServerEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "14f0a37241f3",
+              "description": "玩家在对方块使用物品之后服务端抛出的事件。",
+              "match_type": "related_phase",
+              "operation": "observe",
+              "phase": "after",
+              "tags": [
+                "物品使用",
+                "方块交互",
+                "使用之后"
+              ],
+              "related_to": "c06f0347a72c"
+            }
+          ],
+          "limitations": [],
+          "prerequisites": {},
+          "unresolved_intents": [],
+          "assessment": "按子目标分配的候选，不代表需求已验证或可直接实现；须核对参数、限制和前置条件。"
+        }
+      }
+    },
+    {
+      "id": "cuffed",
+      "market_id": "4686818977661804124",
+      "request": "手持约束道具点击其他玩家后，禁止该玩家攻击、破坏和交互，不能移动或跳跃；播放受限姿势动画，玩家在屏幕按钮上交替点击挣脱。",
+      "max_chars": 6000,
+      "limit": 12,
+      "intents": [
+        {
+          "id": "interact",
+          "queries": [
+            "玩家手持物品点击另一个玩家时的事件",
+            "拿着道具右键另一位玩家的通知",
+            "检测玩家用物品点中了另一玩家"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [],
+          "forbidden": [
+            "modsdk:event:server:PlayerFeedEntityServerEvent"
+          ],
+          "expected_state": "needs_review"
+        },
+        {
+          "id": "attack",
+          "queries": [
+            "禁止指定玩家攻击其他实体",
+            "关闭角色攻击玩家和生物的权限",
+            "不允许该玩家攻击其他玩家及怪物"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetAttackPlayersAbility"
+            ],
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetAttackMobsAbility"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "break",
+          "queries": [
+            "禁止指定玩家破坏方块",
+            "不允许生存玩家挖掘方块",
+            "关闭指定玩家摧毁方块的权限"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetMineAbility"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "use",
+          "queries": [
+            "禁止指定玩家与方块交互开门和开箱子",
+            "关闭该玩家开门和开启箱子的权限",
+            "只限制一个玩家操作门及容器"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetOperateDoorsAndSwitchesAbility"
+            ],
+            [
+              "modsdk:api:server:mod.server.component.playerCompServer.PlayerCompServer.SetOpenContainersAbility"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "move",
+          "queries": [
+            "禁用本地玩家移动输入",
+            "锁住本地角色的方向输入，使其无法走动",
+            "将玩家移动摇杆输入固定为零"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.actorMotionCompClient.ActorMotionComponentClient.LockInputVector"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "jump",
+          "queries": [
+            "禁用本地玩家跳跃输入",
+            "关闭本地角色的跳跃响应",
+            "使玩家按跳跃键不会跳起"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.operationCompClient.OperationCompClient.SetCanJump"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "animation",
+          "queries": [
+            "为玩家播放受限姿势的动作动画",
+            "切换玩家身体为自定义束缚姿态",
+            "让玩家模型显示自定义姿势动画"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "play",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:client:mod.client.component.playerCompClient.PlayerCompClient.Swing"
+          ],
+          "expected_state": "matched",
+          "recipe": "player.animation"
+        },
+        {
+          "id": "button",
+          "queries": [
+            "为界面按钮绑定点击回调",
+            "在玩家点完按钮时执行处理函数",
+            "注册按钮触摸抬起处理函数"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.buttonUIControl.ButtonUIControl.SetButtonTouchUpCallback"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        }
+      ],
+      "before": {
+        "reliable": 4,
+        "output_chars": 3518,
+        "results": {
+          "intents": [
+            {
+              "id": "interact",
+              "query": "玩家手持物品点击另一个玩家时的事件",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "8b203de6916c"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "attack",
+              "query": "禁止指定玩家攻击其他实体",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "372266d6b1d3"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "break",
+              "query": "禁止指定玩家破坏方块",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "e8c7642af5fa"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "use",
+              "query": "禁止指定玩家与方块交互开门和开箱子",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "dc4630e7a1c0"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "move",
+              "query": "禁用本地玩家移动输入",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "a438864fc708"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "jump",
+              "query": "禁用本地玩家跳跃输入",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "5b97de8a2dff"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "animation",
+              "query": "为玩家播放受限姿势的动作动画",
+              "kind": "api",
+              "operation": "play",
+              "requested_phase": "any",
+              "candidates": [
+                "0d7c82141ddb"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "button",
+              "query": "为界面按钮绑定点击回调",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "c52d0527b543"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            }
+          ],
+          "results": [
+            {
+              "name": "PlayerFeedEntityServerEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "8b203de6916c",
+              "description": "玩家喂养生物时触发，例如玩家手持小麦喂养牛、玩家手持胡萝卜喂养幼年猪。",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "change"
+            },
+            {
+              "name": "SetAttackPlayersAbility",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "372266d6b1d3",
+              "description": "设置玩家能否攻击其他玩家",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家权限",
+                "玩家攻击",
+                "行为控制"
+              ]
+            },
+            {
+              "name": "SetMineAbility",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "e8c7642af5fa",
+              "description": "设置玩家能否摧毁方块，该接口的设置会存档，且只影响生存模式",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家权限",
+                "方块破坏",
+                "行为控制"
+              ]
+            },
+            {
+              "name": "SetOperateDoorsAndSwitchesAbility",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "dc4630e7a1c0",
+              "description": "设置玩家能否与门和开关交互",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家权限",
+                "方块交互",
+                "行为控制"
+              ]
+            },
+            {
+              "name": "LockInputVector",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "a438864fc708",
+              "description": "锁定本地玩家方向键（移动轮盘）的输入，可使本地玩家持续向指定方向前行，且不会再受玩家输入影响",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ActorMotionComponentClient",
+              "tags": [
+                "移动输入",
+                "方向锁定",
+                "持续移动"
+              ]
+            },
+            {
+              "name": "SetCanJump",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "5b97de8a2dff",
+              "description": "设置是否响应跳跃（以及在水中浮起）",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "OperationCompClient",
+              "tags": [
+                "输入响应",
+                "跳跃输入",
+                "响应设置"
+              ]
+            },
+            {
+              "name": "Swing",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "0d7c82141ddb",
+              "description": "本地玩家播放原版攻击动作",
+              "match_type": "capability_text",
+              "operation": "play",
+              "component": "PlayerCompClient",
+              "tags": [
+                "玩家动作",
+                "攻击表现",
+                "本地动画"
+              ]
+            },
+            {
+              "name": "SetButtonTouchUpCallback",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "c52d0527b543",
+              "description": "设置触控在按钮范围内弹起时的回调函数",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ButtonUIControl",
+              "tags": [
+                "按钮输入",
+                "触控释放",
+                "事件回调"
+              ]
+            }
+          ],
+          "related": [],
+          "limitations": [],
+          "prerequisites": {},
+          "unresolved_intents": [],
+          "assessment": "按子目标分配的候选，不代表需求已验证或可直接实现；须核对参数、限制和前置条件。"
+        }
+      }
+    },
+    {
+      "id": "dragon",
+      "market_id": "4647952405786615727",
+      "request": "驯龙骑乘系统：识别龙的主人并让玩家骑乘，长按跳跃控制龙升降；读取骑手朝向调整龙头方向，用原版粒子显示持续龙息，并注册新的宫殿维度。",
+      "max_chars": 6000,
+      "limit": 12,
+      "intents": [
+        {
+          "id": "owner",
+          "queries": [
+            "读取被驯服生物的主人玩家标识",
+            "查询驯养动物属于哪位玩家",
+            "取得驯服者的实体标识"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.tameCompServer.TameComponentServer.GetOwnerId"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "ride",
+          "queries": [
+            "让指定玩家骑乘指定生物",
+            "让角色立即坐到指定坐骑上",
+            "把玩家加入生物的乘客座位"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "write",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.rideCompServer.RideCompServer.SetRiderRideEntity"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.rideCompServer.RideCompServer.SetCanOtherPlayerRide"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "jump",
+          "queries": [
+            "监听本地玩家跳跃按钮按下和松开",
+            "分别收到跳跃键按下和抬起的通知",
+            "监测本地跳跃按钮开始按压和释放"
+          ],
+          "kind": "event",
+          "side": "client",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:client:ClientJumpButtonPressDownEvent"
+            ],
+            [
+              "modsdk:event:client:ClientJumpButtonReleaseEvent"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "motion",
+          "queries": [
+            "设置非玩家生物的运动速度向量",
+            "给非玩家实体指定三维移动速度",
+            "调整生物瞬时运动向量"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.actorMotionCompServer.ActorMotionComponentServer.SetMotion"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "look",
+          "queries": [
+            "读取玩家的视角朝向",
+            "获取角色头部俯仰与左右转角",
+            "读取玩家头部旋转角度"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.rotCompServer.RotComponentServer.GetRot"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "rotate",
+          "queries": [
+            "设置生物朝向角度",
+            "修改实体头部的俯仰与偏航角",
+            "设置生物头部旋转角度"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.rotCompServer.RotComponentServer.SetRot"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "breath",
+          "queries": [
+            "在生物口部绑定原版粒子发射器",
+            "把Bedrock粒子发射源挂在生物骨骼上",
+            "创建跟随生物嘴部骨骼的原版粒子"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "create",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.component.particleSystemCompClient.ParticleSystemCompClient.CreateBindEntityNew"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "dimension",
+          "queries": [
+            "注册一个自定义维度",
+            "初始化新维度实例",
+            "创建一个新的世界维度"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "create",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.dimensionCompServer.DimensionCompServer.CreateDimension"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        }
+      ],
+      "before": {
+        "reliable": 5,
+        "output_chars": 3538,
+        "results": {
+          "intents": [
+            {
+              "id": "owner",
+              "query": "读取被驯服生物的主人玩家标识",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "4236d2804272"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "ride",
+              "query": "让指定玩家骑乘指定生物",
+              "kind": "api",
+              "operation": "write",
+              "requested_phase": "any",
+              "candidates": [
+                "346fc9bcf3c9"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "jump",
+              "query": "监听本地玩家跳跃按钮按下和松开",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "eebd46b5058c"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "motion",
+              "query": "设置非玩家生物的运动速度向量",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "e8568f5f9a4d"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "look",
+              "query": "读取玩家的视角朝向",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "74f30c2b6990"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "rotate",
+              "query": "设置生物朝向角度",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "92489b8ed7e1"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "breath",
+              "query": "在生物口部绑定原版粒子发射器",
+              "kind": "api",
+              "operation": "create",
+              "requested_phase": "any",
+              "candidates": [
+                "5fa3ca61f86b"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "dimension",
+              "query": "注册一个自定义维度",
+              "kind": "api",
+              "operation": "create",
+              "requested_phase": "any",
+              "candidates": [
+                "5d9dc79ea1ac"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            }
+          ],
+          "results": [
+            {
+              "name": "GetOwnerId",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "4236d2804272",
+              "description": "获取驯服生物的主人id",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "TameComponentServer",
+              "tags": [
+                "生物驯服",
+                "主人标识",
+                "归属查询"
+              ]
+            },
+            {
+              "name": "SetCanOtherPlayerRide",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "346fc9bcf3c9",
+              "description": "设置其他玩家是否有权限骑乘，True表示每个玩家都能骑乘，False只有驯服者才能骑乘",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "RideCompServer",
+              "tags": [
+                "实体骑乘",
+                "骑乘权限",
+                "驯服关系"
+              ]
+            },
+            {
+              "name": "ClientJumpButtonReleaseEvent",
+              "kind": "event",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "eebd46b5058c",
+              "description": "跳跃按钮按下释放事件",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "change"
+            },
+            {
+              "name": "SetMotion",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "e8568f5f9a4d",
+              "description": "设置生物（不含玩家）的瞬时移动方向向量",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ActorMotionComponentServer",
+              "tags": [
+                "实体运动",
+                "瞬时运动",
+                "方向向量",
+                "击退控制"
+              ]
+            },
+            {
+              "name": "GetRot",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "74f30c2b6990",
+              "description": "获取实体头与水平方向的俯仰角度和竖直方向的旋转角度，获得角度后可用GetDirFromRot接口转换为朝向的单位向量 MC坐标系说明",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "RotComponentServer",
+              "tags": [
+                "实体朝向",
+                "角度读取",
+                "俯仰角",
+                "偏航角"
+              ]
+            },
+            {
+              "name": "SetRot",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "92489b8ed7e1",
+              "description": "设置实体头与水平方向的俯仰角度和竖直方向的旋转角度 MC坐标系说明",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "RotComponentServer",
+              "tags": [
+                "实体朝向",
+                "角度设置",
+                "俯仰角",
+                "偏航角"
+              ]
+            },
+            {
+              "name": "Create",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "5fa3ca61f86b",
+              "description": "创建粒子发射器, 创建后立即播放",
+              "match_type": "capability_text",
+              "operation": "create",
+              "component": "ParticleSystemCompClient",
+              "tags": [
+                "原版粒子",
+                "发射器创建",
+                "立即播放"
+              ]
+            },
+            {
+              "name": "CreateDimension",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "5d9dc79ea1ac",
+              "description": "创建新的dimension",
+              "match_type": "capability_text",
+              "operation": "create",
+              "component": "DimensionCompServer",
+              "tags": [
+                "维度创建",
+                "维度管理",
+                "地图初始化"
+              ]
+            }
+          ],
+          "related": [],
+          "limitations": [],
+          "prerequisites": {},
+          "unresolved_intents": [],
+          "assessment": "按子目标分配的候选，不代表需求已验证或可直接实现；须核对参数、限制和前置条件。"
+        }
+      }
+    },
+    {
+      "id": "sweep",
+      "market_id": "4673101585038515024",
+      "request": "还原Java战斗：根据攻击冷却修改本次攻击伤害，切换手持物品重置冷却，读取武器附魔等级，为附近生物施加横扫伤害和击退；播放第一人称抬手动作并更新屏幕冷却指示器。",
+      "max_chars": 6000,
+      "limit": 12,
+      "intents": [
+        {
+          "id": "damage",
+          "queries": [
+            "玩家攻击命中时修改本次伤害数值",
+            "角色攻击敌人时由服务端改写本次伤害",
+            "监听玩家攻击并设置伤害值"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:server:PlayerAttackEntityEvent"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "switch",
+          "queries": [
+            "玩家切换当前手持物品时的事件",
+            "主手物品切换后收到通知",
+            "监听玩家换到另一件手持物品"
+          ],
+          "kind": "event",
+          "side": "server",
+          "operation": "observe",
+          "required": [
+            [
+              "modsdk:event:server:OnCarriedNewItemChangedServerEvent"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "enchant",
+          "queries": [
+            "读取玩家手持武器的附魔类型与等级",
+            "查询手持物所在背包格的附魔类别和级别",
+            "读取物品栏武器的原版附魔列表"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.itemCompServer.ItemCompServer.GetInvItemEnchantData"
+            ]
+          ],
+          "forbidden": [
+            "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetEntityDamage"
+          ],
+          "expected_state": "matched"
+        },
+        {
+          "id": "nearby",
+          "queries": [
+            "获取指定生物周围一定范围的其他生物",
+            "枚举某实体附近的同类或指定类型生物",
+            "查找生物周围范围内实体列表"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "read",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.gameCompServer.GameComponentServer.GetEntitiesAroundByType"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "hurt",
+          "queries": [
+            "对指定生物造成伤害并记录攻击来源",
+            "让目标实体承受指定数值伤害并标明伤害来源",
+            "给生物施加伤害并设置攻击者"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "write",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.hurtCompServer.HurtCompServer.Hurt"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "knockback",
+          "queries": [
+            "将生物沿指定方向击退",
+            "向某个方向把实体击退",
+            "给生物施加击退初速度"
+          ],
+          "kind": "api",
+          "side": "server",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:server:mod.server.component.actionCompServer.ActionCompServer.SetMobKnockback"
+            ],
+            [
+              "modsdk:api:server:mod.server.component.actorMotionCompServer.ActorMotionComponentServer.SetMotion"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        },
+        {
+          "id": "animation",
+          "queries": [
+            "播放玩家第一人称抬手攻击动画",
+            "调整第一视角的自定义武器抬手动作",
+            "驱动玩家第一人称自定义攻击动画"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "play",
+          "required": [],
+          "forbidden": [
+            "modsdk:api:client:mod.client.component.playerAnimCompClient.PlayerAnimCompClient.PlayTpAnimation"
+          ],
+          "expected_state": "partial",
+          "recipe": "player.animation"
+        },
+        {
+          "id": "cooldown",
+          "queries": [
+            "更新界面冷却进度条显示比例",
+            "按剩余冷却比例设置UI进度",
+            "设置界面进度条当前百分比"
+          ],
+          "kind": "api",
+          "side": "client",
+          "operation": "set",
+          "required": [
+            [
+              "modsdk:api:client:mod.client.ui.controls.progressBarUIControl.ProgressBarUIControl.SetValue"
+            ]
+          ],
+          "forbidden": [],
+          "expected_state": "matched"
+        }
+      ],
+      "before": {
+        "reliable": 4,
+        "output_chars": 3508,
+        "results": {
+          "intents": [
+            {
+              "id": "damage",
+              "query": "玩家攻击命中时修改本次伤害数值",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "63113eee2c15"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "switch",
+              "query": "玩家切换当前手持物品时的事件",
+              "kind": "event",
+              "operation": "observe",
+              "requested_phase": "any",
+              "candidates": [
+                "dfb3835c744e"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "enchant",
+              "query": "读取玩家手持武器的附魔类型与等级",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "77aa5eae42bf"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "nearby",
+              "query": "获取指定生物周围一定范围的其他生物",
+              "kind": "api",
+              "operation": "read",
+              "requested_phase": "any",
+              "candidates": [
+                "e9541b057799"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "hurt",
+              "query": "对指定生物造成伤害并记录攻击来源",
+              "kind": "api",
+              "operation": "write",
+              "requested_phase": "any",
+              "candidates": [
+                "73fe3b4c9155"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "knockback",
+              "query": "将生物沿指定方向击退",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "e8568f5f9a4d"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "animation",
+              "query": "播放玩家第一人称抬手攻击动画",
+              "kind": "api",
+              "operation": "play",
+              "requested_phase": "any",
+              "candidates": [
+                "edacbb103a5b"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            },
+            {
+              "id": "cooldown",
+              "query": "更新界面冷却进度条显示比例",
+              "kind": "api",
+              "operation": "set",
+              "requested_phase": "any",
+              "candidates": [
+                "3b21386a3de8"
+              ],
+              "limitations": [],
+              "status": "candidates"
+            }
+          ],
+          "results": [
+            {
+              "name": "PlayerAttackEntityEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "63113eee2c15",
+              "description": "触发时机：当本地玩家攻击时触发该事件。",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "change"
+            },
+            {
+              "name": "OnCarriedNewItemChangedServerEvent",
+              "kind": "event",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "dfb3835c744e",
+              "description": "触发时机：玩家切换主手物品时触发该事件",
+              "match_type": "capability_text",
+              "operation": "observe",
+              "phase": "change",
+              "tags": [
+                "主手物品",
+                "物品切换",
+                "事件通知"
+              ]
+            },
+            {
+              "name": "GetEntityDamage",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "77aa5eae42bf",
+              "description": "获取生物(包括玩家)的攻击力",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "GameComponentServer",
+              "tags": [
+                "攻击力",
+                "属性读取",
+                "武器加成",
+                "附魔加成"
+              ]
+            },
+            {
+              "name": "GetEntitiesAroundByType",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "e9541b057799",
+              "description": "获取区域内的某类型的entity列表",
+              "match_type": "capability_text",
+              "operation": "read",
+              "component": "GameComponentServer",
+              "tags": [
+                "范围查询",
+                "实体筛选",
+                "实体类型"
+              ]
+            },
+            {
+              "name": "PlayerAttackEntity",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "73fe3b4c9155",
+              "description": "玩家使用手持武器攻击某个生物",
+              "match_type": "capability_text",
+              "operation": "play",
+              "component": "PlayerCompServer",
+              "tags": [
+                "玩家攻击",
+                "手持武器",
+                "实体目标"
+              ]
+            },
+            {
+              "name": "SetMotion",
+              "kind": "api",
+              "side": "server",
+              "documentation_status": "full",
+              "id": "e8568f5f9a4d",
+              "description": "设置生物（不含玩家）的瞬时移动方向向量",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ActorMotionComponentServer",
+              "tags": [
+                "实体运动",
+                "瞬时运动",
+                "方向向量",
+                "击退控制"
+              ]
+            },
+            {
+              "name": "PlayTpAnimation",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "edacbb103a5b",
+              "description": "第三人称视角播放玩家通用动作",
+              "match_type": "capability_text",
+              "operation": "play",
+              "component": "PlayerAnimCompClient",
+              "tags": [
+                "玩家动画",
+                "第三人称",
+                "动作播放"
+              ]
+            },
+            {
+              "name": "SetValue",
+              "kind": "api",
+              "side": "client",
+              "documentation_status": "full",
+              "id": "3b21386a3de8",
+              "description": "设置进度条的进度",
+              "match_type": "capability_text",
+              "operation": "set",
+              "component": "ProgressBarUIControl",
+              "tags": [
+                "进度条",
+                "进度设置",
+                "数值显示"
+              ]
+            }
+          ],
+          "related": [],
+          "limitations": [],
+          "prerequisites": {},
+          "unresolved_intents": [],
+          "assessment": "按子目标分配的候选，不代表需求已验证或可直接实现；须核对参数、限制和前置条件。"
+        }
+      }
+    }
+  ]
+}
