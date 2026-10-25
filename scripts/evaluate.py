@@ -130,7 +130,10 @@ def evaluate_operations():
         # 回执缺失时在接触 GitHub 写入前即拒绝。
         tx=clone/'.local/maintenance/transaction.json'
         tx.write_text(json.dumps({'root':str(root),'repository':'EaseCation/netease-modsdk-wiki','base':head,'phase':'editing','probes':[]}))
-        value,_=run('maintenance.py','publish',settings=active,code=1);assert '回归回执' in value['error']
+        value,_=run('maintenance.py','publish',settings={**active,'MODSDK_WIKI_REF':'validation-branch'},code=1)
+        assert '只面向配置的 main' in value['error']
+        checks.append('maintenance_rejects_non_main')
+        value,_=run('maintenance.py','publish',settings={**active,'MODSDK_WIKI_REF':'main'},code=1);assert '回归回执' in value['error']
         checks.append('publish_requires_current_validation_receipt')
     report={'passed':len(checks),'checks':checks,'scope':'真实 CLI/文件/Git/超时检查；不执行生产推送或游戏测试'}
     out=SKILL_ROOT/'.local';out.mkdir(exist_ok=True);(out/'operations-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
