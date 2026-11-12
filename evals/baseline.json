@@ -1,165 +1,165 @@
 {
   "bank_sha256": "f7740134a0bdfcc6de2dbe1116976808c1657e37c9bb8de4e932547bca0f0832",
   "runtime_schema_version": 3,
-  "corpus_sha256": "0492ecc27fbeb618d5877552ab0b9ac98cebc6e53c0ba015fd608c5c430213aa",
+  "corpus_sha256": "34dbb17bc4685ca3008dab8f6e3b857d28219f51bbbe5ea0b208f5db8da1b128",
   "cases": {
     "remote-processing": {
-      "chars": 575,
+      "chars": 873,
       "hits": 3,
       "calls": 1
     },
     "saved-respawn": {
-      "chars": 745,
+      "chars": 1051,
       "hits": 4,
       "calls": 1
     },
     "equipment-modifiers": {
-      "chars": 550,
+      "chars": 891,
       "hits": 3,
       "calls": 1
     },
     "container-audit": {
-      "chars": 599,
+      "chars": 727,
       "hits": 3,
       "calls": 1
     },
     "independent-exhibit": {
-      "chars": 1515,
+      "chars": 2191,
       "hits": 6,
       "calls": 1
     },
     "visitor-policy": {
-      "chars": 729,
+      "chars": 1179,
       "hits": 4,
       "calls": 1
     },
     "filter-form": {
-      "chars": 859,
+      "chars": 1326,
       "hits": 4,
       "calls": 1
     },
     "model-preview": {
-      "chars": 371,
+      "chars": 427,
       "hits": 1,
       "calls": 1
     },
     "inspection-camera": {
-      "chars": 940,
+      "chars": 1296,
       "hits": 5,
       "calls": 1
     },
     "persistent-name": {
-      "chars": 371,
+      "chars": 467,
       "hits": 2,
       "calls": 1
     },
     "particle-controls": {
-      "chars": 851,
+      "chars": 1185,
       "hits": 4,
       "calls": 1
     },
     "interaction-ray": {
-      "chars": 228,
+      "chars": 344,
       "hits": 1,
       "calls": 1
     },
     "entity-lifetime": {
-      "chars": 391,
+      "chars": 601,
       "hits": 2,
       "calls": 1
     },
     "readonly-dashboard": {
-      "chars": 723,
+      "chars": 1179,
       "hits": 4,
       "calls": 1
     },
     "region-snapshot": {
-      "chars": 882,
+      "chars": 1294,
       "hits": 4,
       "calls": 1
     },
     "sound-instance": {
-      "chars": 794,
+      "chars": 1203,
       "hits": 4,
       "calls": 1
     },
     "permission-tree": {
-      "chars": 228,
+      "chars": 318,
       "hits": 0,
       "calls": 1
     },
     "remote-inventory-client": {
-      "chars": 239,
+      "chars": 330,
       "hits": 0,
       "calls": 1
     },
     "account-not-entity": {
-      "chars": 191,
+      "chars": 281,
       "hits": 1,
       "calls": 1
     },
     "local-force-point": {
-      "chars": 225,
+      "chars": 310,
       "hits": 1,
       "calls": 1
     },
     "effect-before": {
-      "chars": 628,
+      "chars": 773,
       "hits": 1,
       "calls": 1
     },
     "leave-before-delete": {
-      "chars": 197,
+      "chars": 349,
       "hits": 1,
       "calls": 1
     },
     "chunk-generated": {
-      "chars": 212,
+      "chars": 306,
       "hits": 1,
       "calls": 1
     },
     "flight-two-states": {
-      "chars": 384,
+      "chars": 576,
       "hits": 2,
       "calls": 1
     },
     "thunder-observe": {
-      "chars": 201,
+      "chars": 305,
       "hits": 1,
       "calls": 1
     },
     "world-spawn": {
-      "chars": 258,
+      "chars": 369,
       "hits": 1,
       "calls": 1
     },
     "own-backpack": {
-      "chars": 222,
+      "chars": 282,
       "hits": 1,
       "calls": 1
     },
     "virtual-camera": {
-      "chars": 227,
+      "chars": 360,
       "hits": 1,
       "calls": 1
     },
     "block-state-read": {
-      "chars": 191,
+      "chars": 249,
       "hits": 1,
       "calls": 1
     },
     "particle-size": {
-      "chars": 239,
+      "chars": 340,
       "hits": 1,
       "calls": 1
     },
     "remote-equipment-client": {
-      "chars": 240,
+      "chars": 415,
       "hits": 1,
       "calls": 1
     },
     "serialize-readonly": {
-      "chars": 225,
+      "chars": 390,
       "hits": 1,
       "calls": 1
     },
@@ -179,7 +179,7 @@
       "calls": 1
     },
     "reject-small-budget": {
-      "chars": 37,
+      "chars": 57,
       "hits": 0,
       "calls": 1
     },
@@ -189,187 +189,187 @@
       "calls": 1
     },
     "dimension-finished-related": {
-      "chars": 369,
+      "chars": 482,
       "hits": 1,
       "calls": 1
     },
     "event-family-multiple-intents": {
-      "chars": 959,
+      "chars": 1204,
       "hits": 2,
       "calls": 1
     },
     "bukkit-title": {
-      "chars": 198,
+      "chars": 260,
       "hits": 1,
       "calls": 1
     },
     "bukkit-title-name": {
-      "chars": 198,
+      "chars": 254,
       "hits": 1,
       "calls": 1
     },
     "bukkit-title-reset": {
-      "chars": 198,
+      "chars": 258,
       "hits": 1,
       "calls": 1
     },
     "bukkit-actionbar": {
-      "chars": 180,
+      "chars": 306,
       "hits": 1,
       "calls": 1
     },
     "bukkit-rawtext": {
-      "chars": 198,
+      "chars": 315,
       "hits": 1,
       "calls": 1
     },
     "bukkit-chat-one": {
-      "chars": 192,
+      "chars": 257,
       "hits": 1,
       "calls": 1
     },
     "bukkit-message-name": {
-      "chars": 210,
+      "chars": 265,
       "hits": 1,
       "calls": 1
     },
     "bukkit-chat-broadcast": {
-      "chars": 357,
+      "chars": 472,
       "hits": 2,
       "calls": 1
     },
     "bukkit-chat-as-player": {
-      "chars": 204,
+      "chars": 268,
       "hits": 1,
       "calls": 1
     },
     "bukkit-chat-private-player": {
-      "chars": 244,
+      "chars": 304,
       "hits": 1,
       "calls": 1
     },
     "bukkit-tip-one": {
-      "chars": 274,
+      "chars": 347,
       "hits": 1,
       "calls": 1
     },
     "bukkit-tip-all": {
-      "chars": 231,
+      "chars": 288,
       "hits": 1,
       "calls": 1
     },
     "bukkit-scoreboard-create": {
-      "chars": 198,
+      "chars": 275,
       "hits": 1,
       "calls": 1
     },
     "bukkit-scoreboard-write": {
-      "chars": 198,
+      "chars": 266,
       "hits": 1,
       "calls": 1
     },
     "bukkit-scoreboard-read": {
-      "chars": 219,
+      "chars": 340,
       "hits": 1,
       "calls": 1
     },
     "bukkit-online": {
-      "chars": 208,
+      "chars": 240,
       "hits": 1,
       "calls": 1
     },
     "bukkit-xp-total": {
-      "chars": 208,
+      "chars": 348,
       "hits": 1,
       "calls": 1
     },
     "bukkit-xp-progress": {
-      "chars": 207,
+      "chars": 293,
       "hits": 1,
       "calls": 1
     },
     "bukkit-xp-set-total": {
-      "chars": 208,
+      "chars": 234,
       "hits": 1,
       "calls": 1
     },
     "bukkit-xp-give": {
-      "chars": 208,
+      "chars": 234,
       "hits": 1,
       "calls": 1
     },
     "bukkit-level-absolute": {
-      "chars": 383,
+      "chars": 525,
       "hits": 2,
       "calls": 1
     },
     "bukkit-location": {
-      "chars": 184,
+      "chars": 208,
       "hits": 1,
       "calls": 1
     },
     "bukkit-teleport-same": {
-      "chars": 233,
+      "chars": 214,
       "hits": 1,
       "calls": 1
     },
     "bukkit-teleport-dimension": {
-      "chars": 190,
+      "chars": 214,
       "hits": 1,
       "calls": 1
     },
     "bukkit-velocity": {
-      "chars": 218,
+      "chars": 251,
       "hits": 1,
       "calls": 1
     },
     "bukkit-food": {
-      "chars": 181,
+      "chars": 272,
       "hits": 1,
       "calls": 1
     },
     "bukkit-health": {
-      "chars": 344,
+      "chars": 459,
       "hits": 2,
       "calls": 1
     },
     "bukkit-potion": {
-      "chars": 336,
+      "chars": 431,
       "hits": 1,
       "calls": 1
     },
     "bukkit-invulnerable": {
-      "chars": 189,
+      "chars": 220,
       "hits": 1,
       "calls": 1
     },
     "bukkit-fire": {
-      "chars": 181,
+      "chars": 227,
       "hits": 1,
       "calls": 1
     },
     "bukkit-inventory-add": {
-      "chars": 207,
+      "chars": 261,
       "hits": 1,
       "calls": 1
     },
     "bukkit-tip-client": {
-      "chars": 232,
+      "chars": 298,
       "hits": 1,
       "calls": 1
     },
     "bukkit-popup-client": {
-      "chars": 233,
+      "chars": 296,
       "hits": 1,
       "calls": 1
     },
     "bukkit-corner-client": {
-      "chars": 213,
+      "chars": 225,
       "hits": 1,
       "calls": 1
     },
     "bukkit-sound-client": {
-      "chars": 224,
+      "chars": 294,
       "hits": 1,
       "calls": 1
     }
