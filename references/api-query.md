@@ -37,10 +37,10 @@ python3 <技能目录>/scripts/query.py detail <短ID1> <短ID2> --side server -
 - `review` 保留关键条件未核验的候选，不作为已支持的步骤；`limitations` 是已知冲突或限制证据；`related` 是同族关联阶段，不能替代所需时机。`timing_review` 需核对真实阶段。取消与可改参数不能从“之前”推断。
 - 候选都不对或要确认平台有无某能力：`catalog 关键词` 读所属文档页的完整清单（`--page` 可接合同的 source），未列出即该页没有；不盲猜同义词。替代候选不拼成完整能力。
 
-最后批量读必要 detail 合同：核对组件归属、参数、返回、端侧和限制，不凭摘要或名称实现。`enums` 列枚举成员，属性/槽位/动作类型常只在其中；键名看 examples。source 定位原文；developer_notes 是工程补充。长合同用 `detail ID --part remarks|examples|raw --offset 0 --page-chars 6000` 分页；next_offset 表示还有后文。超预算应缩小候选/示例，不截掉限制后声称已核验。
+最后批量读必要 detail 合同：核对组件归属、参数、返回、端侧和限制，不凭摘要或名称实现。`enums` 列枚举成员，属性/槽位/动作类型常只在其中；键名看 examples。source 定位原文；developer_notes 是工程补充。长合同用 `detail ID --part remarks|examples|raw --offset 0 --page-chars 6000` 分页；next_offset 表示还有后文。超预算应缩小候选/示例，不截掉限制。
 
-默认 scope=modsdk 排除 Preset；仅用户明确要求时使用 preset/all。当前是 ModSDK 3.9 文档快照，不证明其他版本兼容；旧请求引擎报错时同步更新 Wiki 与 Skill，不回退协议。
+默认 scope=modsdk 排除 Preset；仅用户明确要求时使用 preset/all。当前是 ModSDK 3.10 快照，不证明其他版本兼容；旧请求引擎报错时同步更新 Wiki 与 Skill，不回退协议。
 
-Bukkit/Nukkit 迁移先解释中文能力并保留范围，按需读 [常用能力迁移](bukkit-basics.md)；字符串问题读 [Python 数据边界](python-boundaries.md)。`str` 不证明 Unicode 兼容，无返回值也不证明失败。引用原文可用 section；原文或标注变化自动重建，证据哈希变化须先复核。
+Bukkit/Nukkit 迁移先解释中文能力并保留范围，按需读 [常用能力迁移](bukkit-basics.md)；字符串问题读 [Python 数据边界](python-boundaries.md)。`str` 不证明 Unicode 兼容，无返回值也不证明失败。引用原文可用 section；原文或标注变化自动重建；带 stale_note 时以合同为准。
 
 回复包含端侧、能力边界、来源和组合职责。检索命中不等于游戏实机验收。

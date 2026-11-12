@@ -34,7 +34,7 @@
     "cn-ui-api": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/自定义UI/通用.md",
-      "sha256": "d5551f736106ed3ebacb96c795a614e90772f83432197fcb14ce19b73d164e28",
+      "sha256": "9053375d5411a8ec83b4ae6dd87cd6c8b5d8b5f6431ed91729da4cc15a528954",
       "evidence": "网易教程/API 快照；具体版本见原文"
     },
     "cn-particle-build": {
@@ -52,7 +52,7 @@
     "cn-particle-api": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/特效/微软粒子.md",
-      "sha256": "bdee7d7caf36c10dc57f5e9473c310ff463b16cf744b3b79f094ec27bea43a63",
+      "sha256": "0c799f8ae5e4db5c8d6bcbf5331d72f4beaea46cc3b85eadee71d21137d437d1",
       "evidence": "网易教程/API 快照；具体版本见原文"
     },
     "cn-molang": {
@@ -64,7 +64,7 @@
     "cn-molang-api": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/实体/molang.md",
-      "sha256": "1b7c1631b5e68f9ec874b8d94413af4ec71d22c02aff66c8bb023c3328ad6f48",
+      "sha256": "eb5ff308ed676af7fe774477c63b9f6cbe929bfe67c1ef019d1853ddb5dec770",
       "evidence": "网易教程/API 快照；具体版本见原文"
     },
     "cn-entity": {
@@ -357,7 +357,7 @@
     "cn-local-storage": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/通用/本地存储.md",
-      "sha256": "f531ff766067d39210091317fa221580651d9608f3a6b5653bdee2df33b49a2f",
+      "sha256": "d09893d98eba4df3497088570028680f9489350cac48de7b8a01b99c2672a55a",
       "evidence": "网易教程/API 或 Bedrock 中文镜像；具体格式与版本看原文"
     },
     "cn-tick-performance": {
@@ -419,13 +419,13 @@
     "cn-messages": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/世界/消息.md",
-      "sha256": "5815bcd1d852a987319f6bdddf9663965a7d1a85cc8561522ed02a7b49e3ee4f",
+      "sha256": "3ed8135e3a276a8bb6e22e1628e2d5b39acab4c2ea14197808c88b8e383adff0",
       "evidence": "ModSDK API 原文，实际调用先读取完整合同"
     },
     "cn-commands": {
       "provider": "wiki",
       "path": "mcdocs/1-ModAPI/接口/世界/指令.md",
-      "sha256": "737fb752739adeceb4e40121417fb0261a011c4d4662ff32a977b978097541a1",
+      "sha256": "9107136ca32d5660f6aeed35cad9e1d20804784a5d952074d45173053bddedb9",
       "evidence": "ModSDK API 原文，实际调用先读取完整合同"
     }
   },
