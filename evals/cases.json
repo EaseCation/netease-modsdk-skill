@@ -800,7 +800,8 @@
         }
       ],
       "hard_negative_ids": [
-        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.Raycast"
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.Raycast@mcdocs/1-ModAPI/接口/物理.md",
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.Raycast@mcdocs/1-ModAPI/接口/物理/场景.md"
       ],
       "contract_checks": [
         "物理 Raycast 只支持自定义刚体；普通世界射线另有接口。"
@@ -1233,12 +1234,14 @@
         {
           "label": "局部作用点施力",
           "ids": [
-            "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPosLocal"
+            "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPosLocal@mcdocs/1-ModAPI/接口/物理.md",
+            "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPosLocal@mcdocs/1-ModAPI/接口/物理/刚体.md"
           ]
         }
       ],
       "hard_negative_ids": [
-        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPos"
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPos@mcdocs/1-ModAPI/接口/物理.md",
+        "modsdk:api:server:mod.server.component.physxCompServer.PhysxComponentServer.AddForceAtPos@mcdocs/1-ModAPI/接口/物理/刚体.md"
       ],
       "contract_checks": [],
       "boundary": false,
