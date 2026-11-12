@@ -40,7 +40,7 @@ def evaluate_guides():
     rows=[]
     for case in bank['cases']:
         initial=len(entry)+sum(len((SKILL_ROOT/p).read_text()) for p in case['references'])
-        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),*case['source_request']],capture_output=True,text=True)
+        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),*case['source_request']],capture_output=True,text=True,env={**os.environ,'MODSDK_MAINTAINER_MODE':'0'})
         output=json.loads(proc.stdout) if proc.returncode==0 else {}
         expanded=initial+len(proc.stdout.rstrip('\n'))
         row_errors=[]
@@ -49,7 +49,7 @@ def evaluate_guides():
         if initial>case['max_initial_chars'] or expanded>case['max_expanded_chars']:row_errors.append('阅读路径超过字符预算')
         rows.append({'id':case['id'],'initial_chars':initial,'expanded_chars':expanded,'paged':output.get('next_offset') is not None,'errors':row_errors})
         print(('FAIL' if row_errors else 'PASS'),case['id'],initial,expanded,flush=True)
-    outline=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),'cn-ui'],capture_output=True,text=True,check=True)
+    outline=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/read_doc.py'),'cn-ui'],capture_output=True,text=True,check=True,env={**os.environ,'MODSDK_MAINTAINER_MODE':'0'})
     outline_data=json.loads(outline.stdout)
     if outline_data.get('mode')!='outline' or 'text' in outline_data:errors.append('默认读取泄漏整篇正文')
     report={'kind':'guide-source-and-budget-check','sources':len(sources),'cases':len(rows),'passed':sum(not r['errors'] for r in rows),'errors':errors,'rows':rows,'scope':'固定阅读路径；不评估 Agent 自主路由或游戏功能'}
@@ -213,7 +213,7 @@ def main():
     bank_path=SKILL_ROOT/'evals/cases.json';bank=json.loads(bank_path.read_text())
     root=validate_wiki(resolve_root(read_config()['MODSDK_WIKI_ROOT']))
     # build/load 由实际 CLI 完成，评估器只读取生成后的索引以映射稳定 ID。
-    subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'build'],env={**os.environ,'MODSDK_WIKI_ROOT':str(root)},check=True,capture_output=True,text=True)
+    subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),'build'],env={**os.environ,'MODSDK_WIKI_ROOT':str(root),'MODSDK_MAINTAINER_MODE':'0'},check=True,capture_output=True,text=True)
     index=json.loads((root/'.api-index/index.json').read_text());by_key={r['key']:r for r in index['records']};known_ids={r['id'] for r in index['records']}
     baseline_path=SKILL_ROOT/'evals/baseline.json';baseline=json.loads(baseline_path.read_text()) if baseline_path.exists() else {}
     expected_baseline=baseline.get('cases',{})
@@ -228,7 +228,7 @@ def main():
         if reference-known_ids:errors.append('原文接口身份已变化，需人工复核参考答案')
         arguments=['--max-chars',str(case['max_chars']),'resolve','--plan-file','-','--limit',str(case['limit'])]
         started=time.monotonic()
-        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),*arguments],input=json.dumps(case['plan'],ensure_ascii=False),env={**os.environ,'MODSDK_WIKI_ROOT':str(root),'PYTHONHASHSEED':'0'},capture_output=True,text=True)
+        proc=subprocess.run([sys.executable,str(SKILL_ROOT/'scripts/query.py'),*arguments],input=json.dumps(case['plan'],ensure_ascii=False),env={**os.environ,'MODSDK_WIKI_ROOT':str(root),'PYTHONHASHSEED':'0','MODSDK_MAINTAINER_MODE':'0'},capture_output=True,text=True)
         try:output=json.loads(proc.stderr if proc.returncode else proc.stdout)
         except json.JSONDecodeError:output={};errors.append('查询未返回合法 JSON')
         if case.get('expect_error'):
