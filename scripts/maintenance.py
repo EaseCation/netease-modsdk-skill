@@ -58,6 +58,12 @@ def issue_key(root, query):
     return digest((str(root) + '\0' + query).encode())[:16]
 
 
+# 保留上限：单条查询记录约 300 字节、单个问题约 500 字节，满额时日志约 1.6 MB。
+MAX_OBSERVATIONS = 2000
+MAX_ISSUES = 2000
+AUTO_SUMMARY = '未命中/有未解决项；需先区分预期能力边界与检索缺口。'
+
+
 def add_issue(state, root, query, summary):
     key = issue_key(root, query)
     now = time.time()
@@ -67,9 +73,11 @@ def add_issue(state, root, query, summary):
             existing.update({'status': 'pending', 'reopened_at': now})
         existing['last_seen_at'] = now
         existing['occurrences'] += 1
-        existing['summary'] = summary[:600]
+        # 自动记录的默认文案不覆盖已有的人工结论；显式 record 才更新说明。
+        if summary != AUTO_SUMMARY or not existing.get('summary'):
+            existing['summary'] = summary[:600]
     else:
-        if len(state['issues']) >= 200:
+        if len(state['issues']) >= MAX_ISSUES:
             closed = next((i for i in state['issues'] if i['status'] != 'pending'), None)
             if closed:
                 state['issues'].remove(closed)
@@ -134,10 +142,10 @@ def capture_query(arguments, root, invoke):
                        'chars': len(captured.getvalue()), 'unresolved': output.get('unresolved_intents', [g['id'] for g in output.get('intents',[]) if g.get('state','matched')!='matched']),
                        'candidates': [r.get('name') or r.get('id') for r in output.get('results', [])[:8] if r.get('name') or r.get('id')],
                        'error': error}
-                state['observations'] = (state['observations'] + [row])[-60:]
+                state['observations'] = (state['observations'] + [row])[-MAX_OBSERVATIONS:]
                 state['last_activity_at'] = row['at']
                 if error or row['unresolved'] or not row['candidates']:
-                    add_issue(state, root, request, error or '未命中/有未解决项；需先区分预期能力边界与检索缺口。')
+                    add_issue(state, root, request, error or AUTO_SUMMARY)
                 save_ledger(state)
         except (OSError, ValueError, TypeError, AttributeError):
             # 记录失败不改变业务查询结果，也不在工作中发整理提醒。
